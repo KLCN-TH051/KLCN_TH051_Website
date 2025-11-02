@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KLCN_TH051_Website.Common.Entities
 {
-    public class User: IdentityUser
+    public class User: IdentityUser<int>
     {
         public string? FullName { get; set; }
         public DateTime? DateOfBirth { get; set; }

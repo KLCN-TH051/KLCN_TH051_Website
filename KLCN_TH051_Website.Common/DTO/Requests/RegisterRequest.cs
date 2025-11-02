@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KLCN_TH051_Website.Common.DTO
+namespace KLCN_TH051_Website.Common.DTO.Requests
 {
-    public class RegisterDto
+    public class RegisterRequest
     {
         [Required(ErrorMessage = "Email là bắt buộc")]
         [EmailAddress(ErrorMessage = "Email không đúng định dạng")]

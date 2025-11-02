@@ -2,12 +2,14 @@
 using KLCN_TH051_Web.Services.Models;
 using KLCN_TH051_Web.Services.Services;
 using KLCN_TH051_Website.Common.Entities;
+using KLCN_TH051_Website.Common.Helpers;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +26,7 @@ if (string.IsNullOrEmpty(connectionString))
 builder.Services.AddRepository(connectionString);
 
 // 🔸 Thêm Identity Framework
-builder.Services.AddIdentity<User, IdentityRole>()
+builder.Services.AddIdentity<User, IdentityRole<int>>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 //  Cấu hình JWT
@@ -46,7 +48,11 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+
+        // 👇 Thêm 2 dòng này
+        NameClaimType = ClaimTypes.NameIdentifier,
+        RoleClaimType = ClaimTypes.Role
     };
 });
 // 🔸 Đăng ký dịch vụ Email
@@ -54,6 +60,10 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 builder.Services.AddScoped<IEmailService, EmailService>();
 // 🔸 Đăng ký dịch vụ Account
 builder.Services.AddScoped<IAccountService, AccountService>();
+// 🔸 Đăng ký JwtHelper
+builder.Services.AddScoped<JwtHelper>();
+
+
 // 🔸 Cấu hình Swagger để hỗ trợ xác thực JWT
 builder.Services.AddSwaggerGen(c =>
 {
@@ -85,7 +95,6 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
 
 
 builder.Services.AddControllers();

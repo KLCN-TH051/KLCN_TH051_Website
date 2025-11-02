@@ -1,9 +1,13 @@
 ﻿using KLCN_TH051_Website.Common.DTO;
+using KLCN_TH051_Website.Common.DTO.Requests;
+using KLCN_TH051_Website.Common.DTO.Responses;
 using KLCN_TH051_Website.Common.Entities;
+using KLCN_TH051_Website.Common.Extensions;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace KLCN_TH051_Web.API.Controllers
 {
@@ -13,100 +17,65 @@ namespace KLCN_TH051_Web.API.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly UserManager<User> _userManager;
+        private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
 
         public AccountController(
             IAccountService accountService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IEmailService emailService,
+            IConfiguration configuration)
         {
             _accountService = accountService;
             _userManager = userManager;
+            _emailService = emailService;
+            _configuration = configuration;
         }
 
         /// <summary>
         /// [POST] Đăng ký tài khoản
         /// </summary>
-        /// <param name="model">Thông tin đăng ký</param>
-        /// <returns>Thông báo thành công/thất bại</returns>
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto model)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest model)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
+                return BadRequest(new ApiResponse<UserResponse>
                 {
                     Success = false,
                     Message = "Dữ liệu không hợp lệ.",
-                    Errors = ModelState.Values
-                        .SelectMany(v => v.Errors)
-                        .Select(e => e.ErrorMessage)
+                    Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
                 });
             }
 
             var result = await _accountService.RegisterAsync(model);
+            if (result.Success)
+                return Ok(result);
 
-            if (result.Succeeded)
-            {
-                return Ok(new
-                {
-                    Success = true,
-                    Message = "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản."
-                });
-            }
-
-            return BadRequest(new
-            {
-                Success = false,
-                Message = "Đăng ký thất bại.",
-                Errors = result.Errors.Select(e => e.Description)
-            });
+            return BadRequest(result);
         }
 
         /// <summary>
         /// [POST] Đăng nhập → trả JWT Token
         /// </summary>
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto model)
+        public async Task<IActionResult> Login([FromBody] LoginRequest model)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
+                return BadRequest(new ApiResponse<string>
                 {
                     Success = false,
                     Message = "Dữ liệu không hợp lệ.",
-                    Errors = ModelState.Values
-                        .SelectMany(v => v.Errors)
-                        .Select(e => e.ErrorMessage)
+                    Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
                 });
             }
 
-            try
-            {
-                var token = await _accountService.LoginAsync(model);
+            var result = await _accountService.LoginAsync(model);
+            if (result.Success)
+                return Ok(result);
 
-                return Ok(new
-                {
-                    Success = true,
-                    Message = "Đăng nhập thành công!",
-                    Token = token,
-                    TokenType = "Bearer"
-                });
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(new
-                {
-                    Success = false,
-                    Message = ex.Message
-                });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
-                {
-                    Success = false,
-                    Message = "Lỗi hệ thống: " + ex.Message
-                });
-            }
+            return Unauthorized(result);
         }
 
         /// <summary>
@@ -114,12 +83,15 @@ namespace KLCN_TH051_Web.API.Controllers
         /// </summary>
         /// <param name="userId">ID người dùng</param>
         /// <param name="token">Token xác thực (đã encode)</param>
+        /// <summary>
+        /// [GET] Xác thực email từ link trong Gmail
+        /// </summary>
         [HttpGet("confirm-email")]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
             {
-                return BadRequest(new
+                return BadRequest(new ApiResponse<string>
                 {
                     Success = false,
                     Message = "Thiếu thông tin xác thực (userId hoặc token)."
@@ -129,34 +101,32 @@ namespace KLCN_TH051_Web.API.Controllers
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return NotFound(new
+                return NotFound(new ApiResponse<string>
                 {
                     Success = false,
                     Message = "Không tìm thấy người dùng."
                 });
             }
 
-            // Giải mã token
             var decodedToken = Uri.UnescapeDataString(token);
             var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
 
             if (result.Succeeded)
             {
-                // Kích hoạt tài khoản
                 if (!user.IsActive)
                 {
                     user.IsActive = true;
                     await _userManager.UpdateAsync(user);
                 }
 
-                return Ok(new
+                return Ok(new ApiResponse<string>
                 {
                     Success = true,
                     Message = "Xác thực email thành công! Bạn có thể đăng nhập ngay."
                 });
             }
 
-            return BadRequest(new
+            return BadRequest(new ApiResponse<string>
             {
                 Success = false,
                 Message = "Token không hợp lệ hoặc đã hết hạn.",
@@ -173,22 +143,24 @@ namespace KLCN_TH051_Web.API.Controllers
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return NotFound(new
+                return NotFound(new ApiResponse<string>
                 {
                     Success = false,
                     Message = "Không tìm thấy người dùng với email này."
                 });
             }
 
-            return Ok(new
+            return Ok(new ApiResponse<UserResponse>
             {
                 Success = true,
-                Email = user.Email,
-                FullName = user.FullName,
-                IsActive = user.IsActive,
-                EmailConfirmed = user.EmailConfirmed,
-                PhoneNumber = user.PhoneNumber,
-                DateOfBirth = user.DateOfBirth?.ToString("yyyy-MM-dd")
+                Data = new UserResponse
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    PhoneNumber = user.PhoneNumber,
+                    DateOfBirth = user.DateOfBirth
+                }
             });
         }
 
@@ -199,25 +171,84 @@ namespace KLCN_TH051_Web.API.Controllers
         [Authorize]
         public async Task<IActionResult> GetProfile()
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            var user = await _userManager.FindByIdAsync(userId!);
+            var userId = User.GetUserId();
+            var user = await _userManager.FindByIdAsync(userId.ToString());
 
-            if (user == null)
-                return NotFound();
+            if (user == null) return NotFound(new ApiResponse<string> { Success = false, Message = "Không tìm thấy người dùng." });
 
-            return Ok(new
+            var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "None";
+
+            return Ok(new ApiResponse<UserResponse>
             {
                 Success = true,
-                Data = new
+                Data = new UserResponse
                 {
-                    user.Id,
-                    user.Email,
-                    user.FullName,
-                    user.PhoneNumber,
-                    user.DateOfBirth,
-                    user.IsActive
+                    Id = user.Id,
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    PhoneNumber = user.PhoneNumber,
+                    DateOfBirth = user.DateOfBirth,
                 }
             });
         }
+
+        /// <summary>
+        /// [POST] Quên mật khẩu → gửi email reset password
+        /// </summary>
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new { Success = false, Message = "Dữ liệu không hợp lệ." });
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Không tiết lộ user có tồn tại hay không
+                return Ok(new { Success = true, Message = "Nếu email tồn tại, bạn sẽ nhận được hướng dẫn reset password." });
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = System.Web.HttpUtility.UrlEncode(token);
+            var callbackUrl = $"{_configuration["AppUrl"]}/reset-password?email={user.Email}&token={encodedToken}";
+
+            await _emailService.SendConfirmationEmailAsync(user.Email, callbackUrl); // gửi email token
+
+            return Ok(new { Success = true, Message = "Nếu email tồn tại, bạn sẽ nhận được hướng dẫn reset password." });
+        }
+
+        /// <summary>
+        /// [POST] Reset mật khẩu mới
+        /// </summary>
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new { Success = false, Message = "Dữ liệu không hợp lệ." });
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Không tiết lộ user có tồn tại hay không
+                return BadRequest(new { Success = false, Message = "Email hoặc token không hợp lệ." });
+            }
+
+            var decodedToken = System.Web.HttpUtility.UrlDecode(model.Token);
+            var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                return Ok(new { Success = true, Message = "Đặt lại mật khẩu thành công!" });
+            }
+
+            return BadRequest(new
+            {
+                Success = false,
+                Message = "Token không hợp lệ hoặc đã hết hạn.",
+                Errors = result.Errors.Select(e => e.Description)
+            });
+        }
+
+
     }
 }

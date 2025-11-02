@@ -1,6 +1,7 @@
-﻿using KLCN_TH051_Website.Common.DTO;
+﻿using KLCN_TH051_Website.Common.DTO.Requests;
+using KLCN_TH051_Website.Common.DTO.Responses;
 using KLCN_TH051_Website.Common.Entities;
-using KLCN_TH051_Website.Common.Interfaces;
+using KLCN_TH051_Website.Common.Helpers;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,37 +14,47 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace KLCN_TH051_Web.Services.Services
 {
-    public class AccountService: IAccountService
+    public class AccountService : IAccountService
     {
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
+        private readonly JwtHelper _jwtHelper; 
 
         public AccountService(
             UserManager<User> userManager,
             IConfiguration configuration,
-            IEmailService emailService)
+            IEmailService emailService,
+            JwtHelper jwtHelper) 
         {
             _userManager = userManager;
             _configuration = configuration;
             _emailService = emailService;
+            _jwtHelper = jwtHelper;
         }
 
-        public async Task<IdentityResult> RegisterAsync(RegisterDto model)
+        public async Task<ApiResponse<UserResponse>> RegisterAsync(RegisterRequest model)
         {
-            // Kiểm tra email đã tồn tại
+            var response = new ApiResponse<UserResponse>();
+
+            // Kiểm tra email tồn tại
             if (await _userManager.FindByEmailAsync(model.Email) != null)
             {
-                return IdentityResult.Failed(new IdentityError { Description = "Email đã được sử dụng." });
+                response.Success = false;
+                response.Message = "Email đã được sử dụng.";
+                return response;
             }
 
-            // Kiểm tra số điện thoại đã tồn tại
+            // Kiểm tra số điện thoại
             if (await _userManager.Users.AnyAsync(u => u.PhoneNumber == model.PhoneNumber))
             {
-                return IdentityResult.Failed(new IdentityError { Description = "Số điện thoại đã được sử dụng." });
+                response.Success = false;
+                response.Message = "Số điện thoại đã được sử dụng.";
+                return response;
             }
 
             var user = new User
@@ -55,36 +66,66 @@ namespace KLCN_TH051_Web.Services.Services
                 PhoneNumber = model.PhoneNumber,
                 CreatedDate = DateTime.Now,
                 CreatedBy = "self",
-                IsActive = false // Chưa active cho đến khi xác thực email
+                IsActive = false
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                // Tạo token xác thực email
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var encodedToken = Uri.EscapeDataString(token);
-                var callbackUrl = $"{_configuration["AppUrl"]}/api/account/confirm-email?userId={user.Id}&token={encodedToken}";
-
-                // Gửi email xác nhận
-                await _emailService.SendConfirmationEmailAsync(user.Email, callbackUrl);
+                response.Success = false;
+                response.Message = "Đăng ký thất bại.";
+                response.Errors = result.Errors.Select(e => e.Description);
+                return response;
             }
 
-            return result;
-        }
+            // Gán vai trò "Student"
+            var addRoleResult = await _userManager.AddToRoleAsync(user, "Student");
+            if (!addRoleResult.Succeeded)
+            {
+                response.Success = false;
+                response.Message = "Gán vai trò thất bại.";
+                response.Errors = addRoleResult.Errors.Select(e => e.Description);
+                return response;
+            }
 
-        public async Task<string> LoginAsync(LoginDto model)
+            // Gửi email xác thực
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var encodedToken = HttpUtility.UrlEncode(token);
+            var callbackUrl = $"{_configuration["AppUrl"]}/api/account/confirm-email?userId={user.Id}&token={encodedToken}";
+
+            await _emailService.SendConfirmationEmailAsync(user.Email, callbackUrl);
+
+            response.Success = true;
+            response.Message = "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.";
+            response.Data = new UserResponse
+            {
+                Id = user.Id,
+                Email = user.Email,
+                FullName = user.FullName,
+                PhoneNumber = user.PhoneNumber,
+                DateOfBirth = user.DateOfBirth
+            };
+
+            return response;
+        }
+        public async Task<ApiResponse<string>> LoginAsync(LoginRequest model)
         {
+            var response = new ApiResponse<string>();
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                throw new UnauthorizedAccessException("Sai email hoặc mật khẩu.");
+                response.Success = false;
+                response.Message = "Sai email hoặc mật khẩu.";
+                return response;
             }
 
             if (!user.IsActive)
             {
-                throw new UnauthorizedAccessException("Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email.");
+                response.Success = false;
+                response.Message = "Tài khoản chưa được kích hoạt. Vui lòng kiểm tra email.";
+                return response;
             }
 
             // Cập nhật lần đăng nhập cuối
@@ -92,32 +133,17 @@ namespace KLCN_TH051_Web.Services.Services
             user.LastUpdatedBy = user.Email;
             await _userManager.UpdateAsync(user);
 
-            return GenerateJwtToken(user);
-        }
+            // Lấy roles
+            var roles = await _userManager.GetRolesAsync(user);
 
-        private string GenerateJwtToken(User user)
-        {
-            var jwtSettings = _configuration.GetSection("JwtSettings");
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            // ✅ Gọi JwtHelper để sinh token
+            var token = _jwtHelper.GenerateToken(user, roles);
 
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Email!),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.FullName ?? user.Email!)
-            };
+            response.Success = true;
+            response.Message = "Đăng nhập thành công.";
+            response.Data = token;
 
-            var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(double.Parse(jwtSettings["ExpiryMinutes"])),
-                signingCredentials: credentials
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return response;
         }
     }
 }

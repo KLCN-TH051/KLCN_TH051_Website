@@ -15,7 +15,7 @@ namespace KLCN_TH051_Web.Repositories.Data
             var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
 
             // 🔹 Cấu hình connection string tại design-time
-            optionsBuilder.UseSqlServer("Data Source=LAPTOP-SSVQNLTA;Initial Catalog=TestMH3layer;User ID=sa;Password=123;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer("Data Source=LAPTOP-SSVQNLTA;Initial Catalog=TestMH3layer;User ID=sa;Password=123;Trust Server Certificate=True");
 
             return new AppDbContext(optionsBuilder.Options);
         }

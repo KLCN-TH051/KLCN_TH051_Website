@@ -1,4 +1,6 @@
 ﻿using KLCN_TH051_Website.Common.DTO;
+using KLCN_TH051_Website.Common.DTO.Requests;
+using KLCN_TH051_Website.Common.DTO.Responses;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -10,7 +12,7 @@ namespace KLCN_TH051_Website.Common.Interfaces
 {
     public interface IAccountService
     {
-        Task<IdentityResult> RegisterAsync(RegisterDto model);
-        Task<string> LoginAsync(LoginDto model);
+        Task<ApiResponse<UserResponse>> RegisterAsync(RegisterRequest model);
+        Task<ApiResponse<string>> LoginAsync(LoginRequest model);
     }
 }
