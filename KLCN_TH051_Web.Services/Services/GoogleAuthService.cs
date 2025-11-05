@@ -16,41 +16,45 @@ namespace KLCN_TH051_Web.Services.Services
     {
         private readonly UserManager<User> _userManager;
         private readonly JwtHelper _jwtHelper;
-        private readonly IConfiguration _configuration;
+        private readonly string _googleClientId;
 
-        public GoogleAuthService(UserManager<User> userManager, JwtHelper jwtHelper, IConfiguration configuration)
+        public GoogleAuthService(UserManager<User> userManager, JwtHelper jwtHelper, IConfiguration config)
         {
             _userManager = userManager;
             _jwtHelper = jwtHelper;
-            _configuration = configuration;
+            // Lấy Google ClientId từ biến môi trường nếu có, nếu không fallback sang config
+            _googleClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID")
+                              ?? config["Authentication:Google:ClientId"]!;
         }
 
-        public async Task<string> LoginWithGoogleAsync(string idToken)
+        public async Task<string?> LoginWithGoogleAsync(string idToken)
         {
-            // ✅ Xác thực token Google
-            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, new GoogleJsonWebSignature.ValidationSettings
+            var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
-                Audience = new[] { _configuration["Authentication:Google:ClientId"] }
-            });
+                Audience = new List<string> { _googleClientId }
+            };
+            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
 
-            // 🔍 Tìm user trong DB
             var user = await _userManager.FindByEmailAsync(payload.Email);
             if (user == null)
             {
                 user = new User
                 {
-                    UserName = payload.Email,
                     Email = payload.Email,
+                    UserName = payload.Email,
                     FullName = payload.Name,
                     EmailConfirmed = true,
                     IsActive = true
                 };
                 await _userManager.CreateAsync(user);
+
+                // PHÂN ROLE "Student" CHO USER MỚI
+                await _userManager.AddToRoleAsync(user, "Student");
             }
 
-            // 🔑 Sinh JWT token
             var roles = await _userManager.GetRolesAsync(user);
-            return _jwtHelper.GenerateToken(user, roles);
+            var token = _jwtHelper.GenerateToken(user, roles);
+            return token;
         }
     }
 }

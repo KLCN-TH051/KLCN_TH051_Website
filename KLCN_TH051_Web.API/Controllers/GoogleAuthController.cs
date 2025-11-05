@@ -18,8 +18,18 @@ namespace KLCN_TH051_Web.API.Controllers
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
         {
+            if (!ModelState.IsValid || string.IsNullOrEmpty(request.IdToken))
+            {
+                return BadRequest(new { success = false, message = "IdToken is required." });
+            }
+
             var token = await _googleAuthService.LoginWithGoogleAsync(request.IdToken);
-            return Ok(new { Success = true, Token = token });
+            if (token == null)
+            {
+                return Unauthorized(new { success = false, message = "Google login failed." });
+            }
+
+            return Ok(new { success = true, token = token });
         }
     }
 }

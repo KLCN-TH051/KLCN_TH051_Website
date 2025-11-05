@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Đăng nhập bằng Google";
+}
+<h2 class="text-center mt-4">Đăng nhập</h2>
+<div>
+    <p class="text-center">Sử dụng tài khoản Google của bạn để đăng nhập.</p>
+</div>
+
+<head>
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin-allow-popups">
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+</head>
+
+<div class="text-center mt-5">
+    <div id="googleLoginBtn"></div>
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+    window.onload = function () {
+        google.accounts.id.initialize({
+            client_id: "754099279591-jtngs4cpoflvqes5ljofe47c7sts5h6r.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+            document.getElementById("googleLoginBtn"),
+            {
+                theme: "outline",
+                size: "large",
+                text: "continue_with",
+                shape: "pill",
+                width: "300"
+            }
+        );
+    };
+
+    async function handleCredentialResponse(response) {
+        const idToken = response.credential;
+        console.log("Google ID Token:", idToken);
+
+        try {
+            const res = await fetch("https://localhost:7134/api/GoogleAuth/google-login", {
+                method: "POST",
+                credentials: "include", // BẮT BUỘC
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idToken: idToken })
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(`HTTP ${res.status}: ${errorText}`);
+            }
+
+            const data = await res.json();
+            console.log("Response từ API:", data);
+
+            if (data.success) {
+                alert("Đăng nhập thành công!");
+                localStorage.setItem("jwt", data.token);
+                window.location.href = "https://localhost:7267/Home/Index";
+            } else {
+                alert("Đăng nhập thất bại: " + (data.message || "Lỗi không xác định"));
+            }
+        } catch (err) {
+            console.error("Lỗi fetch:", err);
+            alert("Không thể kết nối API. Kiểm tra backend và CORS.");
+        }
+    }
+</script>

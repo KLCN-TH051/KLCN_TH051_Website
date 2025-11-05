@@ -13,7 +13,6 @@ using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // 🔸 Lấy chuỗi kết nối từ appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -62,7 +61,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 // 🔸 Đăng ký JwtHelper
 builder.Services.AddScoped<JwtHelper>();
-
+// Đăng ký GoogleAuthService
+builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
 
 // 🔸 Cấu hình Swagger để hỗ trợ xác thực JWT
 builder.Services.AddSwaggerGen(c =>
@@ -95,12 +95,31 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+// ✅ Cấu hình CORS để cho phép frontend truy cập API
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("https://localhost:7267", "http://localhost:5103")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+
 
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
+
+
+
+
+
+
 
 var app = builder.Build();
 
@@ -112,6 +131,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+// ✅ Áp dụng CORS
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
