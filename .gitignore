@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/KLCN_TH051_Web.Repositories/Data/AppDbContextFactory.cs
+/KLCN_TH051_Web.API/appsettings.json
