@@ -1,0 +1,105 @@
+﻿@{
+    ViewData["Title"] = "Quên mật khẩu";
+}
+
+<link href="~/css/accountformstyle.css" rel="stylesheet" />
+
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div class="card shadow-lg border-0 p-4 account-card text-center">
+        <!-- Logo -->
+        <img src="https://placehold.co/120x80?text=Logo" alt="Logo" class="mb-3 mx-auto">
+
+        <!-- Tiêu đề -->
+        <h4 class="fw-bold text-primary mb-2">QUÊN MẬT KHẨU</h4>
+        <p class="text-muted small mb-4">
+            Nhập địa chỉ email hoặc tài khoản của bạn để nhận liên kết đặt lại mật khẩu.
+        </p>
+
+        <!-- FORM GỌI API -->
+        <form id="forgotPassForm">
+            <!-- Email hoặc Tài khoản -->
+            <div class="input-group mb-4">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-envelope text-primary"></i>
+                </span>
+                <div class="form-floating flex-grow-1">
+                    <input type="text" class="form-control border-start-0" id="account" name="Account" placeholder="Email hoặc tài khoản" required>
+                    <label for="account">Email hoặc tài khoản</label>
+                </div>
+            </div>
+
+            <!-- Nút gửi -->
+            <button type="submit" class="btn btn-primary w-100 py-2 mb-3" id="submitBtn">
+                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                Gửi liên kết đặt lại
+            </button>
+
+            <!-- Liên kết phụ -->
+            <div class="text-center mt-3">
+                <a href="/Account/Login" class="fw-semibold text-decoration-none small">
+                    ← Quay lại đăng nhập
+                </a>
+            </div>
+        </form>
+
+        <!-- THÔNG BÁO THÀNH CÔNG -->
+        <div id="successMessage" class="alert alert-success mt-3 d-none">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <div>
+                    <strong>Yêu cầu đặt lại mật khẩu đã được gửi!</strong><br>
+                    <small>Vui lòng vào <strong>Gmail</strong> để thay đổi mật khẩu.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- LỖI -->
+        <div id="errorMessage" class="alert alert-danger mt-3 d-none"></div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("forgotPassForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const account = document.getElementById("account").value.trim();
+        const submitBtn = document.getElementById("submitBtn");
+        const spinner = submitBtn.querySelector(".spinner-border");
+        const successDiv = document.getElementById("successMessage");
+        const errorDiv = document.getElementById("errorMessage");
+
+        // Reset UI
+        successDiv.classList.add("d-none");
+        errorDiv.classList.add("d-none");
+        submitBtn.disabled = true;
+        spinner.classList.remove("d-none");
+
+        try {
+            const res = await fetch("https://localhost:7134/api/Account/forgot-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: account })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && (data.Success === true || data.success === true)) {
+                // HIỆN THÔNG BÁO RÕ RÀNG
+                successDiv.classList.remove("d-none");
+
+                // TẮT FORM ĐỂ TRÁNH GỬI LẠI
+                document.getElementById("forgotPassForm").style.display = "none";
+
+            } else {
+                errorDiv.textContent = data.Message || data.message || "Gửi thất bại. Vui lòng thử lại.";
+                errorDiv.classList.remove("d-none");
+            }
+        } catch (err) {
+            errorDiv.textContent = "Lỗi kết nối. Vui lòng kiểm tra mạng.";
+            errorDiv.classList.remove("d-none");
+        } finally {
+            submitBtn.disabled = false;
+            spinner.classList.add("d-none");
+        }
+    });
+</script>

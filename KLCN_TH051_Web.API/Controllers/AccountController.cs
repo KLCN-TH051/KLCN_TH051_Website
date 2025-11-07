@@ -7,6 +7,7 @@ using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using System.Security.Claims;
 
 namespace KLCN_TH051_Web.API.Controllers
@@ -202,19 +203,29 @@ namespace KLCN_TH051_Web.API.Controllers
                 return BadRequest(new { Success = false, Message = "Dữ liệu không hợp lệ." });
 
             var user = await _userManager.FindByEmailAsync(model.Email);
+
+            // Luôn trả về cùng một message để tránh lộ thông tin tồn tại user
+            var responseMessage = "Nếu email tồn tại, bạn sẽ nhận được hướng dẫn reset password.";
+
             if (user == null)
             {
-                // Không tiết lộ user có tồn tại hay không
-                return Ok(new { Success = true, Message = "Nếu email tồn tại, bạn sẽ nhận được hướng dẫn reset password." });
+                return Ok(new { Success = true, Message = responseMessage });
             }
 
+            // Tạo token reset password
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var encodedToken = System.Web.HttpUtility.UrlEncode(token);
-            var callbackUrl = $"{_configuration["AppUrl"]}/reset-password?email={user.Email}&token={encodedToken}";
 
-            await _emailService.SendConfirmationEmailAsync(user.Email, callbackUrl); // gửi email token
+            // Encode token và email để nhét vào URL an toàn
+            var encodedToken = WebUtility.UrlEncode(token);
+            var encodedEmail = WebUtility.UrlEncode(user.Email);
 
-            return Ok(new { Success = true, Message = "Nếu email tồn tại, bạn sẽ nhận được hướng dẫn reset password." });
+            // Tạo URL callback (dẫn đến trang reset password)
+            var callbackUrl = $"{_configuration["AppUrl"]}/Account/ResetPasswordForm?email={encodedEmail}&token={encodedToken}";
+
+            // Gửi email chứa link reset
+            await _emailService.SendConfirmationEmailAsync(user.Email, callbackUrl);
+
+            return Ok(new { Success = true, Message = responseMessage });
         }
 
         /// <summary>
@@ -229,12 +240,11 @@ namespace KLCN_TH051_Web.API.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                // Không tiết lộ user có tồn tại hay không
                 return BadRequest(new { Success = false, Message = "Email hoặc token không hợp lệ." });
             }
 
-            var decodedToken = System.Web.HttpUtility.UrlDecode(model.Token);
-            var result = await _userManager.ResetPasswordAsync(user, decodedToken, model.NewPassword);
+            // KHÔNG DECODE LẠI - token đã được decode bởi browser
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
 
             if (result.Succeeded)
             {

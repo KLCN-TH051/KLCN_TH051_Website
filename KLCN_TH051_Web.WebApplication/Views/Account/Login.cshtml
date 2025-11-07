@@ -1,70 +1,60 @@
 ﻿@{
-    ViewData["Title"] = "Đăng nhập bằng Google";
+    ViewData["Title"] = "Đăng Nhập";
 }
-<h2 class="text-center mt-4">Đăng nhập</h2>
-<div>helo</div>
-<div>
-    <p class="text-center">Sử dụng tài khoản Google của bạn để đăng nhập.</p>
+
+<link rel="stylesheet" href="~/css/accountformStyle.css" />
+
+<div id="toast-container"></div>
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div class="card shadow-lg border-0 p-4 account-card text-center">
+        <img src="https://placehold.co/120x80?text=Logo" alt="Logo" class="mb-3 mx-auto">
+        <h4 class="fw-bold text-primary mb-2">HỆ THỐNG HỖ TRỢ HỌC TẬP</h4>
+        <p class="text-muted small mb-4">Đăng nhập để sử dụng hệ thống</p>
+
+        <form id="loginForm" method="post">
+            <!-- Email -->
+            <div class="input-group mb-4">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-envelope text-primary"></i>
+                </span>
+                <div class="form-floating flex-grow-1 position-relative">
+                    <input class="form-control border-start-0" id="email" name="email" placeholder="Email">
+                    <label for="email">Email</label>
+                    <div class="error-message text-danger small mt-1" style="display: none; position: absolute; bottom: -20px; left: 0;"></div>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="input-group mb-4">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-lock text-primary"></i>
+                </span>
+                <div class="form-floating flex-grow-1 position-relative">
+                    <input type="password" class="form-control border-start-0" id="password" name="password" placeholder="Mật khẩu">
+                    <label for="password">Mật khẩu</label>
+                    <div class="error-message text-danger small mt-1" style="display: none; position: absolute; bottom: -20px; left: 0;"></div>
+                </div>
+            </div>
+
+            <!-- Remember Me -->
+            <div class="form-check mb-3 text-start">
+                <input class="form-check-input" type="checkbox" id="rememberMe" name="RememberMe">
+                <label class="form-check-label" for="rememberMe">Ghi nhớ đăng nhập</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Đăng nhập</button>
+
+            @await Html.PartialAsync("_SocialLoginPartial")
+
+            <div class="text-center mt-3">
+                <a href="/account/forgotpass" class="text-decoration-none small">Quên mật khẩu?</a><br />
+                <span class="text-muted small">Chưa có tài khoản?</span>
+                <a href="/Account/Register" class="fw-semibold">Đăng ký ngay</a>
+            </div>
+        </form>
+    </div>
 </div>
 
-<head>
-    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin-allow-popups">
-    <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
-</head>
-
-<div class="text-center mt-5">
-    <div id="googleLoginBtn"></div>
-</div>
-
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script>
-    window.onload = function () {
-        google.accounts.id.initialize({
-            client_id: "754099279591-jtngs4cpoflvqes5ljofe47c7sts5h6r.apps.googleusercontent.com",
-            callback: handleCredentialResponse
-        });
-        google.accounts.id.renderButton(
-            document.getElementById("googleLoginBtn"),
-            {
-                theme: "outline",
-                size: "large",
-                text: "continue_with",
-                shape: "pill",
-                width: "300"
-            }
-        );
-    };
-
-    async function handleCredentialResponse(response) {
-        const idToken = response.credential;
-        console.log("Google ID Token:", idToken);
-
-        try {
-            const res = await fetch("https://localhost:7134/api/GoogleAuth/google-login", {
-                method: "POST",
-                credentials: "include", // BẮT BUỘC
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ idToken: idToken })
-            });
-
-            if (!res.ok) {
-                const errorText = await res.text();
-                throw new Error(`HTTP ${res.status}: ${errorText}`);
-            }
-
-            const data = await res.json();
-            console.log("Response từ API:", data);
-
-            if (data.success) {
-                alert("Đăng nhập thành công!");
-                localStorage.setItem("jwt", data.token);
-                window.location.href = "https://localhost:7267/Home/Index";
-            } else {
-                alert("Đăng nhập thất bại: " + (data.message || "Lỗi không xác định"));
-            }
-        } catch (err) {
-            console.error("Lỗi fetch:", err);
-            alert("Không thể kết nối API. Kiểm tra backend và CORS.");
-        }
-    }
-</script>
+@section Scripts {
+    <script src="~/js/login.js"></script>
+}

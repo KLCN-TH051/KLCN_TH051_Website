@@ -1,4 +1,5 @@
 ﻿using KLCN_TH051_Website.Common.DTO.Requests;
+using KLCN_TH051_Website.Common.DTO.Responses;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,22 +15,54 @@ namespace KLCN_TH051_Web.API.Controllers
         {
             _googleAuthService = googleAuthService;
         }
-
         [HttpPost("google-login")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
         {
-            if (!ModelState.IsValid || string.IsNullOrEmpty(request.IdToken))
+            if (!ModelState.IsValid || string.IsNullOrEmpty(request?.IdToken))
             {
-                return BadRequest(new { success = false, message = "IdToken is required." });
+                return BadRequest(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "IdToken is required."
+                });
             }
 
-            var token = await _googleAuthService.LoginWithGoogleAsync(request.IdToken);
-            if (token == null)
+            try
             {
-                return Unauthorized(new { success = false, message = "Google login failed." });
-            }
+                var token = await _googleAuthService.LoginWithGoogleAsync(request.IdToken);
 
-            return Ok(new { success = true, token = token });
+                if (string.IsNullOrEmpty(token))
+                {
+                    return Unauthorized(new ApiResponse<string>
+                    {
+                        Success = false,
+                        Message = "Google login failed."
+                    });
+                }
+
+                // TRẢ VỀ ĐÚNG ĐỊNH DẠNG NHƯ /api/Account/login
+                return Ok(new ApiResponse<string>
+                {
+                    Success = true,
+                    Data = token
+                });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Google token không hợp lệ."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Lỗi server: " + ex.Message
+                });
+            }
         }
     }
 }

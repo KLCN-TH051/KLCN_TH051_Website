@@ -1,0 +1,87 @@
+﻿@{
+    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+    // bool isLoggedIn = false;
+    // string userName = "Sinh viên";
+}
+
+<header>
+    <!-- ===== Sub Header ===== -->
+    <div class="sub-header text-white py-1 px-3">
+        <div class="container-fluid d-flex justify-content-between align-items-center small flex-wrap">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-mortarboard-fill me-2"></i>
+                <span>Hệ thống hỗ trợ học tập – KLCN_TH051</span>
+            </div>
+            <div class="mt-1 mt-md-0">
+                <a href="#" class="text-white text-decoration-none me-3">Hỗ trợ</a>
+                <a href="#" class="text-white text-decoration-none">Ngôn ngữ: 🇻🇳</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Main Navbar ===== -->
+    <nav class="navbar navbar-expand-lg navbar-dark edu-navbar shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                <img src="https://placehold.co/60x40" alt="Logo" style="height:40px;" class="me-2" />
+                <span class="fw-semibold">KLCN_TH051</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "Home" ? "active" : "")"
+                           asp-controller="Home" asp-action="Index">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "Course" ? "active" : "")"
+                           asp-controller="Course" asp-action="Index">Khóa học</a>
+                    </li>
+                    @* <li class="nav-item">
+                        <a class="nav-link @(currentController == "About" ? "active" : "")"
+                           asp-controller="About" asp-action="Index">Giới thiệu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(currentController == "Contact" ? "active" : "")"
+                           asp-controller="Contact" asp-action="Index">Liên hệ</a>
+                    </li> *@
+
+
+                    <!-- Dropdown tài khoản -->
+                    <li class="nav-item dropdown" id="userMenu" style="display:none;">
+                        <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#"
+                           id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=0d6efd&color=fff&size=32"
+                                 alt="Avatar" class="rounded-circle me-2" style="width:32px; height:32px;" />
+                            <span id="userName">Người dùng</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#">Thông tin cá nhân</a></li>
+                            <li><a class="dropdown-item" href="#">Cài đặt</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><a class="dropdown-item text-danger" href="#" id="logoutBtn">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown" id="guestMenu">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="loginDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i> Tài khoản
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="loginDropdown">
+                            <li><a class="dropdown-item" href="/Account/Login">Đăng nhập</a></li>
+                            <li><a class="dropdown-item" href="/Account/Register">Đăng ký</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+

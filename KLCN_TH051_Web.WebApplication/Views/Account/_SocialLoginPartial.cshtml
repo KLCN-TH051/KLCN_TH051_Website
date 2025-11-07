@@ -1,0 +1,156 @@
+﻿@* Dùng cho cả Login và Register *@
+<div class="social-login">
+    <p class="text-muted mb-2">Hoặc tiếp tục bằng</p>
+
+    <div class="d-grid gap-2">
+        <!-- Google -->
+        <div id="googleLoginBtn"></div>
+
+        <!-- Facebook -->
+        <a href="#" class="btn btn-facebook w-100 py-2">
+            <i class="bi bi-facebook me-2"></i> Đăng nhập bằng Facebook
+        </a>
+    </div>
+</div>
+
+<!-- Google Sign-In SDK -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script>
+    // === KHỞI TẠO GOOGLE LOGIN ===
+    window.onload = function () {
+        google.accounts.id.initialize({
+            client_id: "754099279591-jtngs4cpoflvqes5ljofe47c7sts5h6r.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+        });
+
+        google.accounts.id.renderButton(
+            document.getElementById("googleLoginBtn"),
+            {
+                theme: "outline",
+                size: "large",
+                text: "continue_with",
+                shape: "pill",
+                width: "100%"  // Full width cho đẹp
+            }
+        );
+    };
+
+    // === GỌI API GOOGLE LOGIN ===
+    async function handleCredentialResponse(response) {
+        const idToken = response.credential;
+
+        try {
+            const res = await fetch("https://localhost:7134/api/GoogleAuth/google-login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idToken })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.message || "Đăng nhập thất bại");
+            }
+
+            // SỬA: LƯU ĐÚNG TÊN + ĐÚNG CẤU TRÚC
+            localStorage.setItem("jwtToken", data.data);  // jwtToken + data.data
+
+            // GỌI PROFILE ĐỂ CẬP NHẬT HEADER
+            await updateUserProfile(data.data);
+
+            // CHUYỂN TRANG
+            window.location.href = "/";
+
+        } catch (err) {
+            console.error("Google login error:", err);
+            showToast(err.message || "Lỗi kết nối. Vui lòng thử lại.", "error");
+        }
+    }
+
+    // === GỌI /api/Account/profile ĐỂ LẤY THÔNG TIN USER ===
+    async function updateUserProfile(token) {
+        try {
+            const res = await fetch("https://localhost:7134/api/Account/profile", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            const profile = await res.json();
+
+            if (res.ok && profile.success) {
+                localStorage.setItem("userName", profile.data.fullName || "Người dùng");
+                localStorage.setItem("userEmail", profile.data.email);
+
+                // GỌI HÀM CẬP NHẬT HEADER (có trong login.js)
+                if (typeof updateHeaderUser === "function") {
+                    updateHeaderUser();
+                }
+            }
+        } catch (err) {
+            console.error("Lấy profile thất bại:", err);
+        }
+    }
+
+    // === TOAST THÔNG BÁO ĐẸP ===
+    function showToast(message, type = "info") {
+        const toast = document.createElement("div");
+        toast.className = `toast align-items-center text-white bg-${type === "error" ? "danger" : "success"} border-0 position-fixed top-0 end-0 m-3`;
+        toast.style.zIndex = "9999";
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+        document.body.appendChild(toast);
+        new bootstrap.Toast(toast).show();
+        setTimeout(() => toast.remove(), 5000);
+    }
+</script>
+
+
+
+
+
+
+@section Styles {
+    <style>
+        #googleLoginBtn {
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            width: 100%;
+        }
+
+            #googleLoginBtn iframe {
+                display: block !important; /* block vẫn cần để hiển thị đúng chiều cao */
+                margin-left: auto !important; /* căn giữa ngang */
+                margin-right: auto !important;
+            }
+        .btn-google {
+            background-color: #fff;
+            border: 1px solid #dadce0;
+            color: #3c4043;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+            .btn-google:hover {
+                background-color: #f8f9fa;
+                border-color: #c6c6c6;
+            }
+
+        .btn-facebook {
+            background-color: #1877f2;
+            color: #fff;
+            border: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+            .btn-facebook:hover {
+                background-color: #145dbf;
+            }
+    </style>
+}
+
