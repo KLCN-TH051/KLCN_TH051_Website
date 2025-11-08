@@ -17,13 +17,13 @@ namespace KLCN_TH051_Web.API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
         public AccountController(
             IAccountService accountService,
-            UserManager<User> userManager,
+            UserManager<ApplicationUser> userManager,
             IEmailService emailService,
             IConfiguration configuration)
         {

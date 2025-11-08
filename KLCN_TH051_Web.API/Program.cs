@@ -24,8 +24,8 @@ if (string.IsNullOrEmpty(connectionString))
 }
 builder.Services.AddRepository(connectionString);
 
-// 🔸 Thêm Identity Framework
-builder.Services.AddIdentity<User, IdentityRole<int>>()
+// 🔸 Cấu hình Identity
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 //  Cấu hình JWT

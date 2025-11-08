@@ -20,13 +20,13 @@ namespace KLCN_TH051_Web.Services.Services
 {
     public class AccountService : IAccountService
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
         private readonly JwtHelper _jwtHelper; 
 
         public AccountService(
-            UserManager<User> userManager,
+            UserManager<ApplicationUser> userManager,
             IConfiguration configuration,
             IEmailService emailService,
             JwtHelper jwtHelper) 
@@ -57,7 +57,7 @@ namespace KLCN_TH051_Web.Services.Services
                 return response;
             }
 
-            var user = new User
+            var user = new ApplicationUser
             {
                 UserName = model.Email,
                 Email = model.Email,

@@ -20,7 +20,7 @@ namespace KLCN_TH051_Website.Common.Helpers
             _configuration = configuration;
         }
 
-        public string GenerateToken(User user, IList<string> roles)
+        public string GenerateToken(ApplicationUser user, IList<string> roles)
         {
             var jwtSettings = _configuration.GetSection("JwtSettings");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]));
