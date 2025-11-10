@@ -7,8 +7,10 @@ using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Net;
 using System.Security.Claims;
+using System.Text;
 
 namespace KLCN_TH051_Web.API.Controllers
 {
@@ -109,7 +111,21 @@ namespace KLCN_TH051_Web.API.Controllers
                 });
             }
 
-            var decodedToken = Uri.UnescapeDataString(token);
+            // 🔥 Decode chuẩn
+            string decodedToken;
+            try
+            {
+                decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
+            }
+            catch
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Token không hợp lệ hoặc bị hỏng."
+                });
+            }
+
             var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
 
             if (result.Succeeded)
@@ -135,6 +151,7 @@ namespace KLCN_TH051_Web.API.Controllers
             });
         }
 
+
         /// <summary>
         /// [GET] Kiểm tra trạng thái tài khoản (test)
         /// </summary>
@@ -159,11 +176,11 @@ namespace KLCN_TH051_Web.API.Controllers
                     Id = user.Id,
                     Email = user.Email,
                     FullName = user.FullName,
-                    PhoneNumber = user.PhoneNumber,
                     DateOfBirth = user.DateOfBirth
                 }
             });
         }
+
 
         /// <summary>
         /// [GET] Lấy thông tin người dùng hiện tại (cần JWT)
@@ -175,9 +192,8 @@ namespace KLCN_TH051_Web.API.Controllers
             var userId = User.GetUserId();
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
-            if (user == null) return NotFound(new ApiResponse<string> { Success = false, Message = "Không tìm thấy người dùng." });
-
-            var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "None";
+            if (user == null)
+                return NotFound(new ApiResponse<string> { Success = false, Message = "Không tìm thấy người dùng." });
 
             return Ok(new ApiResponse<UserResponse>
             {
@@ -187,11 +203,11 @@ namespace KLCN_TH051_Web.API.Controllers
                     Id = user.Id,
                     Email = user.Email,
                     FullName = user.FullName,
-                    PhoneNumber = user.PhoneNumber,
-                    DateOfBirth = user.DateOfBirth,
+                    DateOfBirth = user.DateOfBirth
                 }
             });
         }
+
 
         /// <summary>
         /// [POST] Quên mật khẩu → gửi email reset password

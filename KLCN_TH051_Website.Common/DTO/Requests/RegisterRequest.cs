@@ -26,9 +26,9 @@ namespace KLCN_TH051_Website.Common.DTO.Requests
         [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
 
-        [Required(ErrorMessage = "Số điện thoại là bắt buộc")]
-        [Phone(ErrorMessage = "Số điện thoại không đúng định dạng")]
-        [StringLength(10, ErrorMessage = "Số điện thoại tối đa 10 ký tự")]
-        public string PhoneNumber { get; set; } = null!;
+        //[Required(ErrorMessage = "Số điện thoại là bắt buộc")]
+        //[Phone(ErrorMessage = "Số điện thoại không đúng định dạng")]
+        //[StringLength(10, ErrorMessage = "Số điện thoại tối đa 10 ký tự")]
+        //public string PhoneNumber { get; set; } = null!;
     }
 }

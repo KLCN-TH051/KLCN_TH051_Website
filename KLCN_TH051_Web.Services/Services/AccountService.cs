@@ -4,6 +4,7 @@ using KLCN_TH051_Website.Common.Entities;
 using KLCN_TH051_Website.Common.Helpers;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -49,13 +50,7 @@ namespace KLCN_TH051_Web.Services.Services
                 return response;
             }
 
-            // Kiểm tra số điện thoại
-            if (await _userManager.Users.AnyAsync(u => u.PhoneNumber == model.PhoneNumber))
-            {
-                response.Success = false;
-                response.Message = "Số điện thoại đã được sử dụng.";
-                return response;
-            }
+            // Không cần kiểm tra số điện thoại nữa
 
             var user = new ApplicationUser
             {
@@ -63,7 +58,6 @@ namespace KLCN_TH051_Web.Services.Services
                 Email = model.Email,
                 FullName = model.FullName,
                 DateOfBirth = model.DateOfBirth,
-                PhoneNumber = model.PhoneNumber,
                 CreatedDate = DateTime.Now,
                 CreatedBy = "self",
                 IsActive = false
@@ -91,8 +85,9 @@ namespace KLCN_TH051_Web.Services.Services
 
             // Gửi email xác thực
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var encodedToken = HttpUtility.UrlEncode(token);
-            var callbackUrl = $"{_configuration["AppUrl"]}/api/account/confirm-email?userId={user.Id}&token={encodedToken}";
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var clientUrl = _configuration["AppUrl"];
+            var callbackUrl = $"{clientUrl}/confirm-email?userId={user.Id}&token={encodedToken}";
 
             await _emailService.SendConfirmationEmailAsync(user.Email, callbackUrl);
 
@@ -103,7 +98,6 @@ namespace KLCN_TH051_Web.Services.Services
                 Id = user.Id,
                 Email = user.Email,
                 FullName = user.FullName,
-                PhoneNumber = user.PhoneNumber,
                 DateOfBirth = user.DateOfBirth
             };
 

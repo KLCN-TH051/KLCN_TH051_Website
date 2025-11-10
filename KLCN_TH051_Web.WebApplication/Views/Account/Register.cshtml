@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Đăng ký tài khoản";
+    var apiUrl = ViewData["ApiUrl"]?.ToString();
 }
 
 <div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
@@ -32,7 +33,7 @@
             </div>
 
             <!-- 🔹 Số điện thoại -->
-            <div class="input-group mb-3">
+            @* <div class="input-group mb-3">
                 <span class="input-group-text bg-white border-end-0">
                     <i class="bi bi-telephone text-primary"></i>
                 </span>
@@ -40,7 +41,7 @@
                     <input type="tel" class="form-control border-start-0" id="phoneNumber" placeholder="Số điện thoại" required>
                     <label for="phoneNumber">Số điện thoại</label>
                 </div>
-            </div>
+            </div> *@
 
             <!-- 🔹 Ngày sinh -->
             <div class="input-group mb-3">
@@ -98,5 +99,9 @@
 }
 
 @section Scripts {
+    <script>
+        // Tạo biến global để JS riêng truy cập
+        window.API_URL = "@apiUrl/api/Account/register";
+    </script>
     <script src="~/js/register.js"></script>
 }

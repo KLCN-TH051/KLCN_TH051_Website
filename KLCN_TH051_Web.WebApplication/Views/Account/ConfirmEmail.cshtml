@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Xác thực email";
+    var userId = Context.Request.Query["userId"].ToString();
+    var token = Context.Request.Query["token"].ToString();
+    var apiUrl = ViewData["ApiUrl"]; 
+}
+
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div class="card shadow-lg p-4 text-center" style="max-width: 500px;">
+        <h3 class="mb-3">Xác thực email</h3>
+        <p class="text-muted" id="message">Đang xác thực...</p>
+        <a href="/Account/Login" class="btn btn-primary mt-3 d-none" id="loginBtn">Quay lại đăng nhập</a>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        async function confirmEmail() {
+            if (!"@userId" || !"@token") {
+                document.getElementById("message").textContent = "Liên kết không hợp lệ hoặc đã hết hạn.";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${"@apiUrl"}/api/account/confirm-email?userId=@userId&token=@token`);
+                const data = await response.json();
+
+                document.getElementById("message").textContent = data.message;
+                if (data.success) {
+                    document.getElementById("loginBtn").classList.remove("d-none");
+                }
+            } catch (err) {
+                document.getElementById("message").textContent = "Đã có lỗi xảy ra, vui lòng thử lại.";
+            }
+        }
+
+        confirmEmail();
+    </script>
+}

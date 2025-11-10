@@ -4,6 +4,14 @@ namespace KLCN_TH051_Web.WebApplication.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly IConfiguration _configuration;
+
+        // Inject IConfiguration qua constructor
+        public AccountController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         [HttpGet]
         public IActionResult Login()
         {
@@ -13,7 +21,15 @@ namespace KLCN_TH051_Web.WebApplication.Controllers
 
         public IActionResult Register()
         {
+            ViewData["ApiUrl"] = _configuration["ApiUrl"]; // Lấy từ appsettings.json
             return View();
+        }
+
+        [HttpGet("confirm-email")]
+        public IActionResult ConfirmEmail()
+        {
+            ViewData["ApiUrl"] = _configuration["ApiUrl"];
+            return View(); // MVC sẽ tìm Views/Account/ConfirmEmail.cshtml
         }
 
         public IActionResult ForgotPass()
