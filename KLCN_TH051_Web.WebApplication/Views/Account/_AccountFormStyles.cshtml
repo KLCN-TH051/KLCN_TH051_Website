@@ -1,0 +1,128 @@
+﻿<style>
+    /* ===========================================
+           🎨 GIAO DIỆN CHUNG CHO CÁC FORM ACCOUNT
+           =========================================== */
+
+    /* 📦 Card tổng của form (Login, Register, Forgot, v.v.) */
+    .account-card {
+        max-width: 500px; /* ✅ Mở rộng khung để chữ tiếng Việt không bị ngắt */
+        width: 90%;
+        margin: auto;
+        border-radius: 1rem;
+        background: #ffffff;
+        transition: all 0.3s ease-in-out;
+    }
+
+        /* 🌈 Hiệu ứng nhẹ khi hover card */
+        .account-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 🔹 Tiêu đề, nhãn, chữ trong card */
+        .account-card h4,
+        .account-card p,
+        .account-card label {
+            white-space: normal; /* Cho phép xuống dòng tự nhiên */
+            word-break: keep-all; /* Không tách giữa ký tự tiếng Việt */
+            line-height: 1.4;
+            letter-spacing: 0.2px;
+        }
+
+            /* 🔹 Tiêu đề in hoa */
+            .account-card h4.fw-bold {
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                white-space: nowrap; /* Không bị xuống dòng lung tung */
+                overflow-wrap: normal;
+            }
+
+    /* 📱 Mobile (tự co gọn, cho phép xuống dòng nếu cần) */
+    @@media (max-width: 576px) {
+        .account-card {
+            max-width: 95%;
+            padding: 1.5rem !important;
+        }
+
+            .account-card h4.fw-bold {
+                white-space: normal;
+                font-size: 1.15rem;
+                line-height: 1.3;
+                text-align: center;
+            }
+    }
+
+    /* 🧭 Input group */
+    .input-group-text {
+        border-top-left-radius: 0.75rem;
+        border-bottom-left-radius: 0.75rem;
+    }
+
+    .form-floating > .form-control,
+    .form-floating > .form-select {
+        border-radius: 0 0.75rem 0.75rem 0;
+    }
+
+    .input-group:focus-within .input-group-text {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+    }
+
+    /* 🎯 Input focus đẹp hơn */
+    .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        border-color: #0d6efd;
+    }
+
+    /* 🌐 Nút bấm chính */
+    .btn-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        /* border: none;
+            border-radius: 0.5rem; */
+        font-weight: 600;
+        transition: all 0.25s ease;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0069d9, #004999);
+            transform: translateY(-2px);
+        }
+
+    /* ⚪ Nút phụ (outline) */
+    .btn-outline-secondary {
+        /* border-color: #6c757d; */
+        color: #6c757d;
+        /* border-radius: 0.5rem; */
+        transition: all 0.25s ease;
+    }
+
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            color: #fff;
+        }
+
+    /* ✅ Tiêu đề màu xanh thành công */
+    .text-success {
+        color: #198754 !important;
+    }
+
+    /* 📧 Icon trong input */
+    .input-group-text i {
+        font-size: 1.1rem;
+    }
+
+    /* 🌗 Toàn khối nền xung quanh form */
+    body {
+        background: linear-gradient(to bottom right, #eef4ff, #d8e3f0);
+    }
+
+    /* 🌙 Dark mode nhẹ (nếu muốn dùng nền tối) */
+    /*
+        body {
+            background: linear-gradient(to bottom right, #2c3e50, #34495e);
+        }
+        .account-card {
+            background: #fff;
+        }
+        */
+</style>

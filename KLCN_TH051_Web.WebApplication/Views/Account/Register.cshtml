@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+}
+
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div class="card shadow-lg border-0 p-4 account-card text-center">
+        <img src="https://placehold.co/120x80?text=Logo" alt="Logo" class="mb-3 mx-auto">
+        <h4 class="fw-bold text-primary mb-2">ĐĂNG KÝ TÀI KHOẢN</h4>
+        <p class="text-muted small mb-4">Vui lòng điền thông tin để tạo tài khoản học tập</p>
+
+        <form id="registerForm">
+            <!-- 🔹 Họ và tên -->
+            <div class="input-group mb-3">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-person-vcard text-primary"></i>
+                </span>
+                <div class="form-floating flex-grow-1">
+                    <input type="text" class="form-control border-start-0" id="fullName" placeholder="Họ và tên" required>
+                    <label for="fullName">Họ và tên</label>
+                </div>
+            </div>
+
+            <!-- 🔹 Email -->
+            <div class="input-group mb-3">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-envelope text-primary"></i>
+                </span>
+                <div class="form-floating flex-grow-1">
+                    <input type="email" class="form-control border-start-0" id="email" placeholder="Email" required>
+                    <label for="email">Email</label>
+                </div>
+            </div>
+
+            <!-- 🔹 Số điện thoại -->
+            <div class="input-group mb-3">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-telephone text-primary"></i>
+                </span>
+                <div class="form-floating flex-grow-1">
+                    <input type="tel" class="form-control border-start-0" id="phoneNumber" placeholder="Số điện thoại" required>
+                    <label for="phoneNumber">Số điện thoại</label>
+                </div>
+            </div>
+
+            <!-- 🔹 Ngày sinh -->
+            <div class="input-group mb-3">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-calendar3 text-primary"></i>
+                </span>
+                <div class="form-floating flex-grow-1">
+                    <input type="date" class="form-control border-start-0" id="dateOfBirth" placeholder="Ngày sinh" required>
+                    <label for="dateOfBirth">Ngày sinh</label>
+                </div>
+            </div>
+
+            <!-- 🔹 Mật khẩu -->
+            <div class="input-group mb-3">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-lock text-primary"></i>
+                </span>
+                <div class="form-floating flex-grow-1">
+                    <input type="password" class="form-control border-start-0" id="password" placeholder="Mật khẩu" required>
+                    <label for="password">Mật khẩu</label>
+                </div>
+            </div>
+
+            <!-- 🔹 Xác nhận mật khẩu -->
+            <div class="input-group mb-4">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-shield-check text-primary"></i>
+                </span>
+                <div class="form-floating flex-grow-1">
+                    <input type="password" class="form-control border-start-0" id="confirmPassword" placeholder="Xác nhận mật khẩu" required>
+                    <label for="confirmPassword">Xác nhận mật khẩu</label>
+                </div>
+            </div>
+
+            <!-- 🔹 Nút đăng ký -->
+            <button type="submit" class="btn btn-primary w-100 py-2 mb-3" id="registerBtn">
+                <span id="btnText"><i class="bi bi-person-plus me-1"></i> Đăng ký</span>
+                <span id="btnLoading" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            </button>
+
+            @await Html.PartialAsync("_SocialLoginPartial")
+
+            <div class="text-center mt-3">
+                <span class="text-muted small">Đã có tài khoản?</span>
+                <a href="/Account/Login" class="fw-semibold">Đăng nhập ngay</a>
+            </div>
+        </form>
+
+        <div id="registerMessage" class="alert mt-3 d-none"></div>
+    </div>
+</div>
+
+@section Styles {
+    @await Html.PartialAsync("_AccountFormStyles")
+}
+
+@section Scripts {
+    <script src="~/js/register.js"></script>
+}
