@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Quản lý khóa học";
+}
+
+<div class="container py-4">
+    <!-- Tiêu đề trang và nút tạo khóa học -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0">
+            <i class="bi bi-journal-text me-2"></i>Quản lý khóa học
+        </h3>
+        <button class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Tạo khóa học
+        </button>
+    </div>
+
+    <!-- Bảng danh sách khóa học -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" class="text-center" style="width: 5%">#</th>
+                            <th scope="col" style="width: 20%">Tên khóa học</th>
+                            <th scope="col" style="width: 15%">Môn học</th>
+                            <th scope="col" style="width: 10%">Số chương</th>
+                            <th scope="col" style="width: 25%">Mô tả</th>
+                            <th scope="col" style="width: 10%">Trạng thái</th>
+                            <th scope="col" style="width: 15%">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="courseTableBody">
+                        <!-- Ví dụ dữ liệu mẫu -->
+                        <tr>
+                            <td class="text-center">1</td>
+                            <td>Lập trình C# cơ bản</td>
+                            <td>CNTT</td>
+                            <td>8</td>
+                            <td>Khóa học nhập môn lập trình hướng đối tượng.</td>
+                            <td>
+                                <span class="badge bg-success">Hoạt động</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-pencil-square"></i> Chỉnh sửa
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">2</td>
+                            <td>Cơ sở dữ liệu nâng cao</td>
+                            <td>Hệ thống thông tin</td>
+                            <td>6</td>
+                            <td>Khóa học chuyên sâu về thiết kế và tối ưu CSDL.</td>
+                            <td>
+                                <span class="badge bg-secondary">Tạm ngưng</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-pencil-square"></i> Chỉnh sửa
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
