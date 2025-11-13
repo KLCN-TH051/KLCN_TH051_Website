@@ -26,6 +26,9 @@ namespace KLCN_TH051_Web.Repositories.Data
         {
         }
 
+        public DbSet<MonHoc> MonHocs { get; set; }
+        public DbSet<KhoaHoc> KhoaHocs { get; set; }
+
         public override int SaveChanges()
         {
             var entries = ChangeTracker.Entries<IBaseEntity>();

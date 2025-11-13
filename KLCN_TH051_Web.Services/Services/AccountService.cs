@@ -139,5 +139,59 @@ namespace KLCN_TH051_Web.Services.Services
 
             return response;
         }
+
+        public async Task<ApiResponse<UserResponse>> CreateTeacherAsync(RegisterTeacherRequest model)
+        {
+            var response = new ApiResponse<UserResponse>();
+
+            // Kiểm tra email tồn tại
+            if (await _userManager.FindByEmailAsync(model.Email) != null)
+            {
+                response.Success = false;
+                response.Message = "Email đã được sử dụng.";
+                return response;
+            }
+
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                FullName = model.FullName,
+                CreatedDate = DateTime.Now,
+                CreatedBy = "Admin",
+                IsActive = true // giáo viên do admin tạo => kích hoạt luôn
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+            {
+                response.Success = false;
+                response.Message = "Tạo giáo viên thất bại.";
+                response.Errors = result.Errors.Select(e => e.Description);
+                return response;
+            }
+
+            // Gán role Teacher
+            var addRoleResult = await _userManager.AddToRoleAsync(user, "Teacher");
+            if (!addRoleResult.Succeeded)
+            {
+                response.Success = false;
+                response.Message = "Gán vai trò thất bại.";
+                response.Errors = addRoleResult.Errors.Select(e => e.Description);
+                return response;
+            }
+
+            response.Success = true;
+            response.Message = "Tạo giáo viên thành công!";
+            response.Data = new UserResponse
+            {
+                Id = user.Id,
+                Email = user.Email,
+                FullName = user.FullName
+            };
+
+            return response;
+        }
+
     }
 }

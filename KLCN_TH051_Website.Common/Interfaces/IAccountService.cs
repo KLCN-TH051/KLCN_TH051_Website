@@ -14,5 +14,7 @@ namespace KLCN_TH051_Website.Common.Interfaces
     {
         Task<ApiResponse<UserResponse>> RegisterAsync(RegisterRequest model);
         Task<ApiResponse<string>> LoginAsync(LoginRequest model);
+        // Mới: Admin tạo giáo viên
+        Task<ApiResponse<UserResponse>> CreateTeacherAsync(RegisterTeacherRequest model);
     }
 }
