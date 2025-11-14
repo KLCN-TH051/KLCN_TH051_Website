@@ -274,6 +274,30 @@ namespace KLCN_TH051_Web.API.Controllers
                 Errors = result.Errors.Select(e => e.Description)
             });
         }
+        /// <summary>
+        /// 
+        /// [POST] Admin tạo tài khoản giáo viên
+        /// 
+        /// </summary>
+        [Authorize(Roles = "Admin")]
+        [HttpPost("create-teacher")]
+        public async Task<IActionResult> CreateTeacher([FromBody] RegisterTeacherRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new ApiResponse<UserResponse>
+                {
+                    Success = false,
+                    Message = "Dữ liệu không hợp lệ.",
+                    Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+                });
+
+            var result = await _accountService.CreateTeacherAsync(request);
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+
 
 
     }
