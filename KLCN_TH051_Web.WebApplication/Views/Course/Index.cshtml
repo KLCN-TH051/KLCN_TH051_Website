@@ -1,79 +1,123 @@
-﻿@{
-    ViewData["Title"] = "Quản lý khóa học";
-}
+﻿<div class="container-fluid">
+    <div class="row">
 
-<div class="container py-4">
-    <!-- Tiêu đề trang và nút tạo khóa học -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold mb-0">
-            <i class="bi bi-journal-text me-2"></i>Quản lý khóa học
-        </h3>
-        <button class="btn btn-primary">
-            <i class="bi bi-plus-circle me-1"></i> Tạo khóa học
-        </button>
-    </div>
+        <!-- SIDEBAR BỘ LỌC -->
+        <div class="col-md-3 col-lg-2 border-end">
+            <h5 class="mt-3">Bộ lọc</h5>
 
-    <!-- Bảng danh sách khóa học -->
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col" class="text-center" style="width: 5%">#</th>
-                            <th scope="col" style="width: 20%">Tên khóa học</th>
-                            <th scope="col" style="width: 15%">Môn học</th>
-                            <th scope="col" style="width: 10%">Số chương</th>
-                            <th scope="col" style="width: 25%">Mô tả</th>
-                            <th scope="col" style="width: 10%">Trạng thái</th>
-                            <th scope="col" style="width: 15%">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody id="courseTableBody">
-                        <!-- Ví dụ dữ liệu mẫu -->
-                        <tr>
-                            <td class="text-center">1</td>
-                            <td>Lập trình C# cơ bản</td>
-                            <td>CNTT</td>
-                            <td>8</td>
-                            <td>Khóa học nhập môn lập trình hướng đối tượng.</td>
-                            <td>
-                                <span class="badge bg-success">Hoạt động</span>
-                            </td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-outline-secondary btn-sm">
-                                        <i class="bi bi-pencil-square"></i> Chỉnh sửa
-                                    </button>
-                                    <button class="btn btn-outline-danger btn-sm">
-                                        <i class="bi bi-trash"></i> Xóa
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="text-center">2</td>
-                            <td>Cơ sở dữ liệu nâng cao</td>
-                            <td>Hệ thống thông tin</td>
-                            <td>6</td>
-                            <td>Khóa học chuyên sâu về thiết kế và tối ưu CSDL.</td>
-                            <td>
-                                <span class="badge bg-secondary">Tạm ngưng</span>
-                            </td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-outline-secondary btn-sm">
-                                        <i class="bi bi-pencil-square"></i> Chỉnh sửa
-                                    </button>
-                                    <button class="btn btn-outline-danger btn-sm">
-                                        <i class="bi bi-trash"></i> Xóa
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Search box -->
+            <input type="text" class="form-control mb-3" placeholder="Tìm kiếm...">
+
+            <!-- Category -->
+            <h6>Danh mục</h6>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cb1">
+                <label class="form-check-label" for="cb1">Cơ bản</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cb2">
+                <label class="form-check-label" for="cb2">Lập trình web</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="cb3">
+                <label class="form-check-label" for="cb3">Thiết kế</label>
+            </div>
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="cb4">
+                <label class="form-check-label" for="cb4">Mobile</label>
+            </div>
+
+            <!-- Sort -->
+            <h6>Sắp xếp theo</h6>
+            <select class="form-select mb-3">
+                <option selected>Giá tăng dần</option>
+                <option>Giá giảm dần</option>
+                <option>Đánh giá</option>
+                <option>Mới nhất</option>
+            </select>
+
+            <button class="btn btn-primary w-100">SEARCH</button>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="col-md-9 col-lg-10">
+            <div class="row row-cols-1 row-cols-md-3 g-4 p-3">
+
+                <!-- CARD ITEM -->
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="https://via.placeholder.com/500x250/2ecc71/ffffff?text=NodeJS" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">Node JS</h5>
+                            <p class="card-text">Lập trình web với NodeJS</p>
+
+                            <!-- Rating -->
+                            <div class="mb-2 text-warning">
+                                ★★★★★
+                            </div>
+
+                            <small class="text-muted">GV: Nguyễn Đạt</small>
+                        </div>
+                        <div class="card-footer bg-white d-flex justify-content-between">
+                            <strong>Miễn phí</strong>
+                            <button class="btn btn-outline-primary btn-sm">
+                                🛒
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD ITEM -->
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="https://via.placeholder.com/500x250/e67e22/ffffff?text=HTML5" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">HTML5 cơ bản</h5>
+                            <p class="card-text">Khóa học nhập môn HTML5</p>
+
+                            <div class="mb-2 text-warning">★★★★☆</div>
+
+                            <small class="text-muted">GV: Hai Nguyen</small>
+                        </div>
+                        <div class="card-footer bg-white d-flex justify-content-between">
+                            <strong>110,000đ</strong>
+                            <button class="btn btn-outline-primary btn-sm">🛒</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD ITEM -->
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="https://via.placeholder.com/500x250/6c5ce7/ffffff?text=PHP" class="card-img-top">
+                        <div class="card-body">
+                            <h5 class="card-title">PHP nâng cao</h5>
+                            <p class="card-text">Khóa học nâng cao PHP</p>
+
+                            <div class="mb-2 text-warning">★★★★☆</div>
+
+                            <small class="text-muted">GV: Trịnh Hiếu</small>
+                        </div>
+                        <div class="card-footer bg-white d-flex justify-content-between">
+                            <strong>110,000đ</strong>
+                            <button class="btn btn-outline-primary btn-sm">🛒</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-3">
+                <nav>
+                    <ul class="pagination">
+                        <li class="page-item disabled"><a class="page-link">‹</a></li>
+                        <li class="page-item active"><a class="page-link">1</a></li>
+                        <li class="page-item"><a class="page-link">›</a></li>
+                    </ul>
+                </nav>
             </div>
         </div>
+
     </div>
 </div>
