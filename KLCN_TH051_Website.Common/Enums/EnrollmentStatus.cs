@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace KLCN_TH051_Website.Common.Enums
 {
-    public enum KhoaHocStatus
+    public enum EnrollmentStatus
     {
-        Pending,   // Chờ duyệt
-        Approved,  // Đã duyệt
-        Rejected   // Bị từ chối
+        Active,
+        Completed,
+        Cancelled
     }
 }

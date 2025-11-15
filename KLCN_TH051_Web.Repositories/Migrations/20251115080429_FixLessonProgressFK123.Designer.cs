@@ -4,6 +4,7 @@ using KLCN_TH051_Web.Repositories.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KLCN_TH051_Web.Repositories.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251115080429_FixLessonProgressFK123")]
+    partial class FixLessonProgressFK123
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -769,62 +772,6 @@ namespace KLCN_TH051_Web.Repositories.Migrations
                     b.ToTable("Lessons");
                 });
 
-            modelBuilder.Entity("KLCN_TH051_Website.Common.Entities.LessonComment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DeletedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeletedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastUpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastUpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("LessonId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ParentCommentId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ParentCommentId1")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LessonId");
-
-                    b.HasIndex("ParentCommentId1");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("LessonComments");
-                });
-
             modelBuilder.Entity("KLCN_TH051_Website.Common.Entities.LessonProgress", b =>
                 {
                     b.Property<int>("Id")
@@ -1357,31 +1304,6 @@ namespace KLCN_TH051_Web.Repositories.Migrations
                     b.Navigation("Chapter");
                 });
 
-            modelBuilder.Entity("KLCN_TH051_Website.Common.Entities.LessonComment", b =>
-                {
-                    b.HasOne("KLCN_TH051_Website.Common.Entities.Lesson", "Lesson")
-                        .WithMany("LessonComments")
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("KLCN_TH051_Website.Common.Entities.LessonComment", "ParentComment")
-                        .WithMany("Replies")
-                        .HasForeignKey("ParentCommentId1");
-
-                    b.HasOne("KLCN_TH051_Website.Common.Entities.ApplicationUser", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("ParentComment");
-
-                    b.Navigation("Student");
-                });
-
             modelBuilder.Entity("KLCN_TH051_Website.Common.Entities.LessonProgress", b =>
                 {
                     b.HasOne("KLCN_TH051_Website.Common.Entities.Enrollment", "Enrollment")
@@ -1515,18 +1437,11 @@ namespace KLCN_TH051_Web.Repositories.Migrations
                 {
                     b.Navigation("ContentBlocks");
 
-                    b.Navigation("LessonComments");
-
                     b.Navigation("LessonProgresses");
 
                     b.Navigation("Quizzes");
 
                     b.Navigation("VideoContents");
-                });
-
-            modelBuilder.Entity("KLCN_TH051_Website.Common.Entities.LessonComment", b =>
-                {
-                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("KLCN_TH051_Website.Common.Entities.Question", b =>
