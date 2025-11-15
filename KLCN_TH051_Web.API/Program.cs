@@ -63,6 +63,8 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<JwtHelper>();
 // Đăng ký GoogleAuthService
 builder.Services.AddScoped<IGoogleAuthService, GoogleAuthService>();
+// Đăng ký SubjectService
+builder.Services.AddScoped<ISubjectService, SubjectService>();
 
 // 🔸 Cấu hình Swagger để hỗ trợ xác thực JWT
 builder.Services.AddSwaggerGen(c =>
