@@ -1,4 +1,9 @@
-﻿@* Lấy dữ liệu từ ViewData *@
+﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+@* Lấy dữ liệu từ ViewData *@
 <div class="col-md-3 col-lg-2 mb-3">
     <div class="card">
         <div class="card-body">
@@ -6,17 +11,17 @@
 
             <div class="list-group">
                 <a href="/Instructor/Statistics" class="list-group-item list-group-item-action
-                    @(ViewData["ActiveMenu"]?.ToString() == "stats" ? "active" : "")">
+                    @(currentController == "Instructor" && currentAction == "Statistics" ? "active" : "")">
                     Thống kê
                 </a>
 
                 <a href="/Instructor/Courses" class="list-group-item list-group-item-action
-                    @(ViewData["ActiveMenu"]?.ToString() == "courses" ? "active" : "")">
+                    @(currentController == "Instructor" && currentAction == "Courses" ? "active" : "")">
                     Khoá học giảng dạy
                 </a>
 
                 <a href="/Instructor/Orders" class="list-group-item list-group-item-action
-                    @(ViewData["ActiveMenu"]?.ToString() == "orders" ? "active" : "")">
+                    @(currentController == "Instructor" && currentAction == "Orders" ? "active" : "")">
                     Đơn hàng
                 </a>
             </div>
