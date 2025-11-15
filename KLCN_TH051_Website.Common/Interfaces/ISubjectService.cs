@@ -10,10 +10,14 @@ namespace KLCN_TH051_Website.Common.Interfaces
 {
     public interface ISubjectService
     {
-        Task<SubjectResponse> CreateAsync(CreateSubjectRequest request, int? adminUserId = null);
-        Task<SubjectResponse?> UpdateAsync(int id, UpdateSubjectRequest request);
-        Task<bool> DeleteAsync(int id);
+        Task<SubjectResponse> CreateAsync(CreateSubjectRequest request, int? userId = null);
+        Task<SubjectResponse?> UpdateAsync(int id, UpdateSubjectRequest request, int? userId = null);
+        Task<bool> DeleteAsync(int id, int? userId = null);
         Task<SubjectResponse?> GetByIdAsync(int id);
         Task<List<SubjectResponse>> GetAllAsync();
+
+        // Soft delete và restore
+        Task<List<SubjectResponse>> GetDeletedSubjectsAsync();
+        //Task<bool> RestoreAsync(int id);
     }
 }

@@ -40,7 +40,7 @@ namespace KLCN_TH051_Web.API.Controllers
 
         // POST: api/Subjects
         [HttpPost]
-        [Authorize(Roles = "Admin")] // Chỉ admin mới được tạo
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<SubjectResponse>> Create([FromBody] CreateSubjectRequest request)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -50,22 +50,43 @@ namespace KLCN_TH051_Web.API.Controllers
 
         // PUT: api/Subjects/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")] // Chỉ admin mới được cập nhật
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<SubjectResponse>> Update(int id, [FromBody] UpdateSubjectRequest request)
         {
-            var result = await _subjectService.UpdateAsync(id, request);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var result = await _subjectService.UpdateAsync(id, request, userId);
             if (result == null) return NotFound();
             return Ok(result);
         }
 
         // DELETE: api/Subjects/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")] // Chỉ admin mới được xóa
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _subjectService.DeleteAsync(id);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var deleted = await _subjectService.DeleteAsync(id, userId);
             if (!deleted) return NotFound();
             return NoContent();
         }
+
+        // GET: api/Subjects/deleted
+        [HttpGet("deleted")]
+        [Authorize(Roles = "Admin")] // Chỉ admin xem các môn đã xóa
+        public async Task<ActionResult<List<SubjectResponse>>> GetDeletedSubjects()
+        {
+            var deletedSubjects = await _subjectService.GetDeletedSubjectsAsync();
+            return Ok(deletedSubjects);
+        }
+
+        // POST: api/Subjects/restore/5
+        //[HttpPost("restore/{id}")]
+        //[Authorize(Roles = "Admin")] // Chỉ admin mới restore
+        //public async Task<IActionResult> Restore(int id)
+        //{
+        //    var restored = await _subjectService.RestoreAsync(id);
+        //    if (!restored) return NotFound();
+        //    return NoContent();
+        //}
     }
 }

@@ -21,13 +21,17 @@ namespace KLCN_TH051_Web.Services.Services
             _context = context;
         }
 
+        // Tạo môn học
         public async Task<SubjectResponse> CreateAsync(CreateSubjectRequest request, int? adminUserId = null)
         {
             var subject = new Subject
             {
                 Name = request.Name,
                 Description = request.Description,
-                CreatedByUserId = adminUserId
+                CreatedByUserId = adminUserId,
+                CreatedBy = adminUserId?.ToString(),
+                CreatedDate = DateTime.Now,
+                IsDeleted = false
             };
 
             _context.Subjects.Add(subject);
@@ -36,10 +40,11 @@ namespace KLCN_TH051_Web.Services.Services
             return new SubjectResponse(subject);
         }
 
-        public async Task<SubjectResponse?> UpdateAsync(int id, UpdateSubjectRequest request)
+        // Cập nhật môn học
+        public async Task<SubjectResponse?> UpdateAsync(int id, UpdateSubjectRequest request, int? adminUserId = null)
         {
             var subject = await _context.Subjects.FindAsync(id);
-            if (subject == null) return null;
+            if (subject == null || subject.IsDeleted) return null;
 
             if (!string.IsNullOrWhiteSpace(request.Name))
                 subject.Name = request.Name;
@@ -47,37 +52,72 @@ namespace KLCN_TH051_Web.Services.Services
             if (request.Description != null)
                 subject.Description = request.Description;
 
+            subject.LastUpdatedBy = adminUserId?.ToString();
+            subject.LastUpdatedDate = DateTime.Now;
+
             await _context.SaveChangesAsync();
             return new SubjectResponse(subject);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        // Soft delete
+        public async Task<bool> DeleteAsync(int id, int? adminUserId = null)
         {
             var subject = await _context.Subjects.FindAsync(id);
-            if (subject == null) return false;
+            if (subject == null || subject.IsDeleted) return false;
 
-            _context.Subjects.Remove(subject);
+            subject.IsDeleted = true;
+            subject.DeletedBy = adminUserId?.ToString();
+            subject.DeletedTime = DateTime.Now;
+
             await _context.SaveChangesAsync();
             return true;
         }
 
+        // Lấy môn học theo id (không lấy bản ghi đã xóa)
         public async Task<SubjectResponse?> GetByIdAsync(int id)
         {
             var subject = await _context.Subjects
-                .Include(s => s.Courses) // nếu muốn load courses luôn
-                .FirstOrDefaultAsync(s => s.Id == id);
+                .Include(s => s.Courses)
+                .FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted);
 
             if (subject == null) return null;
             return new SubjectResponse(subject);
         }
 
+        // Lấy tất cả môn học (không lấy bản ghi đã xóa)
         public async Task<List<SubjectResponse>> GetAllAsync()
         {
             var subjects = await _context.Subjects
                 .Include(s => s.Courses)
+                .Where(s => !s.IsDeleted)
                 .ToListAsync();
 
             return subjects.Select(s => new SubjectResponse(s)).ToList();
         }
+
+        // Lấy danh sách các môn đã bị soft delete
+        public async Task<List<SubjectResponse>> GetDeletedSubjectsAsync()
+        {
+            var deletedSubjects = await _context.Subjects
+                .Where(s => s.IsDeleted)
+                .Include(s => s.Courses)
+                .ToListAsync();
+
+            return deletedSubjects.Select(s => new SubjectResponse(s)).ToList();
+        }
+
+        // Restore môn học đã xóa
+        //public async Task<bool> RestoreAsync(int id)
+        //{
+        //    var subject = await _context.Subjects.FindAsync(id);
+        //    if (subject == null || !subject.IsDeleted) return false;
+
+        //    subject.IsDeleted = false;
+        //    subject.DeletedTime = null;
+        //    subject.LastUpdatedDate = DateTime.Now;
+
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
     }
 }
