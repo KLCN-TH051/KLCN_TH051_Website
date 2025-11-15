@@ -279,26 +279,32 @@ namespace KLCN_TH051_Web.API.Controllers
         /// [POST] Admin tạo tài khoản giáo viên
         /// 
         /// </summary>
-        [Authorize(Roles = "Admin")]
         [HttpPost("create-teacher")]
-        public async Task<IActionResult> CreateTeacher([FromBody] RegisterTeacherRequest request)
+        [Authorize(Roles = "Admin")]  // chỉ admin mới được tạo
+        public async Task<IActionResult> CreateTeacher([FromBody] RegisterTeacherRequest model)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new ApiResponse<UserResponse>
-                {
-                    Success = false,
-                    Message = "Dữ liệu không hợp lệ.",
-                    Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
-                });
+            // Lấy creatorId từ token
+            var creatorId = User.FindFirst("id")?.Value
+                            ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var result = await _accountService.CreateTeacherAsync(request);
+            if (creatorId == null)
+            {
+                return Unauthorized(new
+                {
+                    success = false,
+                    message = "Không xác định được tài khoản tạo."
+                });
+            }
+
+            var result = await _accountService.CreateTeacherAsync(model, creatorId);
+
+            // Trả ra kết quả chuẩn REST
             if (!result.Success)
+            {
                 return BadRequest(result);
+            }
 
             return Ok(result);
         }
-
-
-
     }
 }

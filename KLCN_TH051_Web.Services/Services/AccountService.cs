@@ -140,49 +140,44 @@ namespace KLCN_TH051_Web.Services.Services
             return response;
         }
 
-        public async Task<ApiResponse<UserResponse>> CreateTeacherAsync(RegisterTeacherRequest model)
+        public async Task<ApiResponse<UserResponse>> CreateTeacherAsync(RegisterTeacherRequest model, string creatorId)
         {
             var response = new ApiResponse<UserResponse>();
 
-            // Kiểm tra email tồn tại
+            // 1. Kiểm tra email tồn tại
             if (await _userManager.FindByEmailAsync(model.Email) != null)
             {
-                response.Success = false;
-                response.Message = "Email đã được sử dụng.";
-                return response;
+                return response.Failed("Email đã được sử dụng.");
             }
 
+            // 2. Khởi tạo user
             var user = new ApplicationUser
             {
                 UserName = model.Email,
                 Email = model.Email,
                 FullName = model.FullName,
+                CreatedBy = creatorId,
                 CreatedDate = DateTime.Now,
-                CreatedBy = "Admin",
-                IsActive = true // giáo viên do admin tạo => kích hoạt luôn
+                IsActive = true
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
+            // 3. Tạo user
+            var createResult = await _userManager.CreateAsync(user, model.Password);
+            if (!createResult.Succeeded)
             {
-                response.Success = false;
-                response.Message = "Tạo giáo viên thất bại.";
-                response.Errors = result.Errors.Select(e => e.Description);
-                return response;
+                response.Errors = createResult.Errors.Select(e => e.Description);
+                return response.Failed("Tạo giáo viên thất bại.");
             }
 
-            // Gán role Teacher
-            var addRoleResult = await _userManager.AddToRoleAsync(user, "Teacher");
-            if (!addRoleResult.Succeeded)
+            // 4. Gán role Teacher
+            var roleResult = await _userManager.AddToRoleAsync(user, "Teacher");
+            if (!roleResult.Succeeded)
             {
-                response.Success = false;
-                response.Message = "Gán vai trò thất bại.";
-                response.Errors = addRoleResult.Errors.Select(e => e.Description);
-                return response;
+                response.Errors = roleResult.Errors.Select(e => e.Description);
+                return response.Failed("Gán vai trò thất bại.");
             }
 
-            response.Success = true;
-            response.Message = "Tạo giáo viên thành công!";
+            // 5. Trả về UserResponse
             response.Data = new UserResponse
             {
                 Id = user.Id,
@@ -190,7 +185,7 @@ namespace KLCN_TH051_Web.Services.Services
                 FullName = user.FullName
             };
 
-            return response;
+            return response.Successed("Tạo giáo viên thành công!");
         }
 
     }
