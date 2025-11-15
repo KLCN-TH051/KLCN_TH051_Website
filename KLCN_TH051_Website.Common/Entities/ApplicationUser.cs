@@ -23,5 +23,8 @@ namespace KLCN_TH051_Website.Common.Entities
         public string? DeletedBy { get; set; }
         public DateTime? DeletedTime { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public ICollection<Enrollment>? Enrollments { get; set; }
+        public ICollection<CourseRating>? CourseRatings { get; set; }
+        public ICollection<Payment>? Payments { get; set; }
     }
 }
