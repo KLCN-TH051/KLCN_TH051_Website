@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "Chỉnh sửa tài khoản";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">@ViewData["Title"]</h4>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fa fa-arrow-left me-1"></i> Quay lại
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form>
+            <div class="text-center mb-4">
+                <img src="https://placehold.co/100x100?text=GV" class="rounded-circle mb-2" alt="Avatar">
+                <div><button type="button" class="btn btn-outline-secondary btn-sm">Đổi ảnh</button></div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Họ tên</label>
+                    <input type="text" class="form-control" value="Nguyễn Văn A">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" value="giaovien@example.com">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Vai trò</label>
+                    <select class="form-select">
+                        <option selected>Giảng viên</option>
+                        <option>Sinh viên</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Trạng thái</label>
+                    <select class="form-select">
+                        <option selected>Hoạt động</option>
+                        <option>Tạm khóa</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Mật khẩu (để trống nếu không đổi)</label>
+                <input type="password" class="form-control" placeholder="Nhập mật khẩu mới...">
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fa fa-save me-1"></i> Lưu thay đổi
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>
