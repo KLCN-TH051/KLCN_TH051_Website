@@ -6,19 +6,29 @@ namespace KLCN_TH051_Web.WebApplication.Controllers
     {
         public IActionResult Statistics()
         {
-            ViewData["ActiveMenu"] = "stats";
             return View();
         }
 
         public IActionResult Courses()
         {
-            ViewData["ActiveMenu"] = "courses";
             return View();
         }
 
+        public IActionResult Detail()
+        {
+            return View();
+        }
+
+        //Dùng cái này khi có backend
+        //public IActionResult Courses(int? id)
+        //{
+        //    return id == null
+        //        ? View()
+        //        : View("Detail");
+        //}
+
         public IActionResult Orders()
         {
-            ViewData["ActiveMenu"] = "orders";
             return View();
         }
     }
