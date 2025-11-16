@@ -56,12 +56,7 @@ namespace KLCN_TH051_Web.Services.Services
             if (course == null)
                 throw new Exception("Course not found");
 
-            // Chỉ cho phép sửa khi ở trạng thái Draft hoặc Rejected
-            if (course.Status != CoursesStatus.Draft &&
-                course.Status != CoursesStatus.Rejected)
-            {
-                throw new Exception("Only Draft or Rejected courses can be updated.");
-            }
+            // ❌ Không cần kiểm tra trạng thái — cho phép sửa ở mọi trạng thái
 
             // Cập nhật các trường cơ bản
             if (!string.IsNullOrEmpty(request.Name))
@@ -82,13 +77,14 @@ namespace KLCN_TH051_Web.Services.Services
             if (request.EndDate.HasValue)
                 course.EndDate = request.EndDate.Value;
 
-            // ✔ Giảng viên sửa xong → khóa học tự động chuyển sang PendingReview
-            course.Status = CoursesStatus.Pending;
+            // 🔥 Sau khi chỉnh sửa → chuyển về trạng thái Draft
+            course.Status = CoursesStatus.Draft;
 
             await _context.SaveChangesAsync();
 
             return new CourseResponse(course);
         }
+
 
 
 

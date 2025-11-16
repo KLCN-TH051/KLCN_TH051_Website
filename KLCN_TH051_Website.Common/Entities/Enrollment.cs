@@ -9,7 +9,7 @@ namespace KLCN_TH051_Website.Common.Entities
 {
     public class Enrollment: BaseEntity
     {
-        public int Id { get; set; }  // đổi sang int nếu bạn muốn thống nhất
+        public int Id { get; set; }  
 
         // Học viên
         public int StudentId { get; set; }

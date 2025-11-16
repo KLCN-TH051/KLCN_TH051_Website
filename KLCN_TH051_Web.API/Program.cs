@@ -79,6 +79,8 @@ builder.Services.AddScoped<IVideoContentService, VideoContentService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
 // Đăng ký QuestionService
 builder.Services.AddScoped<IQuestionService, QuestionService>();
+// Đăng ký EnrollmentService
+builder.Services.AddScoped<IAnswerService, AnswerService>();
 
 // 🔸 Cấu hình Swagger để hỗ trợ xác thực JWT
 builder.Services.AddSwaggerGen(c =>
