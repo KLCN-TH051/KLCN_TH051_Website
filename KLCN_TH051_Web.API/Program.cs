@@ -69,6 +69,8 @@ builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 // Đăng ký ChapterService
 builder.Services.AddScoped<IChapterService, ChapterService>();
+// Đăng ký LessonService
+builder.Services.AddScoped<ILessonService, LessonService>();
 
 
 // 🔸 Cấu hình Swagger để hỗ trợ xác thực JWT
