@@ -15,6 +15,5 @@ namespace KLCN_TH051_Website.Common.DTO.Requests
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string? Thumbnail { get; set; }
-        public CoursesStatus? Status { get; set; }
     }
 }

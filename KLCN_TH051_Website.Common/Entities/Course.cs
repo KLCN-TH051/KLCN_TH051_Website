@@ -31,7 +31,7 @@ namespace KLCN_TH051_Website.Common.Entities
         public int? CreatedByUserId { get; set; }
         public ApplicationUser? CreatedByUser { get; set; }
         //Trạng thái khóa học
-        public CoursesStatus Status { get; set; } = CoursesStatus.Pending;
+        public CoursesStatus Status { get; set; } = CoursesStatus.Draft;
 
         // Navigation property: một khóa học có nhiều Chapter
         public ICollection<Chapter>? Chapters { get; set; }

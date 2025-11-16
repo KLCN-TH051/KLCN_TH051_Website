@@ -8,8 +8,9 @@ namespace KLCN_TH051_Website.Common.Enums
 {
     public enum CoursesStatus
     {
-        Pending,   // Chờ duyệt
-        Approved,  // Đã duyệt
-        Rejected   // Bị từ chối
+        Pending,   // 0
+        Approved,  // 1
+        Rejected,  // 2
+        Draft      // 3
     }
 }
