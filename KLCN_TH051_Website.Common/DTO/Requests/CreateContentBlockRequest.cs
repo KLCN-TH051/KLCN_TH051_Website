@@ -1,0 +1,21 @@
+﻿using KLCN_TH051_Website.Common.Enums;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace KLCN_TH051_Website.Common.DTO.Requests
+{
+    public class CreateContentBlockRequest
+    {
+        // Nếu muốn xác định thuộc lesson nào
+        public int LessonId { get; set; }
+
+        public ContentType Type { get; set; }
+        public string? TextContent { get; set; }
+        public string? ImageUrl { get; set; }
+        public string? ImageCaption { get; set; }
+        public string? Format { get; set; }
+    }
+}
