@@ -2,6 +2,7 @@
 using KLCN_TH051_Website.Common.DTO.Requests;
 using KLCN_TH051_Website.Common.DTO.Responses;
 using KLCN_TH051_Website.Common.Entities;
+using KLCN_TH051_Website.Common.Enums;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -27,6 +28,10 @@ namespace KLCN_TH051_Web.Services.Services
             if (lesson == null || lesson.IsDeleted)
                 throw new Exception("Lesson not found");
 
+            // ❌ Thêm kiểm tra nghiệp vụ
+            if (lesson.Type != LessonType.Video)
+                throw new Exception("Cannot create VideoContent for this type of lesson. Only Video lessons are allowed.");
+
             // Tạo video mới
             var video = new VideoContent
             {
@@ -44,6 +49,7 @@ namespace KLCN_TH051_Web.Services.Services
 
             return new VideoContentResponse(video);
         }
+
 
         public async Task<List<VideoContentResponse>> GetVideoContentsByLessonAsync(int lessonId)
         {

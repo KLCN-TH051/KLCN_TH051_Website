@@ -2,6 +2,7 @@
 using KLCN_TH051_Website.Common.DTO.Requests;
 using KLCN_TH051_Website.Common.DTO.Responses;
 using KLCN_TH051_Website.Common.Entities;
+using KLCN_TH051_Website.Common.Enums;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -27,6 +28,10 @@ namespace KLCN_TH051_Web.Services.Services
             if (lesson == null || lesson.IsDeleted)
                 throw new Exception("Lesson not found");
 
+            // ❌ Kiểm tra nghiệp vụ: chỉ QuizLesson mới được tạo Quiz
+            if (lesson.Type != LessonType.Quiz)
+                throw new Exception("Cannot create Quiz for this type of lesson. Only Quiz lessons are allowed.");
+
             var quiz = new Quiz
             {
                 LessonId = request.LessonId,
@@ -45,6 +50,7 @@ namespace KLCN_TH051_Web.Services.Services
 
             return new QuizResponse(quiz);
         }
+
 
         public async Task<List<QuizResponse>> GetQuizzesByLessonAsync(int lessonId)
         {

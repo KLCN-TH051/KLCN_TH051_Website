@@ -2,6 +2,7 @@
 using KLCN_TH051_Website.Common.DTO.Requests;
 using KLCN_TH051_Website.Common.DTO.Responses;
 using KLCN_TH051_Website.Common.Entities;
+using KLCN_TH051_Website.Common.Enums;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -27,6 +28,10 @@ namespace KLCN_TH051_Web.Services.Services
             if (lesson == null || lesson.IsDeleted)
                 throw new Exception("Lesson not found");
 
+            // ❌ Thêm kiểm tra nghiệp vụ
+            if (lesson.Type != LessonType.Content)
+                throw new Exception("Cannot create ContentBlock for this type of lesson. Only Content lessons are allowed.");
+
             // Tự động Order: lấy max Order của lesson +1
             int maxOrder = await _context.ContentBlocks
                 .Where(c => c.LessonId == request.LessonId)
@@ -50,6 +55,7 @@ namespace KLCN_TH051_Web.Services.Services
 
             return new ContentBlockResponse(contentBlock);
         }
+
 
         public async Task<List<ContentBlockResponse>> GetContentBlocksByLessonAsync(int lessonId)
         {
