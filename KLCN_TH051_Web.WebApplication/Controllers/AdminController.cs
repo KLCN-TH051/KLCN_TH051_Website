@@ -2,19 +2,19 @@
 
 namespace KLCN_TH051_Web.WebApplication.Controllers
 {
-    public class CourseController : Controller
+    public class AdminController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Statistics()
         {
             return View();
         }
 
-        public IActionResult Create()
+        public IActionResult Courses()
         {
             return View();
         }
 
-        public IActionResult Detail()
+        public IActionResult Banners()
         {
             return View();
         }

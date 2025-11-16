@@ -1,0 +1,163 @@
+﻿@{
+    ViewData["Title"] = "Thống kê";
+}
+
+<div class="row">
+
+    <!-- SIDEBAR -->
+    <partial name="_Sidebar" />
+
+    <!-- MAIN CONTENT -->
+    <div class="col-9">
+
+        <!-- WRAPPER CARD -->
+        <div class="card shadow-sm p-4">
+
+            <div class="row g-3">
+
+                <!-- BOX 1 -->
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0" style="background:#e3f2fd;">
+                        <div class="card-body d-flex">
+                            <div class="me-3">
+                                <img src="https://placehold.co/60x60?text=PC" class="img-fluid" />
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-1">15</h4>
+                                <span class="text-muted">Khóa học online</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOX 2 -->
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0" style="background:#eeeeee;">
+                        <div class="card-body d-flex">
+                            <div class="me-3">
+                                <img src="https://placehold.co/60x60?text=GV" class="img-fluid" />
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-1">2</h4>
+                                <span class="text-muted">Giảng viên</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOX 3 -->
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0" style="background:#fff9c4;">
+                        <div class="card-body d-flex">
+                            <div class="me-3">
+                                <img src="https://placehold.co/60x60?text=Học" class="img-fluid" />
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-1">6</h4>
+                                <span class="text-muted">Người học</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOX 4 -->
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0" style="background:#e8f5e9;">
+                        <div class="card-body d-flex">
+                            <div class="me-3">
+                                <img src="https://placehold.co/60x60?text=File" class="img-fluid" />
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-1">31</h4>
+                                <span class="text-muted">Bài học tổng cộng</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOX 5 -->
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0" style="background:#ffebee;">
+                        <div class="card-body d-flex">
+                            <div class="me-3">
+                                <img src="https://placehold.co/60x60?text=ĐH" class="img-fluid" />
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-1">2</h4>
+                                <span class="text-muted">Đơn hàng tháng này</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOX 6 -->
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0" style="background:#e8f5e9;">
+                        <div class="card-body d-flex">
+                            <div class="me-3">
+                                <img src="https://placehold.co/60x60?text=$" class="img-fluid" />
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-1">700000</h4>
+                                <span class="text-muted">Tổng doanh thu tháng này</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- REVENUE CHART -->
+            <div class="row mt-4">
+                <div class="col">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">Doanh Thu 12 Tháng</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Data for the chart (fake data for now)
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Mar 2023', 'Apr 2023', 'May 2023', 'Jun 2023', 'Jul 2023', 'Aug 2023', 'Sep 2023', 'Oct 2023', 'Nov 2023', 'Dec 2023', 'Jan 2024', 'Feb 2024'],
+            datasets: [{
+                label: 'Doanh thu (VND)',
+                data: [500000, 600000, 550000, 580000, 520000, 530000, 500000, 510000, 500000, 480000, 3500000, 450000], // Fake data
+                borderColor: '#f06292',
+                backgroundColor: 'rgba(240, 98, 146, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('en-US'); // Format numbers as VND
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
