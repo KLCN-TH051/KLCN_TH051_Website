@@ -63,7 +63,7 @@ namespace KLCN_TH051_Web.Services.Services
                 throw new Exception("Only Draft or Rejected courses can be updated.");
             }
 
-            // Cập nhật
+            // Cập nhật các trường cơ bản
             if (!string.IsNullOrEmpty(request.Name))
                 course.Name = request.Name;
 
@@ -82,13 +82,14 @@ namespace KLCN_TH051_Web.Services.Services
             if (request.EndDate.HasValue)
                 course.EndDate = request.EndDate.Value;
 
-            // ❌ Không cập nhật Status
-            // ❌ Không cập nhật SubjectId
+            // ✔ Giảng viên sửa xong → khóa học tự động chuyển sang PendingReview
+            course.Status = CoursesStatus.Pending;
 
             await _context.SaveChangesAsync();
 
             return new CourseResponse(course);
         }
+
 
 
 
