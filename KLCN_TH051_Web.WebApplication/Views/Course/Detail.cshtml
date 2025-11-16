@@ -1,0 +1,315 @@
+﻿<style>
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        font-weight: 600;
+        font-size: 18px;
+    }
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+        .divider:not(:empty)::before {
+            margin-right: .75em;
+        }
+        .divider:not(:empty)::after {
+            margin-left: .75em;
+        }
+</style>
+<!-- TIÊU ĐỀ KHÓA HỌC -->
+<div class="row mx-auto">
+    <div class="col-9">
+        <span class="badge bg-primary mb-2">Lập trình web</span>
+        <h2 class="fw-bold">Lập trình frontend với ReactJs</h2>
+        <p>
+            Khóa học ReactJS từ cơ bản tới nâng cao, kết quả của khóa học này là bạn có thể làm hầu hết các dự án thường gặp với ReactJS.
+            Cuối khóa học này bạn sẽ sở hữu một dự án website thương mại điện tử với ReactJS, bạn có thể tự tin đi xin việc khi nắm chắc các kiến thức được chia sẻ trong khóa học này.
+        </p>
+        <div class="mb-3">
+            ⭐⭐⭐⭐⭐
+            <div>Giảng viên: <strong>Hai Nguyen</strong></div>
+        </div>
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-3" id="courseTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#content">DANH SÁCH CHƯƠNG</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#teacher">GIẢNG VIÊN</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#rating">ĐÁNH GIÁ</button>
+            </li>
+        </ul>
+        <!-- TAB CONTENT -->
+        <div class="tab-content p-3">
+            <!-- NỘI DUNG KHÓA HỌC -->
+            <div class="tab-pane fade show active" id="content">
+                <div class="accordion" id="courseAccordion">
+                    <!-- Chương 1 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#c1">
+                                Chương 1: Giới thiệu ReactJS
+                            </button>
+                        </h2>
+                        <div id="c1" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <div class="lesson-item d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-journal-text me-2"></i>
+                                                Bài 1: (Bài đọc)
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-outline-success btn-sm me-2 btn-preview" data-type="reading">Xem trước</button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="lesson-item d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-play-circle me-2"></i>
+                                                Bài 2: (Video)
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-outline-success btn-sm me-2 btn-preview" data-type="video">Xem trước</button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <div class="lesson-item d-flex justify-content-between align-items-center">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-question-circle me-2"></i>
+                                                Bài 3: (Quiz)
+                                            </div>
+                                            <div class="d-flex">
+                                                <button class="btn btn-outline-success btn-sm me-2 btn-preview" data-type="quiz">Xem trước</button>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Chương 2 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#c2">
+                                Chương 2: JSX & Component
+                            </button>
+                        </h2>
+                        <div id="c2" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <i class="bi bi-journal-text me-2"></i>
+                                        Bài 1:...
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Chương 3 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#c3">
+                                Chương 3: Hooks nâng cao
+                            </button>
+                        </h2>
+                        <div id="c3" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">
+                                        <i class="bi bi-journal-text me-2"></i>
+                                        Bài 1:...
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- GIẢNG VIÊN -->
+            <div class="tab-pane fade" id="teacher">
+                <div class="text-center p-4">
+                    <!-- Avatar -->
+                    <img src="https://i.imgur.com/7yUvePI.png"
+                         class="rounded-circle mb-3"
+                         style="width:150px; height:150px; object-fit:cover;" />
+                    <!-- Tên giảng viên -->
+                    <h5 class="fw-bold mt-2">Hai Nguyen</h5>
+                    <!-- Thông tin -->
+                    <div class="d-flex flex-column align-items-center mt-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="bi bi-person-fill me-2 text-primary"></i>
+                            <span>Hai Nguyen</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-envelope-fill me-2 text-primary"></i>
+                            <span>hai@gmail.com</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ĐÁNH GIÁ -->
+            <div class="tab-pane fade" id="rating">
+                <!-- VÙNG 2 CỘT: TỔNG QUAN + BIỂU ĐỒ -->
+                <div class="row align-items-center">
+                    <!-- Cột trái: Tổng quan -->
+                    <div class="col-3 text-center">
+                        <h1 class="fw-bold">5.0</h1>
+                        <div class="text-warning fs-4">★★★★★</div>
+                        <div>1 đánh giá</div>
+                    </div>
+                    <!-- Cột phải: Biểu đồ -->
+                    <div class="col-9">
+                        <!-- 5 sao -->
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="flex-grow-1 bg-light rounded-pill me-2" style="height: 10px; position: relative;">
+                                <div style="width: 100%; height: 100%; background: #0d6efd; border-radius: 20px;"></div>
+                            </div>
+                            <span class="text-warning me-1">★★★★★</span> <span>1</span>
+                        </div>
+                        <!-- 4 sao -->
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="flex-grow-1 bg-light rounded-pill me-2" style="height: 10px;"></div>
+                            <span class="text-warning me-1">★★★★☆</span> <span>0</span>
+                        </div>
+                        <!-- 3 sao -->
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="flex-grow-1 bg-light rounded-pill me-2" style="height: 10px;"></div>
+                            <span class="text-warning me-1">★★★☆☆</span> <span>0</span>
+                        </div>
+                        <!-- 2 sao -->
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="flex-grow-1 bg-light rounded-pill me-2" style="height: 10px;"></div>
+                            <span class="text-warning me-1">★★☆☆☆</span> <span>0</span>
+                        </div>
+                        <!-- 1 sao -->
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="flex-grow-1 bg-light rounded-pill me-2" style="height: 10px;"></div>
+                            <span class="text-warning me-1">★☆☆☆☆</span> <span>0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="divider my-4">
+                    <span>Đánh giá của học viên</span>
+                </div>
+                <!-- Một đánh giá -->
+                <div class="d-flex align-items-center rounded mb-3">
+                    <img src="https://i.imgur.com/7yUvePI.png"
+                         class="rounded-circle me-3"
+                         style="width:60px; height:60px; object-fit:cover;">
+                    <div>
+                        <strong>Tạ Huy</strong>
+                        <div class="text-warning">★★★★★</div>
+                        <div class="text-muted">Khóa học bổ ích</div>
+                    </div>
+                </div>
+				<hr />
+                <!-- Phân trang -->
+                <div class="d-flex justify-content-center mt-4">
+                    <button class="btn btn-light me-2" disabled>&lt;</button>
+                    <button class="btn btn-primary">1</button>
+                    <button class="btn btn-light ms-2" disabled>&gt;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- KHỐI GIÁ & MUA -->
+    <div class="col-3">
+        <div class="card p-3 text-center">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
+                 class="img-fluid p-3" style="max-height: 180px" alt="">
+            <h4 class="fw-bold">150000đ</h4>
+            <button class="btn btn-primary w-100 mt-2">THÊM VÀO GIỎ HÀNG</button>
+        </div>
+        <div class="card mt-3 p-3">
+            <h5 class="fw-bold">Khóa học bao gồm</h5>
+            <ul class="list-unstyled mt-2">
+                <li>
+                    <i class="bi bi-play-circle me-2"></i>
+                    1 video
+                </li>
+                <li>
+                    <i class="bi bi-journal-text me-2"></i>
+                    3 bài đọc
+                </li>
+                <li>
+                    <i class="bi bi-question-circle me-2"></i>
+                    1 bài tập
+                </li>
+                <li>💻 Học trực tuyến mọi nơi</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xem trước</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="previewBody" style="min-height:300px;">
+                <!-- Nội dung preview sẽ được render ở đây -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Giả lập dữ liệu thật từ database
+    let lessonContents = {
+        reading: "<h2>Giới thiệu</h2><p>Đây là nội dung bài đọc đã lưu…</p>",
+        video: "/videos/sample.mp4",
+        quiz: {
+            description: "Quiz kiểm tra căn bản",
+            questions: [
+                { q: "JS là viết tắt của gì?", answers: ["JavaScript", "JSON"], correct: 0 },
+                { q: "React là gì?", answers: ["Library", "Framework"], correct: 0 }
+            ]
+        }
+    };
+    document.querySelectorAll(".btn-preview").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const type = btn.getAttribute("data-type");
+            let body = document.getElementById("previewBody");
+            if (type === "reading") {
+                body.innerHTML = lessonContents.reading;
+            }
+            else if (type === "video") {
+                body.innerHTML = `
+                    <video controls style="width:100%;background:#000;">
+                        <source src="${lessonContents.video}">
+                    </video>
+                `;
+            }
+            else if (type === "quiz") {
+                let quiz = lessonContents.quiz;
+                let html = `<h5>${quiz.description}</h5><hr/>`;
+                quiz.questions.forEach((q, i) => {
+                    html += `
+                        <div class="mb-3">
+                            <strong>Câu ${i + 1}: ${q.q}</strong>
+                            <ul class="mt-1">
+                                ${q.answers.map((a, idx) =>
+                                    `<li ${idx === q.correct ? 'class="text-success fw-bold"' : ""}>${a}</li>`
+                                ).join("")}
+                            </ul>
+                        </div>
+                    `;
+                });
+                body.innerHTML = html;
+            }
+            new bootstrap.Modal("#previewModal").show();
+        });
+    });
+</script>
