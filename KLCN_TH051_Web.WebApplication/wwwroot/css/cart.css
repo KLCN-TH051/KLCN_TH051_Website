@@ -21,6 +21,7 @@
     transform: translateY(10px);
     pointer-events: none;
     transition: 0.2s ease;
+    z-index: 9999;
 }
 
 .cart-wrapper:hover .cart-dropdown {
