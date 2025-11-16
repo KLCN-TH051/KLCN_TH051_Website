@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Banners";
+}
+
+<div class="row">
+    <!-- SIDEBAR -->
+    <partial name="_Sidebar" />
+
+    <!-- MAIN CONTENT -->
+    <div class="col-9">
+        <div class="card shadow-sm p-4">
+
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0 fw-bold">Banner</h5>
+                <a href="#" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Thêm
+                </a>
+            </div>
+
+            <!-- SORTABLE LIST -->
+            <div id="bannerList" class="list-group">
+
+                <!-- ITEM -->
+                <div class="list-group-item d-flex align-items-center">
+                    <span class="handle me-3" style="cursor:grab;">⋮⋮</span>
+                    <img src="https://via.placeholder.com/150x60" class="me-3 rounded" alt="banner">
+
+                    <div class="ms-auto">
+                        <button class="btn btn-outline-secondary btn-sm me-2">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="list-group-item d-flex align-items-center">
+                    <span class="handle me-3" style="cursor:grab;">⋮⋮</span>
+                    <img src="https://via.placeholder.com/150x60" class="me-3 rounded" alt="banner">
+
+                    <div class="ms-auto">
+                        <button class="btn btn-outline-secondary btn-sm me-2">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SORTABLEJS CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+
+<script>
+    // Enable sorting
+    new Sortable(document.getElementById("bannerList"), {
+        animation: 150,
+        handle: ".handle",     // kéo bằng dấu ⋮⋮
+        ghostClass: "bg-light" // Bootstrap class: không tạo CSS mới
+    });
+</script>
