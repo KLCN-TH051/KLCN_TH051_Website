@@ -1,4 +1,5 @@
 ﻿using KLCN_TH051_Website.Common.Entities;
+using KLCN_TH051_Website.Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace KLCN_TH051_Website.Common.DTO.Responses
         public int OrderNumber { get; set; }
         public int DurationMinutes { get; set; }
         public bool IsFree { get; set; }
+        public LessonType Type { get; set; } // trả về loại bài học
 
         public LessonResponse(Lesson lesson)
         {
@@ -24,6 +26,7 @@ namespace KLCN_TH051_Website.Common.DTO.Responses
             OrderNumber = lesson.OrderNumber;
             DurationMinutes = lesson.DurationMinutes;
             IsFree = lesson.IsFree;
+            Type = lesson.Type; // map thêm
         }
     }
 }

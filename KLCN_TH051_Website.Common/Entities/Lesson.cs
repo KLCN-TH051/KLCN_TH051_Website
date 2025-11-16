@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KLCN_TH051_Website.Common.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,9 @@ namespace KLCN_TH051_Website.Common.Entities
         public int ChapterId { get; set; }    // FK
         public Chapter Chapter { get; set; }     // Navigation property
         public bool IsFree { get; set; } = false;
+
+        // Trường xác định loại bài học
+        public LessonType Type { get; set; }
 
         // Một lesson có nhiều nội dung
         public ICollection<LessonProgress>? LessonProgresses { get; set; }

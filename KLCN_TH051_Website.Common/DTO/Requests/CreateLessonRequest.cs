@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KLCN_TH051_Website.Common.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +13,6 @@ namespace KLCN_TH051_Website.Common.DTO.Requests
         public string? Description { get; set; }
         public int DurationMinutes { get; set; }
         public bool IsFree { get; set; } = false;
+        public LessonType Type { get; set; }
     }
 }

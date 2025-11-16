@@ -33,6 +33,13 @@ namespace KLCN_TH051_Website.Common.Configurations
             builder.Property(l => l.IsFree)
                    .IsRequired();
 
+            // ----------------------------
+            // Thêm trường Type
+            // ----------------------------
+            builder.Property(l => l.Type)
+                   .IsRequired()
+                   .HasConversion<int>(); // Content=1, Video=2, Quiz=3
+
             // Liên kết với Chapter
             builder.HasOne(l => l.Chapter)
                    .WithMany(c => c.Lessons)

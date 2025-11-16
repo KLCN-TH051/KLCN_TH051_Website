@@ -41,6 +41,7 @@ namespace KLCN_TH051_Web.Services.Services
                 Description = request.Description,
                 DurationMinutes = request.DurationMinutes,
                 IsFree = request.IsFree,
+                Type = request.Type,
                 OrderNumber = maxOrder + 1,
                 CreatedBy = creatorId,
                 CreatedDate = DateTime.Now
@@ -91,6 +92,10 @@ namespace KLCN_TH051_Web.Services.Services
 
             if (request.IsFree.HasValue)
                 lesson.IsFree = request.IsFree.Value;
+
+            // Cập nhật loại bài học nếu có
+            if (request.Type.HasValue)
+                lesson.Type = request.Type.Value;
 
             lesson.LastUpdatedBy = updaterId;
             lesson.LastUpdatedDate = DateTime.Now;
