@@ -3,7 +3,7 @@
 namespace KLCN_TH051_Web.WebApplication.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class UserController : Controller
+    public class SubjectController : Controller
     {
         public IActionResult Index()
         {
