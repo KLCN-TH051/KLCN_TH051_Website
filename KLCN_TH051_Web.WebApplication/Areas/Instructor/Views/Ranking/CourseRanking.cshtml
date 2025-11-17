@@ -1,0 +1,141 @@
+﻿@* Areas/Instructor/Views/Ranking/CourseRanking.cshtml *@
+@{
+    ViewData["Title"] = "Bảng xếp hạng học viên";
+    var courseId = ViewBag.CourseId;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-1">Bảng xếp hạng học viên</h4>
+        <p class="text-muted mb-0">Khóa học: <strong id="courseTitle">Đang tải...</strong></p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        Quay lại
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" id="rankingTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th width="80">Hạng</th>
+                        <th>Học viên</th>
+                        <th width="150" class="text-center">Điểm số</th>
+                        <th width="180" class="text-center">Hoàn thành</th>
+                        <th width="140">Ngày hoàn thành</th>
+                    </tr>
+                </thead>
+                <tbody id="rankingBody">
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Đang tải...</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center" id="pagination"></ul>
+        </nav>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const courseId = @courseId;
+
+        async function loadRanking(page = 1) {
+            try {
+                const res = await fetch(`/api/instructor/courses/${courseId}/ranking?page=${page}&pageSize=20`);
+                const data = await res.json();
+
+                document.getElementById('courseTitle').textContent = data.courseTitle || 'Không xác định';
+
+                const tbody = document.getElementById('rankingBody');
+                if (!data.items || data.items.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-5">Chưa có học viên hoàn thành khóa học.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.items.map((s, idx) => {
+                    const rank = (page - 1) * 20 + idx + 1;
+                    const rankDisplay = rank === 1 ? '1st place' :
+                                       rank === 2 ? '2nd place' :
+                                       rank === 3 ? '3rd place' : `#${rank}`;
+
+                    const rankBadge = rank <= 3
+                        ? `<span class="badge ${rank===1?'bg-warning':rank===2?'bg-secondary':'bg-danger'} text-white rounded-pill px-3 py-2 fs-6">${rankDisplay}</span>`
+                        : `<span class="text-muted fw-bold">#${rank}</span>`;
+
+                    const progress = Math.round(s.completedLessons / s.totalLessons * 100);
+
+                    return `
+                    <tr>
+                        <td>${rankBadge}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    ${s.avatarUrl
+                                        ? `<img src="${s.avatarUrl}" class="rounded-circle" width="45" height="45">`
+                                        : `<div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width:45px;height:45px;font-size:18px;">
+                                             ${s.fullName.split(' ').pop()[0]}
+                                           </div>`
+                                    }
+                                </div>
+                                <div>
+                                    <div class="fw-bold">${s.fullName}</div>
+                                    <small class="text-muted">${s.email}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <span class="fw-bold fs-5 text-primary">${s.finalScore?.toFixed(1) || '—'}</span>
+                            <small class="d-block text-muted">/ 100</small>
+                        </td>
+                        <td class="text-center">
+                            <div class="progress" style="height:8px;">
+                                <div class="progress-bar ${progress===100?'bg-success':'bg-info'}" style="width:${progress}%"></div>
+                            </div>
+                            <small class="text-muted">${s.completedLessons} / ${s.totalLessons} bài</small>
+                        </td>
+                        <td>
+                            ${s.completedAt ?
+                                `<span class="text-success fw-medium">${new Date(s.completedAt).toLocaleDateString('vi-VN')}</span>`
+                                : '<span class="text-muted">Chưa hoàn thành</span>'
+                            }
+                        </td>
+                    </tr>`;
+                }).join('');
+
+                // Render phân trang (đơn giản)
+                renderPagination(data.currentPage, data.totalPages);
+            } catch (err) {
+                document.getElementById('rankingBody').innerHTML =
+                    '<tr><td colspan="5" class="text-danger text-center py-5">Lỗi tải dữ liệu xếp hạng!</td></tr>';
+                console.error(err);
+            }
+        }
+
+        function renderPagination(current, total) {
+            if (total <= 1) {
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+            let html = '';
+            for (let i = 1; i <= total; i++) {
+                html += `<li class="page-item ${i===current?'active':''}">
+                            <a class="page-link" href="#" onclick="loadRanking(${i}); return false;">${i}</a>
+                         </li>`;
+            }
+            document.getElementById('pagination').innerHTML = html;
+        }
+
+        // Load lần đầu
+        loadRanking();
+    </script>
+}

@@ -1,0 +1,61 @@
+﻿@* Areas/Instructor/Views/Ranking/Index.cshtml *@
+@{
+    ViewData["Title"] = "Xếp hạng học viên";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold">Xếp hạng học viên theo khóa học</h4>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h6 class="mb-0">Chọn khóa học để xem bảng xếp hạng</h6>
+    </div>
+    <div class="card-body">
+        <div id="courseList" class="row">
+            <!-- Dữ liệu sẽ được load bằng JS -->
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Đang tải...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const response = await fetch('/api/instructor/courses'); // API của bạn
+                const courses = await response.json();
+
+                const container = document.getElementById('courseList');
+                if (courses.length === 0) {
+                    container.innerHTML = '<div class="text-center py-5 text-muted">Bạn chưa có khóa học nào.</div>';
+                    return;
+                }
+
+                container.innerHTML = courses.map(c => `
+                    <div class="col-md-6 mb-3">
+                        <a href="/Instructor/Ranking/CourseRanking/${c.id}" class="text-decoration-none">
+                            <div class="p-3 border rounded hover-shadow bg-light h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <h6 class="text-primary fw-bold">${c.title}</h6>
+                                    <small class="text-muted">${c.enrolledCount || 0} học viên đã tham gia</small>
+                                </div>
+                                <div class="mt-2 text-end">
+                                    <i class="fas fa-chevron-right text-primary"></i>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                `).join('');
+            } catch (err) {
+                document.getElementById('courseList').innerHTML =
+                    '<div class="text-danger text-center py-4">Lỗi tải dữ liệu khóa học!</div>';
+                console.error(err);
+            }
+        });
+    </script>
+}
