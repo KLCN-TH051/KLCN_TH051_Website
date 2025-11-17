@@ -130,8 +130,8 @@ footer {
 
 /*Layout Share Admin*/
 /* Thêm padding ở top bằng chiều cao của navbar (56px) */
-body {
-    padding-top: 56px;
+.body-admin-layout {
+    padding-top: 56px; /* 56px là chiều cao navbar, bạn có thể điều chỉnh */
 }
 
 /* Container chính dùng flexbox */
@@ -174,3 +174,33 @@ body {
     /* Màu nền xám nhạt giống trong hình */
     background-color: #f4f6f9;
 }
+
+#navbar-right-icons .nav-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+    /* Làm cho các icon (i) to và có màu trắng rõ */
+    #navbar-right-icons .nav-link i {
+        font-size: 1.2rem; /* Làm icon to hơn một chút */
+        color: #ffffff; /* Màu trắng */
+    }
+
+    /* Hiệu ứng mờ đi khi di chuột qua icon */
+    #navbar-right-icons .nav-link:hover i {
+        color: rgba(255, 255, 255, 0.75);
+    }
+
+/* Tùy chỉnh riêng cho profile dropdown */
+#navbar-right-icons .dropdown-toggle img {
+    margin-right: 5px;
+}
+
+/* Đảm bảo text "Teacher" cũng có màu trắng */
+#navbar-right-icons .dropdown-toggle {
+    color: #ffffff !important;
+}
+
+
+
