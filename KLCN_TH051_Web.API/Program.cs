@@ -91,6 +91,9 @@ builder.Services.AddScoped<ILessonCommentService, LessonCommentService>();
 builder.Services.AddScoped<ICourseRatingService, CourseRatingService>();
 // Đăng ký PaymentService
 builder.Services.AddScoped<IQuizAttemptService, QuizAttemptService>();
+// Đăng ký PaymentService
+builder.Services.AddScoped<IBannerService, BannerService>();
+
 
 
 
