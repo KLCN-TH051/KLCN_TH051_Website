@@ -3,19 +3,12 @@
 namespace KLCN_TH051_Web.WebApplication.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    public class CourseController : Controller
+    public class ProfileController : Controller
     {
         public IActionResult Index()
         {
-            ViewData["Title"] = "Khoá học giảng dạy";
+            ViewData["Title"] = "Trang cá nhân";
             return View();
         }
-
-        public IActionResult Details()
-        {
-            return View();
-        }
-
     }
-
 }

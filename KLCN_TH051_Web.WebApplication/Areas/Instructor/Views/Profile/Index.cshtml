@@ -1,0 +1,280 @@
+﻿@{
+    ViewData["Title"] = "Trang cá nhân";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h4 class="fw-bold mb-4">Trang cá nhân</h4>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button">
+                    <i class="fas fa-user me-1"></i> Thông tin tài khoản
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="security-tab" data-bs-toggle="tab" data-bs-target="#security" type="button">
+                    <i class="fas fa-shield-alt me-1"></i> Bảo mật
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="profileTabContent">
+            <!-- ==================== TAB THÔNG TIN ==================== -->
+            <div class="tab-pane fade show active" id="info" role="tabpanel">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body text-center">
+                                <div class="position-relative d-inline-block">
+                                    <img id="avatarPreview" src="~/images/avatar_default.png"
+                                         alt="Avatar" class="rounded-circle shadow"
+                                         style="width:180px;height:180px;object-fit:cover;border:5px solid #fff;">
+                                    <label for="avatarUpload" class="btn btn-primary rounded-circle position-absolute shadow"
+                                           style="width:44px;height:44px;right:8px;bottom:8px;cursor:pointer;"
+                                           title="Đổi ảnh đại diện">
+                                        <i class="fas fa-camera"></i>
+                                    </label>
+                                    <input type="file" id="avatarUpload" accept="image/*" class="d-none">
+                                </div>
+                                <h5 class="mt-3 mb-1" id="fullNameDisplay">Đang tải...</h5>
+                                <p class="text-muted" id="usernameDisplay">@User.Identity?.Name</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Thông tin cá nhân</h5>
+                                <button class="btn btn-light btn-sm" id="btnEdit">
+                                    <i class="fas fa-edit"></i> Chỉnh sửa
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <form id="profileForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Họ và tên</label>
+                                            <input type="text" class="form-control" id="fullName" required disabled>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Tên tài khoản</label>
+                                            <input type="text" class="form-control" id="username" disabled>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="email" required disabled>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">Ngày sinh</label>
+                                            <input type="date" class="form-control" id="dob" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 d-flex gap-2" id="actionButtons" style="display:none;">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> Lưu thay đổi
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" id="btnCancel">Hủy</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== TAB ĐỔI MẬT KHẨU ==================== -->
+            <div class="tab-pane fade" id="security" role="tabpanel">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-lock me-2"></i> Đổi mật khẩu
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="changePasswordForm">
+                            <div class="mb-3">
+                                <label class="form-label">Mật khẩu cũ</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="oldPassword" required>
+                                    <button type="button" class="btn btn-outline-secondary" id="toggleOld">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Mật khẩu mới</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="newPassword" required minlength="6">
+                                    <button type="button" class="btn btn-outline-secondary" id="toggleNew">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="text-muted">Tối thiểu 6 ký tự</small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">Xác nhận mật khẩu mới</label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" id="confirmPassword" required>
+                                    <button type="button" class="btn btn-outline-secondary" id="toggleConfirm">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-key"></i> Đổi mật khẩu
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let originalData = {};
+
+        // Load thông tin cá nhân
+        async function loadProfile() {
+            try {
+                const res = await fetch('/api/instructor/profile');
+                const data = await res.json();
+
+                document.getElementById('fullName').value = data.fullName || '';
+                document.getElementById('fullNameDisplay').textContent = data.fullName || 'Chưa đặt tên';
+                document.getElementById('username').value = data.username || '@User.Identity?.Name';
+                document.getElementById('usernameDisplay').textContent = data.username || '@User.Identity?.Name';
+                document.getElementById('email').value = data.email || '';
+                document.getElementById('dob').value = data.dateOfBirth ? data.dateOfBirth.split('T')[0] : '';
+                if (data.avatarUrl) {
+                    document.getElementById('avatarPreview').src = data.avatarUrl + '?t=' + Date.now();
+                }
+
+                originalData = { ...data };
+            } catch (err) {
+                alert('Không thể tải thông tin cá nhân!');
+            }
+        }
+
+        // ==================== THÔNG TIN CÁ NHÂN ====================
+        document.getElementById('btnEdit').onclick = () => {
+            ['fullName', 'email', 'dob'].forEach(id => document.getElementById(id).disabled = false);
+            document.getElementById('actionButtons').style.display = 'flex';
+            document.getElementById('btnEdit').style.display = 'none';
+        };
+
+        document.getElementById('btnCancel').onclick = () => {
+            document.getElementById('fullName').value = originalData.fullName || '';
+            document.getElementById('email').value = originalData.email || '';
+            document.getElementById('dob').value = originalData.dateOfBirth?.split('T')[0] || '';
+            ['fullName', 'email', 'dob'].forEach(id => document.getElementById(id).disabled = true);
+            document.getElementById('actionButtons').style.display = 'none';
+            document.getElementById('btnEdit').style.display = 'block';
+        };
+
+        // Lưu thông tin
+        document.getElementById('profileForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                fullName: document.getElementById('fullName').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                dateOfBirth: document.getElementById('dob').value
+            };
+
+            try {
+                const res = await fetch('/api/instructor/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    alert('Cập nhật thông tin thành công!');
+                    loadProfile();
+                    document.getElementById('actionButtons').style.display = 'none';
+                    document.getElementById('btnEdit').style.display = 'block';
+                    ['fullName', 'email', 'dob'].forEach(id => document.getElementById(id).disabled = true);
+                } else {
+                    alert('Lỗi: ' + await res.text());
+                }
+            } catch { alert('Lỗi kết nối!'); }
+        };
+
+        // Đổi avatar
+        document.getElementById('avatarUpload').onchange = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const fd = new FormData(); fd.append('avatar', file);
+            try {
+                const res = await fetch('/api/instructor/avatar', { method: 'POST', body: fd });
+                if (res.ok) {
+                    const json = await res.json();
+                    document.getElementById('avatarPreview').src = json.avatarUrl + '?t=' + Date.now();
+                    alert('Đổi avatar thành công!');
+                }
+            } catch { alert('Lỗi upload ảnh!'); }
+        };
+
+        // ==================== ĐỔI MẬT KHẨU ====================
+        // Hiện/ẩn mật khẩu
+        ['toggleOld', 'toggleNew', 'toggleConfirm'].forEach(id => {
+            document.getElementById(id).onclick = function () {
+                const inputId = id.replace('toggle', '').toLowerCase() + 'Password';
+                const input = document.getElementById(inputId === 'password' ? 'newPassword' : inputId);
+                const icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            };
+        });
+
+        // Submit đổi mật khẩu
+        document.getElementById('changePasswordForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const oldPass = document.getElementById('oldPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+
+            if (newPass !== confirmPass) {
+                alert('Mật khẩu mới không khớp!');
+                return;
+            }
+            if (newPass.length < 6) {
+                alert('Mật khẩu mới phải từ 6 ký tự trở lên!');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/instructor/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ oldPassword: oldPass, newPassword: newPass })
+                });
+
+                if (res.ok) {
+                    alert('Đổi mật khẩu thành công! Vui lòng đăng nhập lại.');
+                    document.getElementById('changePasswordForm').reset();
+                    setTimeout(() => location.href = '/Account/Logout', 1500);
+                } else {
+                    const msg = await res.text();
+                    alert('Lỗi: ' + (msg || 'Mật khẩu cũ không đúng'));
+                }
+            } catch { alert('Lỗi kết nối!'); }
+        };
+
+        // Load khi vào trang
+        document.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+}
