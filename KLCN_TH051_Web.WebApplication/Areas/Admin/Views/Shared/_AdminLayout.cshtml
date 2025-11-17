@@ -8,19 +8,72 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - EduAdmin</title>
-    <!-- Favicon -->
     <link rel="icon" href="~/favicon.ico" />
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome 6 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 </head>
 <body class="bg-light">
+
+    <!-- JS QUẢN LÝ TRẠNG THÁI ĐĂNG NHẬP -->
+    <script>
+        function logout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userEmail');
+            location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('authToken');
+            const userName = localStorage.getItem('userName');
+            const toggle = document.getElementById('dropdownUserToggle');
+            const menu = document.getElementById('userDropdownMenu');
+
+            // KHÔNG ĐƯỢC XÓA innerHTML CỦA TOGGLE → SẼ MẤT data-bs-toggle!!!
+            // Chỉ xóa nội dung menu thôi
+            menu.innerHTML = '';
+
+            // Giữ nguyên thẻ <a> toggle, chỉ thay đổi nội dung bên trong
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'd-flex align-items-center';
+
+            if (token && userName) {
+                // ĐÃ ĐĂNG NHẬP
+                const firstLetter = userName.charAt(0).toUpperCase();
+                contentContainer.innerHTML = `
+                    <img src="https://placehold.co/40x40?text=${firstLetter}" alt="Avatar" width="38" height="38" class="rounded-circle me-2 border">
+                    <span class="fw-semibold text-dark">${userName}</span>
+                `;
+                menu.innerHTML = `
+                    <li><a class="dropdown-item" href="/Admin/Profile/Index"><i class="fa fa-user me-2"></i> Trang cá nhân</a></li>
+                    <li><a class="dropdown-item" href="/Admin/Profile/ChangePassword"><i class="fa fa-key me-2"></i> Đổi mật khẩu</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="logout()"><i class="fa fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
+                `;
+            } else {
+                // CHƯA ĐĂNG NHẬP
+                contentContainer.innerHTML = `
+                    <i class="fa fa-user-circle fa-lg me-2"></i>
+                    <span class="fw-semibold text-dark">Tài khoản</span>
+                `;
+                menu.innerHTML = `
+                    <li><a class="dropdown-item" href="/Admin/Auth/Login"><i class="fa fa-sign-in-alt me-2"></i> Đăng nhập</a></li>
+                `;
+            }
+
+            // Thay thế nội dung mà KHÔNG làm mất data-bs-toggle
+            toggle.innerHTML = '';
+            toggle.appendChild(contentContainer);
+
+            // Bootstrap tự động nhận diện dropdown vì data-bs-toggle còn nguyên!
+            // KHÔNG CẦN new bootstrap.Dropdown() NỮA → HOẠT ĐỘNG 100% Ở MỌI TRANG
+        });
+    </script>
+
     <div class="d-flex flex-nowrap min-vh-100">
         <!-- Sidebar -->
-        <div class="d-flex flex-column flex-shrink-0 p-3 bg-white border-end">
+        <div class="d-flex flex-column flex-shrink-0 p-3 bg-white border-end" style="width: 280px;">
             <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"
                class="d-flex align-items-center mb-3 text-decoration-none">
                 <img src="https://placehold.co/40x40?text=EA" alt="Logo" class="me-2 rounded">
@@ -28,70 +81,46 @@
             </a>
             <hr>
             <ul class="nav nav-pills flex-column mb-auto">
-                <li class="nav-item">
-                    <a href="/admin/home/index" class="nav-link @(currentController == "Home" ? "active" : "")">
-                        <i class="fa fa-home me-2"></i> Trang chủ
-                    </a>
-                </li>
-                <li>
-                    <a href="/admin/account/index" class="nav-link @(currentController == "Account" ? "active" : "")">
-                        <i class="fa fa-at me-2"></i> Quản lý tài khoản
-                    </a>
-                </li>
-                <li>
-                    <a href="/admin/course/index" class="nav-link @(currentController == "Course" ? "active" : "")">
-                        <i class="fa fa-book me-2"></i> Quản lý môn học
-                    </a>
-                </li>
-                <li>
-                    <a href="/admin/lesson/index" class="nav-link @(currentController == "Lesson" ? "active" : "")">
-                        <i class="fa fa-book-reader me-2"></i> Quản lý khóa học
-                    </a>
-                </li>
-                <li>
-                    <a href="/admin/user/index" class="nav-link @(currentController == "User" ? "active" : "")">
-                        <i class="fa fa-users me-2"></i> Quản lý người dùng
-                    </a>
-                </li>
+                <li><a href="/admin/home/index" class="nav-link @(currentController == "Home" ? "active" : "")"><i class="fa fa-home me-2"></i> Trang chủ</a></li>
+                <li><a href="/admin/account/index" class="nav-link @(currentController == "Account" ? "active" : "")"><i class="fa fa-at me-2"></i> Quản lý tài khoản</a></li>
+                <li><a href="/admin/subject/index" class="nav-link @(currentController == "Subject" ? "active" : "")"><i class="fa fa-book me-2"></i> Quản lý môn học</a></li>
+                <li><a href="/admin/course/index" class="nav-link @(currentController == "Course" ? "active" : "")"><i class="fa fa-book-reader me-2"></i> Quản lý khóa học</a></li>
+                <li><a href="/admin/user/index" class="nav-link @(currentController == "User" ? "active" : "")"><i class="fa fa-users me-2"></i> Quản lý người dùng</a></li>
             </ul>
             <hr>
-            <div class="dropdown">
-                <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
-                   id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://placehold.co/32x32?text=A" alt="User" width="32" height="32" class="rounded-circle me-2">
-                    <strong>Admin</strong>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser">
-                    <li><a class="dropdown-item" href="#">Cài đặt</a></li>
-                    <li><a class="dropdown-item" href="#">Trang cá nhân</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Đăng xuất</a></li>
-                </ul>
-            </div>
         </div>
-        <!-- Main content -->
+
+        <!-- Main Content -->
         <div class="flex-grow-1 d-flex flex-column">
-            <!-- Topbar -->
-            <nav class="navbar navbar-light bg-white border-bottom px-3">
-                <div class="container-fluid">
-                    <form class="d-flex" role="search">
+            <nav class="navbar navbar-light bg-white border-bottom px-4 shadow-sm">
+                <div class="container-fluid justify-content-between">
+                    <form class="d-flex w-50" role="search">
                         <input class="form-control me-2" type="search" placeholder="Tìm kiếm..." aria-label="Search">
                         <button class="btn btn-outline-secondary" type="submit"><i class="fa fa-search"></i></button>
                     </form>
-                    <div class="d-flex align-items-center gap-3">
-                        <a href="#" class="text-dark"><i class="fa fa-bell"></i></a>
-                        <img src="https://placehold.co/32x32?text=U" alt="User" class="rounded-circle">
-                        <span class="fw-semibold">Admin User</span>
+
+                    <!-- Dropdown Tài khoản / User -->
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
+                           id="dropdownUserToggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <!-- Nội dung sẽ được JS thay thế -->
+                            <i class="fa fa-user-circle fa-lg me-2"></i>
+                            <span class="fw-semibold text-dark">Tài khoản</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" id="userDropdownMenu">
+                            <!-- Nội dung sẽ được JS thay thế -->
+                            <li><a class="dropdown-item" href="/Admin/Auth/Login"><i class="fa fa-sign-in-alt me-2"></i> Đăng nhập</a></li>
+                        </ul>
                     </div>
                 </div>
             </nav>
-            <!-- Body -->
+
             <main class="flex-grow-1 p-4 bg-light">
                 @RenderBody()
             </main>
         </div>
     </div>
-    <!-- Bootstrap JS -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>

@@ -3,15 +3,17 @@
 namespace KLCN_TH051_Web.WebApplication.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class SubjectController : Controller
+    public class AuthController : Controller
     {
         private readonly IConfiguration _configuration;
 
-        public SubjectController(IConfiguration configuration)
+        public AuthController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
-        public IActionResult Index()
+        // GET: /Auth/Login
+        [HttpGet]
+        public IActionResult Login()
         {
             ViewData["ApiUrl"] = _configuration["ApiUrl"];
             return View();
