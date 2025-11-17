@@ -1,0 +1,1017 @@
+﻿@* @{
+    ViewData["Title"] = "Chi tiết khóa học";
+    var fakeTitle = "Khoá học lập trình ASP.NET Core";
+    var fakeCategory = "Lập trình web";
+    var fakeDescription = "Khoá học từ cơ bản đến nâng cao về ASP.NET Core 8.";
+    var fakePrice = 300000;
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<style>
+    .handle {
+        cursor: grab;
+    }
+
+    .sortable-ghost {
+        opacity: .5;
+    }
+</style>
+
+<div class="row">
+    <partial name="_Sidebar" />
+
+    <div class="col-9">
+
+        <!-- ================== THÔNG TIN KHOÁ HỌC ================== -->
+        <h4 class="mb-4">Cập nhật khóa học</h4>
+        <form>
+            <div class="row">
+                <div class="col-md-8 mb-3">
+                    <label class="form-label">Tên khóa học</label>
+                    <input type="text" class="form-control" value="@fakeTitle">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Danh mục</label>
+                    <select class="form-select">
+                        <option selected>@fakeCategory</option>
+                        <option>Lập trình Java</option>
+                        <option>Lập trình .NET</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Upload file</label>
+                <input type="file" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Mô tả</label>
+                <textarea class="form-control" rows="4">@fakeDescription</textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Giá</label>
+                    <input type="number" class="form-control" value="@fakePrice">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <input type="checkbox" class="form-check-input me-1" id="freeCheck">
+                    <label class="form-check-label" for="freeCheck">Miễn phí</label>
+                </div>
+            </div>
+
+            <button class="btn btn-primary mb-4">Lưu</button>
+        </form>
+
+        <hr />
+
+        <!-- ================== NỘI DUNG KHOÁ HỌC ================== -->
+        <div>
+            <div class="d-flex justify-content-between mb-3">
+                <h5>Nội dung khóa học</h5>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addLessonModal">+ Thêm</button>
+            </div>
+
+            <div id="lessonList">
+
+                <!-- BÀI ĐỌC -->
+                <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center"
+                     style="background-color:#e9f4ff;border-radius:6px;">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-list me-3 handle"></i>
+                        <i class="bi bi-journal-text me-2"></i>
+                        <strong>Giới thiệu (Bài đọc)</strong>
+                    </div>
+                    <div class="d-flex">
+                        <button class="btn btn-outline-primary btn-sm me-2">Sửa</button>
+                        <button class="btn btn-link text-dark me-1 btn-edit-content" data-type="reading"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-link text-danger"><i class="bi bi-trash"></i></button>
+                    </div>
+                </div>
+
+                <!-- VIDEO -->
+                <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center"
+                     style="background-color:#e9f4ff;border-radius:6px;">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-list me-3 handle"></i>
+                        <i class="bi bi-play-circle me-2"></i>
+                        <strong>Ôn lại kiến thức căn bản (Video)</strong>
+                    </div>
+                    <div class="d-flex">
+                        <button class="btn btn-outline-primary btn-sm me-2">Sửa</button>
+                        <button class="btn btn-link text-dark me-1 btn-edit-content" data-type="video"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-link text-danger"><i class="bi bi-trash"></i></button>
+                    </div>
+                </div>
+
+                <!-- QUIZ -->
+                <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center"
+                     style="background-color:#e9f4ff;border-radius:6px;">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-list me-3 handle"></i>
+                        <i class="bi bi-question-circle me-2"></i>
+                        <strong>Bài tập số 1 (Câu hỏi)</strong>
+                    </div>
+                    <div class="d-flex">
+                        <button class="btn btn-outline-primary btn-sm me-2">Sửa</button>
+                        <button class="btn btn-link text-dark me-1 btn-edit-content" data-type="quiz"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn btn-link text-danger"><i class="bi bi-trash"></i></button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ========================== MODAL THÊM BÀI ========================== -->
+<div class="modal fade" id="addLessonModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content p-3">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Thêm bài học</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <label class="form-label">Tên bài học</label>
+                <input type="text" class="form-control mb-3">
+
+                <label class="form-label">Loại</label>
+                <select class="form-select">
+                    <option>Video</option>
+                    <option>Bài đọc</option>
+                    <option>Câu hỏi ôn tập</option>
+                </select>
+
+                <div class="form-check mt-3">
+                    <input type="checkbox" class="form-check-input" id="previewCheck">
+                    <label class="form-check-label" for="previewCheck">Cho phép xem trước</label>
+                </div>
+            </div>
+
+            <div class="modal-footer border-0">
+                <button class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================== MODAL BÀI ĐỌC ========================== -->
+<div class="modal fade" id="editReadingModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Bài đọc</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="readingEditor" style="height:420px;"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                <button class="btn btn-primary">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================== MODAL VIDEO ========================== -->
+<div class="modal fade" id="editVideoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Video</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <video id="videoPreview" controls style="width:100%;background:#000;">
+                    <source src="" type="video/mp4" />
+                </video>
+
+                <div class="mt-3">
+                    <label class="form-label">Upload video mới</label>
+                    <input type="file" id="videoUploadInput" class="form-control" accept="video/*">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                <button class="btn btn-primary">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================== MODAL QUIZ STEP 1 ========================== -->
+<div class="modal fade" id="quizDescriptionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content p-3">
+
+            <h5 class="modal-title mb-3">Quiz</h5>
+
+            <label class="form-label">Mô tả</label>
+            <input type="text" id="quizDescriptionInput" class="form-control mb-3" placeholder="Bài ôn tập số 1">
+
+            <div class="mt-3 d-flex">
+                <button class="btn btn-primary" id="btnCreateQuiz">TẠO MỚI</button>
+                <div class="flex-grow-1"></div>
+                <button class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- ========================== MODAL QUIZ STEP 2 ========================== -->
+<div class="modal fade" id="editQuizModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Quiz</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <label class="form-label">Mô tả</label>
+                <input type="text" id="quizDescription" class="form-control mb-3">
+
+                <div class="d-flex mb-3">
+                    <button class="btn btn-primary me-2">UPDATE</button>
+                    <div class="flex-grow-1"></div>
+                    <button class="btn btn-primary me-2" id="addQuizQuestionBtn">THÊM CÂU HỎI +</button>
+                    <button class="btn btn-outline-primary">
+                        <i class="bi bi-cloud-upload"></i> IMPORT CÂU HỎI TỪ EXCEL
+                    </button>
+                </div>
+
+                <div class="d-flex bg-primary text-white p-2 fw-bold">
+                    <div class="flex-grow-1">Câu hỏi</div>
+                    <div class="flex-grow-1">Đa lựa chọn</div>
+                    <div style="width:120px;">Tuỳ chọn</div>
+                </div>
+
+                <div id="quizQuestionList"></div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
+                <button class="btn btn-primary" id="saveQuizBtn">Lưu</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<!-- ========================== JS ========================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<script>
+    /* ======== QUILL EDITOR (BÀI ĐỌC) ======== */
+    const minimalToolbar = [
+        [{ header: [false, 1, 2, 3] }],
+        ["bold", "italic", "underline"],
+        ["blockquote"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ align: [] }],
+        ["link", "image"],
+        ["code-block"]
+    ];
+
+    var readingEditor = new Quill("#readingEditor", {
+        theme: "snow",
+        modules: {
+            toolbar: minimalToolbar
+        }
+    });
+
+
+    /* ======== MỞ MODAL THEO LOẠI ======== */
+    document.querySelectorAll(".btn-edit-content").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const type = btn.getAttribute("data-type");
+
+            if (type === "reading")
+                new bootstrap.Modal("#editReadingModal").show();
+            else if (type === "video")
+                new bootstrap.Modal("#editVideoModal").show();
+            else if (type === "quiz")
+                new bootstrap.Modal("#editQuizModal").show();
+        });
+    });
+
+
+    /* ======== QUIZ STEP 1 → STEP 2 ======== */
+    document.getElementById("btnCreateQuiz").addEventListener("click", () => {
+        let desc = document.getElementById("quizDescriptionInput").value.trim();
+        if (!desc) return alert("Vui lòng nhập mô tả!");
+
+        document.getElementById("quizDescription").value = desc;
+
+        bootstrap.Modal.getInstance(document.getElementById("quizDescriptionModal")).hide();
+        new bootstrap.Modal(document.getElementById("editQuizModal")).show();
+    });
+
+
+    /* ======== QUIZ: ADD QUESTION ======== */
+    document.getElementById("addQuizQuestionBtn").addEventListener("click", () => {
+        const html = `
+            <div class="border p-2 mt-2 quiz-block">
+                <div class="d-flex mb-2">
+                    <div class="flex-grow-1">
+                        <input class="form-control quiz-question-input" placeholder="Nhập câu hỏi"/>
+                    </div>
+
+                    <div class="d-flex align-items-center ms-3">
+                        <label class="me-1">Đa lựa chọn</label>
+                        <input type="checkbox" class="form-check-input quiz-multi-check">
+                    </div>
+
+                    <button class="btn btn-link text-danger ms-3 btn-del-question">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+
+                <div class="quiz-answer-list"></div>
+
+                <button class="btn btn-outline-primary btn-sm btn-add-answer mt-2">+ Thêm đáp án</button>
+            </div>
+        `;
+
+        document.getElementById("quizQuestionList").insertAdjacentHTML("beforeend", html);
+    });
+
+
+    /* ======== QUIZ: ADD/REMOVE ANSWER ======== */
+    document.addEventListener("click", e => {
+        if (e.target.closest(".btn-add-answer")) {
+            const wrap = e.target.closest(".quiz-block").querySelector(".quiz-answer-list");
+            wrap.insertAdjacentHTML("beforeend", `
+                <div class="d-flex align-items-center mb-2 answer-row">
+                    <input class="form-control me-2 quiz-answer-input" placeholder="Nhập đáp án"/>
+                    <label class="me-1">Đúng</label>
+                    <input type="checkbox" class="form-check-input quiz-correct-check">
+                    <button class="btn btn-link text-danger ms-2 btn-del-answer">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            `);
+        }
+
+        if (e.target.closest(".btn-del-question"))
+            e.target.closest(".quiz-block").remove();
+
+        if (e.target.closest(".btn-del-answer"))
+            e.target.closest(".answer-row").remove();
+    });
+
+
+
+    /* ======== SAVE QUIZ ======== */
+    document.getElementById("saveQuizBtn").addEventListener("click", () => {
+
+        let quiz = [];
+
+        document.querySelectorAll(".quiz-block").forEach(block => {
+            const question = block.querySelector(".quiz-question-input").value;
+            const multiple = block.querySelector(".quiz-multi-check").checked;
+
+            let answers = [];
+
+            block.querySelectorAll(".answer-row").forEach(a => {
+                answers.push({
+                    text: a.querySelector(".quiz-answer-input").value,
+                    correct: a.querySelector(".quiz-correct-check").checked
+                });
+            });
+
+            quiz.push({ question, multiple, answers });
+        });
+
+        console.log("QUIZ SAVED:", quiz);
+        alert("Quiz đã lưu!");
+    });
+
+
+    /* ======== SORTABLE ======== */
+    new Sortable(document.getElementById("lessonList"), {
+        animation: 150,
+        handle: ".handle",
+        ghostClass: "sortable-ghost"
+    });
+
+</script>
+ *@
+
+
+@{
+    ViewData["Title"] = "Chi tiết khóa học";
+    var fakeTitle = "Khoá học lập trình ASP.NET Core";
+    var fakeCategory = "Lập trình web";
+    var fakeDescription = "Khoá học từ cơ bản đến nâng cao về ASP.NET Core 8.";
+    var fakePrice = 300000;
+}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<style>
+    .handle {
+        cursor: grab;
+    }
+
+    .sortable-ghost {
+        opacity: .5;
+    }
+
+    .chapter-card {
+        background: #f8f9fa;
+        border-left: 4px solid #0d6efd;
+    }
+
+    .lesson-item {
+        background-color: #e9f4ff;
+        border-radius: 6px;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- ================== THÔNG TIN KHOÁ HỌC ================== -->
+            <h4 class="mb-4">Cập nhật khóa học</h4>
+            <form id="courseForm">
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label class="form-label">Tên khóa học</label>
+                        <input type="text" class="form-control" id="courseName" value="@fakeTitle">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Danh mục</label>
+                        <select class="form-select" id="courseCategory">
+                            <option selected>@fakeCategory</option>
+                            <option>Lập trình Java</option>
+                            <option>Lập trình .NET</option>
+                            <option>Thiết kế</option>
+                            <option>Mobile</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Hình ảnh khóa học</label>
+                    <input type="file" class="form-control" id="courseImage" accept="image/*">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mô tả</label>
+                    <textarea class="form-control" id="courseDescription" rows="4">@fakeDescription</textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Giá (VNĐ)</label>
+                        <input type="number" class="form-control" id="coursePrice" value="@fakePrice">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="freeCheck">
+                            <label class="form-check-label" for="freeCheck">Miễn phí</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary mb-4">
+                    <i class="bi bi-save"></i> Lưu thông tin khóa học
+                </button>
+            </form>
+
+            <hr class="my-4" />
+
+            <!-- ================== NỘI DUNG KHOÁ HỌC (CHƯƠNG) ================== -->
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Nội dung khóa học</h5>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addChapterModal">
+                        <i class="bi bi-plus-lg"></i> Thêm chương
+                    </button>
+                </div>
+
+                <div id="chapterList">
+                    <!-- CHƯƠNG 1 -->
+                    <div class="chapter-card card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-grip-vertical me-2 handle"></i>
+                                <h6 class="mb-0 fw-bold">Chương 1: Giới thiệu</h6>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editChapter(1)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteChapter(1)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#chapter1">
+                                    <i class="bi bi-chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="chapter1" class="collapse show">
+                            <div class="card-body">
+                                <button class="btn btn-sm btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addLessonModal">
+                                    <i class="bi bi-plus"></i> Thêm bài học
+                                </button>
+
+                                <div class="lesson-list">
+                                    <!-- BÀI ĐỌC -->
+                                    <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-grip-vertical me-3 handle"></i>
+                                            <i class="bi bi-journal-text me-2 text-primary"></i>
+                                            <div>
+                                                <strong>Giới thiệu về ASP.NET Core</strong>
+                                                <small class="d-block text-muted">Bài đọc</small>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('reading', 1)">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(1)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- VIDEO -->
+                                    <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-grip-vertical me-3 handle"></i>
+                                            <i class="bi bi-play-circle me-2 text-success"></i>
+                                            <div>
+                                                <strong>Cài đặt môi trường</strong>
+                                                <small class="d-block text-muted">Video - 15:30</small>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('video', 2)">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(2)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- QUIZ -->
+                                    <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-grip-vertical me-3 handle"></i>
+                                            <i class="bi bi-question-circle me-2 text-warning"></i>
+                                            <div>
+                                                <strong>Bài kiểm tra chương 1</strong>
+                                                <small class="d-block text-muted">Quiz - 5 câu hỏi</small>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('quiz', 3)">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(3)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHƯƠNG 2 -->
+                    <div class="chapter-card card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-grip-vertical me-2 handle"></i>
+                                <h6 class="mb-0 fw-bold">Chương 2: MVC Pattern</h6>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editChapter(2)">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteChapter(2)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#chapter2">
+                                    <i class="bi bi-chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="chapter2" class="collapse">
+                            <div class="card-body">
+                                <button class="btn btn-sm btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addLessonModal">
+                                    <i class="bi bi-plus"></i> Thêm bài học
+                                </button>
+                                <div class="text-muted text-center py-4">Chưa có bài học nào</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================== MODAL THÊM CHƯƠNG ========================== -->
+<div class="modal fade" id="addChapterModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm chương mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Tên chương</label>
+                    <input type="text" id="chapterName" class="form-control" placeholder="Ví dụ: Chương 1: Giới thiệu">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mô tả (không bắt buộc)</label>
+                    <textarea id="chapterDescription" class="form-control" rows="3" placeholder="Mô tả ngắn về nội dung chương"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="saveChapter()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================== MODAL THÊM BÀI HỌC ========================== -->
+<div class="modal fade" id="addLessonModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm bài học</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Tên bài học</label>
+                    <input type="text" id="lessonName" class="form-control" placeholder="Nhập tên bài học">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Loại bài học</label>
+                    <select class="form-select" id="lessonType">
+                        <option value="reading">Bài đọc (Content Block)</option>
+                        <option value="video">Video</option>
+                        <option value="quiz">Bài kiểm tra (Quiz)</option>
+                    </select>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="previewCheck">
+                    <label class="form-check-label" for="previewCheck">Cho phép xem trước miễn phí</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="saveLesson()">Tạo bài học</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================== MODAL BÀI ĐỌC ========================== -->
+<div class="modal fade" id="editReadingModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa bài đọc</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Tên bài đọc</label>
+                    <input type="text" id="readingTitle" class="form-control" value="Giới thiệu về ASP.NET Core">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nội dung</label>
+                    <div id="readingEditor" style="height:400px;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveReading()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================== MODAL VIDEO ========================== -->
+<div class="modal fade" id="editVideoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa video</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Tên video</label>
+                    <input type="text" id="videoTitle" class="form-control" value="Cài đặt môi trường">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Video hiện tại</label>
+                    <video id="videoPreview" controls style="width:100%;max-height:400px;background:#000;">
+                        <source src="" type="video/mp4" />
+                    </video>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Upload video mới</label>
+                    <input type="file" id="videoUploadInput" class="form-control" accept="video/*">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveVideo()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================== MODAL QUIZ ========================== -->
+<div class="modal fade" id="editQuizModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa Quiz</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Tên bài kiểm tra</label>
+                    <input type="text" id="quizTitle" class="form-control" placeholder="Bài kiểm tra chương 1">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mô tả</label>
+                    <textarea id="quizDescription" class="form-control" rows="2" placeholder="Mô tả ngắn về bài kiểm tra"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mb-3">
+                    <button class="btn btn-primary" onclick="addQuestion()">
+                        <i class="bi bi-plus-lg"></i> Thêm câu hỏi
+                    </button>
+                    <button class="btn btn-outline-primary">
+                        <i class="bi bi-cloud-upload"></i> Import từ Excel
+                    </button>
+                </div>
+
+                <div id="quizQuestionList"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveQuiz()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================== JAVASCRIPT ========================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<script>
+    // Quill Editor
+    const toolbarOptions = [
+        [{ header: [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote', 'code-block'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        [{ align: [] }],
+        ['link', 'image', 'video'],
+        ['clean']
+    ];
+
+    const readingEditor = new Quill('#readingEditor', {
+        theme: 'snow',
+        modules: { toolbar: toolbarOptions }
+    });
+
+    // Sortable cho chương
+    new Sortable(document.getElementById('chapterList'), {
+        animation: 150,
+        handle: '.handle',
+        ghostClass: 'sortable-ghost'
+    });
+
+    // Sortable cho bài học
+    document.querySelectorAll('.lesson-list').forEach(list => {
+        new Sortable(list, {
+            animation: 150,
+            handle: '.handle',
+            ghostClass: 'sortable-ghost'
+        });
+    });
+
+    // Các hàm xử lý
+    function saveChapter() {
+        const name = document.getElementById('chapterName').value;
+        const desc = document.getElementById('chapterDescription').value;
+
+        if (!name.trim()) {
+            alert('Vui lòng nhập tên chương!');
+            return;
+        }
+
+        console.log('Thêm chương:', { name, desc });
+        // Gọi API thêm chương ở đây
+
+        bootstrap.Modal.getInstance(document.getElementById('addChapterModal')).hide();
+    }
+
+    function editChapter(id) {
+        console.log('Sửa chương:', id);
+        // Load dữ liệu và hiển thị modal
+    }
+
+    function deleteChapter(id) {
+        if (confirm('Bạn có chắc muốn xóa chương này?')) {
+            console.log('Xóa chương:', id);
+            // Gọi API xóa
+        }
+    }
+
+    function saveLesson() {
+        const name = document.getElementById('lessonName').value;
+        const type = document.getElementById('lessonType').value;
+        const preview = document.getElementById('previewCheck').checked;
+
+        if (!name.trim()) {
+            alert('Vui lòng nhập tên bài học!');
+            return;
+        }
+
+        console.log('Thêm bài học:', { name, type, preview });
+
+        bootstrap.Modal.getInstance(document.getElementById('addLessonModal')).hide();
+
+        // Mở modal tương ứng để nhập nội dung
+        setTimeout(() => {
+            if (type === 'reading') {
+                new bootstrap.Modal(document.getElementById('editReadingModal')).show();
+            } else if (type === 'video') {
+                new bootstrap.Modal(document.getElementById('editVideoModal')).show();
+            } else if (type === 'quiz') {
+                new bootstrap.Modal(document.getElementById('editQuizModal')).show();
+            }
+        }, 300);
+    }
+
+    function editLesson(type, id) {
+        console.log('Sửa bài học:', type, id);
+
+        if (type === 'reading') {
+            new bootstrap.Modal(document.getElementById('editReadingModal')).show();
+        } else if (type === 'video') {
+            new bootstrap.Modal(document.getElementById('editVideoModal')).show();
+        } else if (type === 'quiz') {
+            new bootstrap.Modal(document.getElementById('editQuizModal')).show();
+        }
+    }
+
+    function deleteLesson(id) {
+        if (confirm('Bạn có chắc muốn xóa bài học này?')) {
+            console.log('Xóa bài học:', id);
+        }
+    }
+
+    function saveReading() {
+        const title = document.getElementById('readingTitle').value;
+        const content = readingEditor.root.innerHTML;
+
+        console.log('Lưu bài đọc:', { title, content });
+        bootstrap.Modal.getInstance(document.getElementById('editReadingModal')).hide();
+    }
+
+    function saveVideo() {
+        const title = document.getElementById('videoTitle').value;
+        const fileInput = document.getElementById('videoUploadInput');
+
+        console.log('Lưu video:', { title, file: fileInput.files[0] });
+        bootstrap.Modal.getInstance(document.getElementById('editVideoModal')).hide();
+    }
+
+    function addQuestion() {
+        const html = `
+            <div class="card mb-3 question-block">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h6>Câu hỏi ${document.querySelectorAll('.question-block').length + 1}</h6>
+                        <button class="btn btn-sm btn-outline-danger" onclick="this.closest('.question-block').remove()">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+
+                    <div class="mb-3">
+                        <input class="form-control question-input" placeholder="Nhập câu hỏi"/>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input type="checkbox" class="form-check-input multi-check">
+                        <label class="form-check-label">Cho phép chọn nhiều đáp án</label>
+                    </div>
+
+                    <div class="answer-list mb-2"></div>
+
+                    <button class="btn btn-sm btn-outline-primary" onclick="addAnswer(this)">
+                        + Thêm đáp án
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('quizQuestionList').insertAdjacentHTML('beforeend', html);
+    }
+
+    function addAnswer(btn) {
+        const answerList = btn.closest('.question-block').querySelector('.answer-list');
+        const html = `
+            <div class="input-group mb-2 answer-row">
+                <input class="form-control answer-input" placeholder="Nhập đáp án"/>
+                <div class="input-group-text">
+                    <input type="checkbox" class="form-check-input correct-check" title="Đáp án đúng">
+                    <label class="ms-1">Đúng</label>
+                </div>
+                <button class="btn btn-outline-danger" onclick="this.closest('.answer-row').remove()">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+        answerList.insertAdjacentHTML('beforeend', html);
+    }
+
+    function saveQuiz() {
+        const title = document.getElementById('quizTitle').value;
+        const description = document.getElementById('quizDescription').value;
+
+        const questions = [];
+        document.querySelectorAll('.question-block').forEach(block => {
+            const question = block.querySelector('.question-input').value;
+            const multiple = block.querySelector('.multi-check').checked;
+
+            const answers = [];
+            block.querySelectorAll('.answer-row').forEach(row => {
+                answers.push({
+                    text: row.querySelector('.answer-input').value,
+                    correct: row.querySelector('.correct-check').checked
+                });
+            });
+
+            questions.push({ question, multiple, answers });
+        });
+
+        console.log('Lưu quiz:', { title, description, questions });
+        bootstrap.Modal.getInstance(document.getElementById('editQuizModal')).hide();
+    }
+
+    // Xử lý form khóa học
+    document.getElementById('courseForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const data = {
+            name: document.getElementById('courseName').value,
+            category: document.getElementById('courseCategory').value,
+            description: document.getElementById('courseDescription').value,
+            price: document.getElementById('coursePrice').value,
+            isFree: document.getElementById('freeCheck').checked
+        };
+        console.log('Lưu khóa học:', data);
+    });
+
+    // Xử lý checkbox miễn phí
+    document.getElementById('freeCheck').addEventListener('change', (e) => {
+        document.getElementById('coursePrice').disabled = e.target.checked;
+        if (e.target.checked) {
+            document.getElementById('coursePrice').value = 0;
+        }
+    });
+</script>
