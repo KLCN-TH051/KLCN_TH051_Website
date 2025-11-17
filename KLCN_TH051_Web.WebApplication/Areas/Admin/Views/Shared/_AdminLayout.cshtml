@@ -29,45 +29,28 @@
             <hr>
             <ul class="nav nav-pills flex-column mb-auto">
                 <li class="nav-item">
-                    <a href="/admin/home/index" class="nav-link @(currentController == "Home" && currentAction == "Index" ? "active" : "")">
+                    <a href="/admin/home/index" class="nav-link @(currentController == "Home" ? "active" : "")">
                         <i class="fa fa-home me-2"></i> Trang chủ
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/account/index" class="nav-link @(currentController == "Account" && currentAction == "Index" ? "active" : "")">
-                        <i class="fa fa-users me-2"></i> Quản lý tài khoản
+                    <a href="/admin/account/index" class="nav-link @(currentController == "Account" ? "active" : "")">
+                        <i class="fa fa-at me-2"></i> Quản lý tài khoản
                     </a>
                 </li>
                 <li>
-                    <a href="/admin/course/index" class="nav-link @(currentController == "Course" && currentAction == "Index" ? "active" : "")">
+                    <a href="/admin/course/index" class="nav-link @(currentController == "Course" ? "active" : "")">
                         <i class="fa fa-book me-2"></i> Quản lý môn học
                     </a>
                 </li>
-
                 <li>
-                    <a class="nav-link @(ViewData["Active"] as string == "LearningResult" ? "active" : "link-dark")"
-                       asp-area="Admin" asp-controller="LearningResult" asp-action="Index">
-                        <i class="fa fa-chart-line me-2"></i> Kết quả học tập
-                    </a>
-                </li>
-                
-                <li>
-                    <a class="nav-link @(ViewData["Active"] as string == "Document" ? "active" : "link-dark")"
-                       asp-area="Admin" asp-controller="Document" asp-action="Index">
-                        <i class="fa fa-folder me-2"></i> Tài liệu
-                    </a>
-                </li>
-                
-                <li>
-                    <a class="nav-link @(ViewData["Active"] as string == "Payment" ? "active" : "link-dark")"
-                       asp-area="Admin" asp-controller="Payment" asp-action="Index">
-                        <i class="fa fa-credit-card me-2"></i> Thanh toán
+                    <a href="/admin/lesson/index" class="nav-link @(currentController == "Lesson" ? "active" : "")">
+                        <i class="fa fa-book-reader me-2"></i> Quản lý khóa học
                     </a>
                 </li>
                 <li>
-                    <a class="nav-link @(ViewData["Active"] as string == "Settings" ? "active" : "link-dark")"
-                       asp-area="Admin" asp-controller="Settings" asp-action="Index">
-                        <i class="fa fa-cog me-2"></i> Cài đặt
+                    <a href="/admin/user/index" class="nav-link @(currentController == "User" ? "active" : "")">
+                        <i class="fa fa-users me-2"></i> Quản lý người dùng
                     </a>
                 </li>
             </ul>
