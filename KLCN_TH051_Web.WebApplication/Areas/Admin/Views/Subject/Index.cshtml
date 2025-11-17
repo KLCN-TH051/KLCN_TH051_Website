@@ -67,7 +67,7 @@
         const token = localStorage.getItem('authToken');
         if (!token) {
             alert('Phiên đăng nhập đã hết hạn!');
-            window.location.href = '/Admin/Account/Login';
+            window.location.href = '/Admin/Auth/Login';
             return {};
         }
         return {
@@ -86,7 +86,7 @@
         if (response.status === 401 || response.status === 403) {
             localStorage.removeItem('authToken');
             alert('Phiên đăng nhập hết hạn! Đang chuyển về trang đăng nhập...');
-            window.location.href = '/Admin/Account/Login';
+            window.location.href = '/Admin/Auth/Login';
             return null;
         }
         return response;
@@ -212,7 +212,7 @@
     // Khởi động
     document.addEventListener('DOMContentLoaded', () => {
         if (!localStorage.getItem('authToken')) {
-            window.location.href = '/Admin/Account/Login';
+            window.location.href = '/Admin/Auth/Login';
         } else {
             loadSubjects();
         }

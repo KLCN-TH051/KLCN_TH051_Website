@@ -16,7 +16,7 @@
                     <ul class="list-group list-group-flush ms-3">
 
                         <!-- Bài 1 -->
-                        <li class="list-group-item text-success lesson-item" data-id="lesson1">
+                        <li class="list-group-item text-success lesson-item" data-id="lesson">
                             <i class="bi bi-check-circle-fill me-2"></i>
                             Bài 1: Tên bài
                         </li>
@@ -61,22 +61,106 @@
     </div>
 </div>
 <script>
-        document.addEventListener('DOMContentLoaded', function () {
-        const lessonItems = document.querySelectorAll('.lesson-item'); // Tất cả các bài học
-        const mainContent = document.getElementById('mainContent'); // Phần nội dung chính
-        // Dữ liệu nội dung cho các bài học
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const lessonItems = document.querySelectorAll(".lesson-item");
+        const mainContent = document.getElementById("mainContent");
+
+        // Nội dung các bài
         const lessonsContent = {
-            lesson1: `
+            lesson: `
                 <h5 class="fw-bold">Bài 1: Giới thiệu React</h5>
                 <p>React là một thư viện JavaScript mạnh mẽ dùng để xây dựng giao diện người dùng...</p>
+            `,
+            video: `
+                <h5 class="fw-bold">Bài 1: Video</h5>
+                <video id="videoPreview" controls style="width:100%;background:#000;">
+                    <source src="" type="video/mp4" />
+                </video>
+            `,
+            quiz: `
+                <h5 class="fw-bold">Bài 2: Câu hỏi Javascript cơ bản</h5>
+
+                <form id="quizForm">
+
+                    <!-- Câu 1 -->
+                    <div class="mb-3">
+                        <label class="form-label">1. JavaScript là gì?</label>
+                        <div><input type="radio" name="question1" value="A"> Ngôn ngữ lập trình web</div>
+                        <div><input type="radio" name="question1" value="B"> Hệ điều hành</div>
+                        <div><input type="radio" name="question1" value="C"> Ngôn ngữ lập trình hệ thống</div>
+                    </div>
+
+                    <!-- Câu 2 -->
+                    <div class="mb-3">
+                        <label class="form-label">2. 'let', 'const', 'var' dùng để khai báo gì?</label>
+                        <div><input type="checkbox" name="question2" value="A"> Biến</div>
+                        <div><input type="checkbox" name="question2" value="B"> Hằng số</div>
+                        <div><input type="checkbox" name="question2" value="C"> Hàm</div>
+                        <div><input type="checkbox" name="question2" value="D"> Số âm</div>
+                    </div>
+
+                    <button type="button" class="btn btn-primary" id="submitQuiz">Nộp bài</button>
+                </form>
+
+                <div id="quizResult" class="mt-3"></div>
             `
         };
-        // Lắng nghe sự kiện click vào mỗi bài học
+
+        // Click chọn bài học
         lessonItems.forEach(item => {
-            item.addEventListener('click', function () {
-                const lessonId = item.getAttribute('data-id'); // Lấy id bài học
-                mainContent.innerHTML = lessonsContent[lessonId] || '<p>Chưa có nội dung cho bài học này.</p>';
+            item.addEventListener("click", function () {
+
+                const lessonId = item.getAttribute("data-id");
+                mainContent.innerHTML = lessonsContent[lessonId] || "Chưa có nội dung.";
+
+                // Nếu bài là quiz -> gắn sự kiện nộp bài
+                if (lessonId === "quiz") {
+                    attachQuizHandler();
+                }
             });
         });
+
+        // ======================
+        // HÀM XỬ LÝ QUIZ
+        // ======================
+        function attachQuizHandler() {
+
+            const submitBtn = document.getElementById("submitQuiz");
+            const resultDiv = document.getElementById("quizResult");
+
+            submitBtn.addEventListener("click", function () {
+
+                let score = 0;
+
+                // Đáp án đúng
+                const answers = {
+                    question1: "A",            // radio
+                    question2: ["A", "B", "C"] // checkbox
+                };
+
+                // Lấy câu 1
+                const q1 = document.querySelector('input[name="question1"]:checked')?.value;
+
+                // Lấy câu 2 (checkbox)
+                const q2 = Array.from(document.querySelectorAll('input[name="question2"]:checked'))
+                                .map(c => c.value);
+
+                // Kiểm tra câu 1
+                if (q1 === answers.question1) score++;
+
+                // Kiểm tra câu 2: mảng phải trùng 100%
+                if (JSON.stringify(q2.sort()) === JSON.stringify(answers.question2.sort())) score++;
+
+                // Hiển thị kết quả
+                resultDiv.style.display = "none";
+                setTimeout(() => {
+                    resultDiv.innerHTML = `Bạn đã trả lời đúng ${score} / 2 câu.`;
+                    resultDiv.style.display = "block";
+                    resultDiv.classList.add("fade-in");
+                }, 200);
+            });
+        }
+
     });
 </script>
