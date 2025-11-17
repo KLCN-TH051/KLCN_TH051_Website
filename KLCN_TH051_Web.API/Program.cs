@@ -81,6 +81,18 @@ builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 // Đăng ký EnrollmentService
 builder.Services.AddScoped<IAnswerService, AnswerService>();
+// Đăng ký EnrollmentService
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+// Đăng ký PaymentService
+builder.Services.AddScoped<ILessonProgressService, LessonProgressService>();
+// Đăng ký PaymentService
+builder.Services.AddScoped<ILessonCommentService, LessonCommentService>();
+// Đăng ký PaymentService
+builder.Services.AddScoped<ICourseRatingService, CourseRatingService>();
+// Đăng ký PaymentService
+builder.Services.AddScoped<IQuizAttemptService, QuizAttemptService>();
+
+
 
 // 🔸 Cấu hình Swagger để hỗ trợ xác thực JWT
 builder.Services.AddSwaggerGen(c =>
