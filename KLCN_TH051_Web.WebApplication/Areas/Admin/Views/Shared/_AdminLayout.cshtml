@@ -30,30 +30,26 @@
             const toggle = document.getElementById('dropdownUserToggle');
             const menu = document.getElementById('userDropdownMenu');
 
-            // KHÔNG ĐƯỢC XÓA innerHTML CỦA TOGGLE → SẼ MẤT data-bs-toggle!!!
-            // Chỉ xóa nội dung menu thôi
+            // Chỉ xóa menu, KHÔNG ĐƯỢC XÓA toggle.innerHTML (giữ data-bs-toggle)
             menu.innerHTML = '';
 
-            // Giữ nguyên thẻ <a> toggle, chỉ thay đổi nội dung bên trong
-            const contentContainer = document.createElement('div');
-            contentContainer.className = 'd-flex align-items-center';
+            const content = document.createElement('div');
+            content.className = 'd-flex align-items-center';
 
             if (token && userName) {
-                // ĐÃ ĐĂNG NHẬP
                 const firstLetter = userName.charAt(0).toUpperCase();
-                contentContainer.innerHTML = `
+                content.innerHTML = `
                     <img src="https://placehold.co/40x40?text=${firstLetter}" alt="Avatar" width="38" height="38" class="rounded-circle me-2 border">
                     <span class="fw-semibold text-dark">${userName}</span>
                 `;
                 menu.innerHTML = `
-                    <li><a class="dropdown-item" href="/Admin/Profile/Index"><i class="fa fa-user me-2"></i> Trang cá nhân</a></li>
-                    <li><a class="dropdown-item" href="/Admin/Profile/ChangePassword"><i class="fa fa-key me-2"></i> Đổi mật khẩu</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fa fa-user me-2"></i> Trang cá nhân</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fa fa-key me-2"></i> Đổi mật khẩu</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="logout()"><i class="fa fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
                 `;
             } else {
-                // CHƯA ĐĂNG NHẬP
-                contentContainer.innerHTML = `
+                content.innerHTML = `
                     <i class="fa fa-user-circle fa-lg me-2"></i>
                     <span class="fw-semibold text-dark">Tài khoản</span>
                 `;
@@ -62,12 +58,8 @@
                 `;
             }
 
-            // Thay thế nội dung mà KHÔNG làm mất data-bs-toggle
             toggle.innerHTML = '';
-            toggle.appendChild(contentContainer);
-
-            // Bootstrap tự động nhận diện dropdown vì data-bs-toggle còn nguyên!
-            // KHÔNG CẦN new bootstrap.Dropdown() NỮA → HOẠT ĐỘNG 100% Ở MỌI TRANG
+            toggle.appendChild(content);
         });
     </script>
 
