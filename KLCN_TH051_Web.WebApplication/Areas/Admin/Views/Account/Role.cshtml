@@ -1,0 +1,192 @@
+﻿@{
+    ViewData["Title"] = "Quản lý vai trò";
+    var apiUrl = ViewData["ApiUrl"]?.ToString() ?? "";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<div class="d-flex justify-content-between mb-3">
+    <h5 class="mb-0">Danh sách vai trò</h5>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoleModal">+ Thêm</button>
+</div>
+
+<div class="list-group" id="roleList"></div>
+
+<!-- Modal: Add Role -->
+<div class="modal fade" id="addRoleModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content p-3">
+            <h5 class="modal-title">Tạo vai trò</h5>
+            <div class="modal-body">
+                <label class="form-label">Tên vai trò</label>
+                <input id="addRoleName" class="form-control mb-3" />
+                <label>Mô tả</label>
+                <textarea id="addRoleDesc" class="form-control mb-3"></textarea>
+                <h6 class="fw-bold">Quyền</h6>
+                <div class="row" id="addRolePermissions"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnAddRole">Thêm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Edit Role -->
+<div class="modal fade" id="editRoleModal">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content p-3">
+            <h5 class="modal-title">Chỉnh sửa vai trò</h5>
+            <div class="modal-body">
+                <label class="form-label">Tên vai trò</label>
+                <input id="editRoleName" class="form-control mb-3" disabled />
+                <label class="form-label">Mô tả</label>
+                <textarea id="editRoleDesc" class="form-control mb-3"></textarea>
+                <h6 class="fw-bold">Quyền</h6>
+                <div class="row" id="editRolePermissions"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnSaveRole">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let ALL_PERMISSIONS = []; // sẽ load từ API
+    const API_ROLES = '@(apiUrl)/api/roles';
+    const API_CLAIMS = '@(apiUrl)/api/roles/claim-values'; // endpoint danh sách permission
+
+    function getHeaders() {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            window.location.href = '/Admin/Auth/Login';
+            return {};
+        }
+        return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+    }
+
+    async function apiFetch(url, options = {}) {
+        try {
+            const res = await fetch(url, { ...options, headers: getHeaders() });
+            if (!res) return null;
+            if (res.status === 401 || res.status === 403) {
+                localStorage.removeItem('authToken');
+                window.location.href = '/Admin/Auth/Login';
+                return null;
+            }
+            return res;
+        } catch (err) {
+            console.error('API fetch error:', err);
+            return null;
+        }
+    }
+
+    async function loadAllPermissions() {
+        const res = await apiFetch(API_CLAIMS);
+        if (!res || !res.ok) return;
+        const perms = await res.json();
+        ALL_PERMISSIONS = perms;
+    }
+
+    function renderPermissions(containerId, selected = []) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        ALL_PERMISSIONS.forEach(p => {
+            const col = document.createElement('div');
+            col.className = 'col-md-4';
+            col.innerHTML = `<input type="checkbox" value="${p}" ${selected.includes(p) ? 'checked' : ''} /> ${p}`;
+            container.appendChild(col);
+        });
+    }
+
+    async function loadRoles() {
+        const res = await apiFetch(API_ROLES);
+        if (!res || !res.ok) return;
+        const roles = await res.json();
+
+        const listGroup = document.getElementById('roleList');
+        listGroup.innerHTML = '';
+
+        roles.forEach(r => {
+            const roleName = r.Name || r.name;
+            const perms = r.Permissions || r.permissions || [];
+            const a = document.createElement('a');
+            a.className = 'list-group-item list-group-item-action d-flex justify-content-between';
+            a.href = '#';
+            a.dataset.roleName = roleName;
+            a.innerHTML = `<div>
+                               <div class="fw-semibold">${roleName}</div>
+                               <small class="text-muted">(${perms.length}) quyền</small>
+                           </div>
+                           <i class="fa fa-chevron-right"></i>`;
+            a.addEventListener('click', () => openEditRoleModal(r));
+            listGroup.appendChild(a);
+        });
+    }
+
+    async function openEditRoleModal(role) {
+        await loadAllPermissions();
+        const perms = role.Permissions || role.permissions || [];
+        document.getElementById('editRoleName').value = role.Name || role.name;
+        document.getElementById('editRoleDesc').value = role.Description || '';
+        renderPermissions('editRolePermissions', perms);
+        new bootstrap.Modal(document.getElementById('editRoleModal')).show();
+    }
+
+    // Thêm role
+    document.getElementById('btnAddRole').addEventListener('click', async () => {
+        const roleName = document.getElementById('addRoleName').value.trim();
+        const roleDesc = document.getElementById('addRoleDesc').value.trim();
+        if (!roleName) return alert('Nhập tên role');
+
+        const permissions = Array.from(document.querySelectorAll('#addRolePermissions input[type="checkbox"]:checked')).map(cb => cb.value);
+
+        const res = await apiFetch(API_ROLES, {
+            method: 'POST',
+            body: JSON.stringify({ Name: roleName, Description: roleDesc, Permissions: permissions })
+        });
+
+        if (!res) return;
+        if (res.ok) {
+            alert('Tạo role thành công!');
+            bootstrap.Modal.getInstance(document.getElementById('addRoleModal')).hide();
+            loadRoles();
+        } else {
+            const text = await res.text();
+            console.error('Tạo role thất bại:', res.status, text);
+            alert('Tạo role thất bại! ' + text);
+        }
+    });
+
+    // Lưu thay đổi role
+    document.getElementById('btnSaveRole').addEventListener('click', async () => {
+        const roleName = document.getElementById('editRoleName').value;
+        const permissions = Array.from(document.querySelectorAll('#editRolePermissions input[type="checkbox"]:checked')).map(cb => cb.value);
+
+        const res = await apiFetch(`${API_ROLES}/${roleName}/permissions`, {
+            method: 'PUT',
+            body: JSON.stringify(permissions)
+        });
+
+        if (!res) return;
+        if (res.ok) {
+            alert('Cập nhật role thành công!');
+            bootstrap.Modal.getInstance(document.getElementById('editRoleModal')).hide();
+            loadRoles();
+        } else {
+            const text = await res.text();
+            console.error('Cập nhật role thất bại:', res.status, text);
+            alert('Cập nhật thất bại! ' + text);
+        }
+    });
+
+    // Render quyền khi mở Add Role Modal
+    document.getElementById('addRoleModal').addEventListener('show.bs.modal', async () => {
+        await loadAllPermissions();
+        renderPermissions('addRolePermissions', []);
+        document.getElementById('addRoleName').value = '';
+        document.getElementById('addRoleDesc').value = '';
+    });
+
+    document.addEventListener('DOMContentLoaded', loadRoles);
+</script>

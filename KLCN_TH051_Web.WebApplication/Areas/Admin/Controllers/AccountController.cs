@@ -5,11 +5,34 @@ namespace YourProject.Areas.Admin.Controllers
     [Area("Admin")]
     public class AccountController : Controller
     {
-        public IActionResult Index()
+        private readonly IConfiguration _configuration;
+
+        public AccountController(IConfiguration configuration)
         {
+            _configuration = configuration;
+        }
+
+
+        public IActionResult User()
+        {
+
+            ViewData["ApiUrl"] = _configuration["ApiUrl"];
+            return View();
+        }
+        public IActionResult Role()
+        {
+
+            ViewData["ApiUrl"] = _configuration["ApiUrl"];
             return View();
         }
 
+
+        public IActionResult Index()
+        {
+
+            ViewData["ApiUrl"] = _configuration["ApiUrl"];
+            return View();
+        }
         //public IActionResult Create()
         //{
         //    return View();

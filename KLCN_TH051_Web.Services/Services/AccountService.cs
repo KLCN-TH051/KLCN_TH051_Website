@@ -188,5 +188,100 @@ namespace KLCN_TH051_Web.Services.Services
             return response.Successed("Tạo giáo viên thành công!");
         }
 
+        public async Task<List<UserWithRoleResponse>> GetAllAccountsAsync()
+        {
+            var users = await _userManager.Users.ToListAsync();
+            var result = new List<UserWithRoleResponse>();
+
+            foreach (var u in users)
+            {
+                var roles = await _userManager.GetRolesAsync(u);
+                result.Add(new UserWithRoleResponse
+                {
+                    Id = u.Id,
+                    FullName = u.FullName,
+                    Email = u.Email,
+                    Role = roles.FirstOrDefault() ?? "",
+                    Avatar = u.Avatar,
+                    IsActive = u.LockoutEnd == null || u.LockoutEnd <= DateTime.Now,
+                    CreatedDate = u.CreatedDate
+                });
+            }
+
+            return result;
+        }
+        public async Task<UserWithRoleResponse?> GetAccountByIdAsync(int id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null) return null;
+
+            var roles = await _userManager.GetRolesAsync(user);
+            return new UserWithRoleResponse
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                Role = roles.FirstOrDefault() ?? "User",
+                Avatar = user.Avatar,
+                IsActive = user.IsActive,
+                CreatedDate = user.CreatedDate
+            };
+        }
+
+        public async Task<ApiResponse<UserWithRoleResponse>> UpdateAccountAsync(int id, UpdateAccountRequest model)
+        {
+            // Lấy user theo id
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+                return new ApiResponse<UserWithRoleResponse> { Success = false, Message = "Tài khoản không tồn tại" };
+
+            // Cập nhật thông tin cơ bản
+            if (!string.IsNullOrEmpty(model.FullName)) user.FullName = model.FullName;
+            if (!string.IsNullOrEmpty(model.Email)) user.Email = model.Email;
+            if (!string.IsNullOrEmpty(model.Avatar)) user.Avatar = model.Avatar;
+
+            // Cập nhật role
+            if (!string.IsNullOrEmpty(model.Role))
+            {
+                var currentRoles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, currentRoles); // Xóa role cũ
+                await _userManager.AddToRoleAsync(user, model.Role);          // Thêm role mới
+            }
+
+            // Cập nhật trạng thái hoạt động
+            if (model.IsActive.HasValue)
+            {
+                if (model.IsActive.Value)
+                    await _userManager.SetLockoutEndDateAsync(user, null); // Mở khóa
+                else
+                    await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue); // Khóa
+            }
+
+            // Lưu các thay đổi
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return new ApiResponse<UserWithRoleResponse>
+                {
+                    Success = false,
+                    Message = string.Join(", ", result.Errors.Select(e => e.Description))
+                };
+
+            // Trả về thông tin đã cập nhật
+            return new ApiResponse<UserWithRoleResponse>
+            {
+                Success = true,
+                Data = new UserWithRoleResponse
+                {
+                    Id = user.Id,
+                    FullName = user.FullName,
+                    Email = user.Email,
+                    Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "User",
+                    IsActive = user.LockoutEnd == null || user.LockoutEnd <= DateTime.Now,
+                    Avatar = user.Avatar
+                }
+            };
+        }
+
+
     }
 }

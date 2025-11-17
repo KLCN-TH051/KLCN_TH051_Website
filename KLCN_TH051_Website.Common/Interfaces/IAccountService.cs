@@ -16,5 +16,9 @@ namespace KLCN_TH051_Website.Common.Interfaces
         Task<ApiResponse<string>> LoginAsync(LoginRequest model);
         // Chuẩn: admin tạo giáo viên, cần biết ai tạo
         Task<ApiResponse<UserResponse>> CreateTeacherAsync(RegisterTeacherRequest model, string creatorId);
+        Task<List<UserWithRoleResponse>> GetAllAccountsAsync();
+        // Lấy chi tiết user theo id
+        Task<UserWithRoleResponse?> GetAccountByIdAsync(int id);
+        Task<ApiResponse<UserWithRoleResponse>> UpdateAccountAsync(int id, UpdateAccountRequest model);
     }
 }

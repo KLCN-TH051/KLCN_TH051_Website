@@ -1,4 +1,5 @@
-﻿using KLCN_TH051_Web.Repositories.Data;
+﻿using Google;
+using KLCN_TH051_Web.Repositories.Data;
 using KLCN_TH051_Web.Services.Models;
 using KLCN_TH051_Web.Services.Services;
 using KLCN_TH051_Website.Common.Entities;
@@ -6,6 +7,7 @@ using KLCN_TH051_Website.Common.Helpers;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
@@ -93,7 +95,24 @@ builder.Services.AddScoped<ICourseRatingService, CourseRatingService>();
 builder.Services.AddScoped<IQuizAttemptService, QuizAttemptService>();
 // Đăng ký PaymentService
 builder.Services.AddScoped<IBannerService, BannerService>();
+// 🔸 Cấu hình Authorization với Policy
+builder.Services.AddAuthorization(options =>
+{
+    // Tạo Policy cho từng quyền – sau này chỉ cần dùng [Authorize(Policy = "Subject.Delete")]
+    options.AddPolicy("Subject.Create", policy => policy.RequireClaim("Permission", "Subject.Create"));
+    options.AddPolicy("Subject.Edit", policy => policy.RequireClaim("Permission", "Subject.Edit"));
+    options.AddPolicy("Subject.Delete", policy => policy.RequireClaim("Permission", "Subject.Delete"));
+    options.AddPolicy("Subject.View", policy => policy.RequireClaim("Permission", "Subject.View"));
 
+    options.AddPolicy("Course.Create", policy => policy.RequireClaim("Permission", "Course.Create"));
+    options.AddPolicy("Course.Edit", policy => policy.RequireClaim("Permission", "Course.Edit"));
+    options.AddPolicy("Course.Delete", policy => policy.RequireClaim("Permission", "Course.Delete"));
+    options.AddPolicy("Course.View", policy => policy.RequireClaim("Permission", "Course.View"));
+
+    options.AddPolicy("User.Manage", policy => policy.RequireClaim("Permission", "User.Create", "User.Edit", "User.Delete"));
+    options.AddPolicy("Role.Manage", policy => policy.RequireClaim("Permission", "Role.Manage"));
+    // Thêm thoải mái ở đây nếu cần
+});
 
 
 
@@ -159,6 +178,24 @@ builder.Services.AddEndpointsApiExplorer();
 
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        context.Database.Migrate(); // Tự động tạo DB + migrate
+
+        await SeedData.Initialize(services); // ← Seed Role + Permission + Admin
+        Console.WriteLine("Seed dữ liệu thành công!");
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Lỗi khi seed dữ liệu");
+    }
+}
 
 using (var scope = app.Services.CreateScope())
 {

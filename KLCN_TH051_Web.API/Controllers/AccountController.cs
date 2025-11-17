@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
@@ -305,6 +306,52 @@ namespace KLCN_TH051_Web.API.Controllers
             }
 
             return Ok(result);
+        }
+        // 
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllAccounts()
+        {
+            var users = await _userManager.Users.ToListAsync();
+
+            var result = new List<UserWithRoleResponse>();
+
+            foreach (var u in users)
+            {
+                var roles = await _userManager.GetRolesAsync(u);
+
+                result.Add(new UserWithRoleResponse
+                {
+                    Id = u.Id,
+                    FullName = u.FullName ?? "",
+                    Email = u.Email ?? "",
+                    Role = roles.FirstOrDefault() ?? "",
+                    Avatar = u.Avatar,              // theo migration
+                    IsActive = u.IsActive,          // hoặc check LockoutEnd nếu muốn
+                    CreatedDate = u.CreatedDate
+                });
+            }
+
+            return Ok(result);
+        }
+        /// <summary>
+        /// Lấy chi tiết 1 tài khoản
+        /// </summary>
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var user = await _accountService.GetAccountByIdAsync(id);
+            if (user == null) return NotFound(new { message = "Tài khoản không tồn tại" });
+            return Ok(user);
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateAccount(int id, [FromBody] UpdateAccountRequest model)
+        {
+            var result = await _accountService.UpdateAccountAsync(id, model);
+            if (!result.Success) return BadRequest(new { result.Message });
+            return Ok(result.Data);
         }
     }
 }
