@@ -1,142 +1,108 @@
-﻿<!-- Bootstrap CSS + Icons -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+﻿@{
+    ViewData["Title"] = "Quản lý khóa học";
+}
+<!-- WRAPPER -->
+<div class="card shadow-sm p-4">
+    <!-- TABLE -->
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>Khóa học</th>
+                    <th>Giá</th>
+                    <th>Trạng thái</th>
+                    <th>Tùy chọn</th>
+                </tr>
+            </thead>
 
-<!-- Nút thêm -->
-<button id="btnAdd" class="btn btn-primary mb-3">
-    + THÊM
-</button>
+            <tbody>
 
-<!-- Danh sách -->
-<ul class="list-group" id="courseList">
+                <!-- ITEM 1 -->
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="https://placehold.co/80x60?text=IMG"
+                                 class="me-3 rounded" />
+                            <span>Khóa học lập trình .NET</span>
+                        </div>
+                    </td>
 
-    <li class="list-group-item d-flex align-items-center justify-content-between bg-light">
-        <div class="d-flex align-items-center gap-3">
-            <span class="bi bi-list handle" style="cursor: grab;"></span>
-            <span class="item-text">Toán cơ bản</span>
-        </div>
+                    <td>300.000đ</td>
 
-        <div class="d-flex gap-3">
-            <button class="btn btn-sm btn-outline-dark btn-edit">
-                <i class="bi bi-pencil"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-danger btn-delete">
-                <i class="bi bi-trash"></i>
-            </button>
-        </div>
-    </li>
+                    <td>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" checked>
+                        </div>
+                    </td>
 
-    <li class="list-group-item d-flex align-items-center justify-content-between bg-light">
-        <div class="d-flex align-items-center gap-3">
-            <span class="bi bi-list handle"></span>
-            <span class="item-text">Vật lý</span>
-        </div>
-        <div class="d-flex gap-3">
-            <button class="btn btn-sm btn-outline-dark btn-edit"><i class="bi bi-pencil"></i></button>
-            <button class="btn btn-sm btn-outline-danger btn-delete"><i class="bi bi-trash"></i></button>
-        </div>
-    </li>
+                    <td>
+                        <button class="btn btn-danger btn-sm">
+                            Xóa
+                        </button>
+                    </td>
+                </tr>
 
-</ul>
+                <!-- ITEM 2 -->
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="https://placehold.co/80x60?text=IMG"
+                                 class="me-3 rounded" />
+                            <span>Khóa học Python cơ bản</span>
+                        </div>
+                    </td>
 
-<!-- MODAL: Môn học -->
-<div class="modal fade" id="subjectModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
+                    <td>350.000đ</td>
 
-            <div class="modal-header">
-                <h5 class="modal-title">Môn học</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+                    <td>
+                        Pending
+                    </td>
 
-            <div class="modal-body">
-                <label class="form-label">Tên môn học</label>
-                <input type="text" id="subjectInput" class="form-control" placeholder="Nhập tên môn học">
-            </div>
+                    <td>
+                        <button class="btn btn-danger btn-sm">
+                            Xóa
+                        </button>
+                        <button class="btn btn-success btn-sm">
+                            Chấp nhận
+                        </button>
+                        <button class="btn btn-secondary btn-sm">
+                            Từ chối
+                        </button>
+                    </td>
+                </tr>
 
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">CANCEL</button>
-                <button id="btnModalOK" class="btn btn-primary">OK</button>
-            </div>
-
-        </div>
+            </tbody>
+        </table>
     </div>
+
+    <!-- PAGINATION -->
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+
+            <!-- Previous -->
+            <li class="page-item">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <!-- Pages -->
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+
+            <li class="page-item active">
+                <a class="page-link" href="#">2</a>
+            </li>
+
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+
+            <!-- Next -->
+            <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
 </div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- SortableJS -->
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
-<script>
-    /* ======== SORTABLE ======== */
-    new Sortable(document.getElementById("courseList"), {
-        animation: 150,
-        handle: ".handle",
-        ghostClass: "sortable-ghost"
-    });
-        
-    const courseList = document.getElementById("courseList");
-    const subjectInput = document.getElementById("subjectInput");
-    const modalEl = document.getElementById("subjectModal");
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    const btnModalOK = document.getElementById("btnModalOK");
-    const btnAdd = document.getElementById("btnAdd");
-
-    let editingItem = null;
-
-    // ==== MỞ MODAL KHI BẤM + THÊM ====
-    btnAdd.addEventListener("click", () => {
-        editingItem = null;
-        subjectInput.value = "";
-        modal.show();   // mở đúng instance → không lỗi backdrop
-    });
-
-    // ==== OK TRONG MODAL ====
-    btnModalOK.addEventListener("click", () => {
-        const text = subjectInput.value.trim();
-        if (!text) return;
-
-        if (editingItem) {
-            editingItem.querySelector(".item-text").textContent = text;
-        } else {
-            addNewItem(text);
-        }
-
-        modal.hide();  // giờ sẽ tắt hoàn toàn trong cả 2 THÊM & SỬA
-    });
-
-    // ==== THÊM ITEM ====
-    function addNewItem(text) {
-        const li = document.createElement("li");
-        li.className = "list-group-item d-flex align-items-center justify-content-between bg-light";
-        li.innerHTML = `
-            <div class="d-flex align-items-center gap-3">
-                <span class="bi bi-list handle" style="cursor: grab;"></span>
-                <span class="item-text">${text}</span>
-            </div>
-            <div class="d-flex gap-3">
-                <button class="btn btn-sm btn-outline-dark btn-edit"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-sm btn-outline-danger btn-delete"><i class="bi bi-trash"></i></button>
-            </div>
-        `;
-        courseList.appendChild(li);
-    }
-
-    // ==== DELEGATION SỬA / XÓA ====
-    courseList.addEventListener("click", (e) => {
-
-        if (e.target.closest(".btn-delete")) {
-            e.target.closest("li").remove();
-            return;
-        }
-
-        if (e.target.closest(".btn-edit")) {
-            editingItem = e.target.closest("li");
-            subjectInput.value = editingItem.querySelector(".item-text").textContent.trim();
-            modal.show();
-        }
-    });
-
-</script>
