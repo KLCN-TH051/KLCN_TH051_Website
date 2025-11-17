@@ -45,6 +45,8 @@ namespace KLCN_TH051_Web.Repositories.Data
         public DbSet<Quiz> Quizzes { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<VideoContent> VideoContents { get; set; }
+        public DbSet<Banner> Banners { get; set; }
+
 
 
 
