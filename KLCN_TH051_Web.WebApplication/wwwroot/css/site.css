@@ -131,7 +131,7 @@ footer {
 /*Layout Share Admin*/
 /* Thêm padding ở top bằng chiều cao của navbar (56px) */
 body {
-    padding-top: 56px;
+   /* padding-top: 56px;*/
 }
 
 /* Container chính dùng flexbox */
