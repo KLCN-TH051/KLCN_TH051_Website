@@ -1,59 +1,462 @@
 ﻿@{
     ViewData["Title"] = "Quản lý tài khoản";
 }
-
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="mb-0">@ViewData["Title"]</h4>
-    <a href="/admin/account/create" class="btn btn-primary">
-        <i class="fa fa-plus me-1"></i> Thêm tài khoản
-    </a>
-</div>
-
-<div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Ảnh</th>
-                        <th>Họ tên</th>
-                        <th>Email</th>
-                        <th>Vai trò</th>
-                        <th>Trạng thái</th>
-                        <th class="text-end">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody id="accountTableBody">
-                    <!-- Ví dụ dữ liệu mẫu -->
-                    <tr>
-                        <td>1</td>
-                        <td><img src="https://placehold.co/40x40?text=GV" class="rounded-circle" /></td>
-                        <td>Nguyễn Văn A</td>
-                        <td>giaovien@example.com</td>
-                        <td><span class="badge bg-info">Giảng viên</span></td>
-                        <td><span class="badge bg-success">Hoạt động</span></td>
-                        <td class="text-end">
-                            <a asp-action="Details" asp-route-id="1" class="btn btn-sm btn-outline-secondary"><i class="fa fa-eye"></i></a>
-                            <a asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
-                            <button class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td><img src="https://placehold.co/40x40?text=SV" class="rounded-circle" /></td>
-                        <td>Trần Thị B</td>
-                        <td>sinhvien@example.com</td>
-                        <td><span class="badge bg-secondary">Sinh viên</span></td>
-                        <td><span class="badge bg-warning text-dark">Tạm khóa</span></td>
-                        <td class="text-end">
-                            <a asp-action="Details" asp-route-id="2" class="btn btn-sm btn-outline-secondary"><i class="fa fa-eye"></i></a>
-                            <a asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
-                            <button class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+<ul class="nav nav-tabs mb-3" id="accountTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="account-tab" data-bs-toggle="tab" data-bs-target="#accountTabContent"
+                type="button" role="tab">
+            Tài khoản
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="role-tab" data-bs-toggle="tab" data-bs-target="#roleTabContent"
+                type="button" role="tab">
+            Vai trò
+        </button>
+    </li>
+</ul>
+<div class="tab-content" id="accountTabContentWrapper">
+    <!-- ================= TAB TÀI KHOẢN ================= -->
+    <div class="tab-pane fade show active" id="accountTabContent" role="tabpanel">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="mb-0">Danh sách tài khoản</h5>
+            <!-- Nút mở modal -->
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAccountModal">
+                Thêm tài khoản
+            </button>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Ảnh</th>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>Vai trò</th>
+                                <th>Ngày tạo</th>
+                                <th>Trạng thái</th>
+                                <th class="text-end">Tùy chọn</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accountTableBody">
+                            <!-- ===== Dữ liệu mẫu ===== -->
+                            <tr>
+                                <td>1</td>
+                                <td><img src="https://placehold.co/40x40?text=GV" class="rounded-circle" /></td>
+                                <td>Nguyễn Văn A</td>
+                                <td>giaovien@example.com</td>
+                                <td><span class="badge bg-info">Giảng viên</span></td>
+                                <td>12/11/2024</td>
+                                <td><span class="badge bg-success">Hoạt động</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#accountDetailModal">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editAccountModal">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td><img src="https://placehold.co/40x40?text=SV" class="rounded-circle" /></td>
+                                <td>Trần Thị B</td>
+                                <td>sinhvien@example.com</td>
+                                <td><span class="badge bg-secondary">Sinh viên</span></td>
+                                <td>05/10/2024</td>
+                                <td><span class="badge bg-warning text-dark">Tạm khóa</span></td>
+                                <td class="text-end">
+                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#accountDetailModal">
+                                        <i class="fa fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editAccountModal">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- ======================= -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ================= TAB VAI TRÒ ================= -->
+    <div class="tab-pane fade" id="roleTabContent" role="tabpanel">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Danh sách vai trò</h5>
+            <a href="/admin/role/create" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#roleModal">
+                + Thêm
+            </a>
+        </div>
+        <!-- Danh sách vai trò -->
+        <div class="list-group rounded-3">
+            <!-- ITEM -->
+            <a data-bs-toggle="modal" data-bs-target="#editRoleModal" class="list-group-item list-group-item-action py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-semibold">NV order</div>
+                    <small class="text-muted">(2) Nhân viên</small>
+                </div>
+                <i class="fa fa-chevron-right"></i>
+            </a>
+            <!-- ITEM -->
+            <a data-bs-toggle="modal" data-bs-target="#editRoleModal" class="list-group-item list-group-item-action py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-semibold">test</div>
+                    <small class="text-muted">(1) Nhân viên</small>
+                </div>
+                <i class="fa fa-chevron-right"></i>
+            </a>
+            <!-- ITEM -->
+            <a data-bs-toggle="modal" data-bs-target="#editRoleModal" class="list-group-item list-group-item-action py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="fw-semibold">Thu Ngân</div>
+                    <small class="text-muted">(2) Nhân viên</small>
+                </div>
+                <i class="fa fa-chevron-right"></i>
+            </a>
         </div>
     </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="addAccountModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm tài khoản</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formAddAccount">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Họ tên</label>
+                        <input type="text" class="form-control" placeholder="Nhập họ tên...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" placeholder="Nhập email...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Vai trò</label>
+                        <select class="form-select">
+                            <option selected>Chọn vai trò...</option>
+                            <option>Giảng viên</option>
+                            <option>Sinh viên</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-select">
+                            <option>Hoạt động</option>
+                            <option>Tạm khóa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Hủy
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="deleteAccountModalLabel">
+                    <i class="fa fa-triangle-exclamation me-2"></i>Xác nhận xóa tài khoản
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="https://placehold.co/100x100?text=GV"
+                     class="rounded-circle mb-3" alt="Avatar">
+                <h5>Nguyễn Văn A</h5>
+                <p class="text-muted mb-3">giaovien@example.com</p>
+                <p class="fw-semibold text-danger">
+                    Bạn có chắc chắn muốn xóa tài khoản này không?
+                </p>
+                <form method="post">
+                    <input type="hidden" name="id" value="1" />
+                    <div class="d-flex justify-content-center gap-2 mt-4">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="fa fa-times me-1"></i> Hủy
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash me-1"></i> Xác nhận xóa
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="accountDetailModal" tabindex="-1" aria-labelledby="accountDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountDetailModalLabel">Chi tiết tài khoản</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <!-- BODY -->
+            <div class="modal-body">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body d-flex align-items-center">
+                        <img src="https://placehold.co/100x100?text=GV" class="rounded-circle me-4" alt="Avatar">
+                        <div>
+                            <h5 class="mb-1">Nguyễn Văn A</h5>
+                            <p class="mb-1 text-muted">giaovien@example.com</p>
+                            <p class="mb-1">
+                                <span class="badge bg-info">Giảng viên</span>
+                                <span class="badge bg-success">Hoạt động</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header fw-semibold">Thông tin chi tiết</div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-3">Họ tên</dt>
+                            <dd class="col-sm-9">Nguyễn Văn A</dd>
+                            <dt class="col-sm-3">Email</dt>
+                            <dd class="col-sm-9">giaovien@example.com</dd>
+                            <dt class="col-sm-3">Vai trò</dt>
+                            <dd class="col-sm-9">Giảng viên</dd>
+                            <dt class="col-sm-3">Trạng thái</dt>
+                            <dd class="col-sm-9">Hoạt động</dd>
+                            <dt class="col-sm-3">Ngày tạo</dt>
+                            <dd class="col-sm-9">12/09/2024</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <!-- FOOTER -->
+            <div class="modal-footer">
+                <a asp-action="Edit" asp-route-id="1" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#editAccountModal">
+                    <i class="fa fa-edit me-1"></i> Chỉnh sửa
+                </a>
+                <a asp-action="Delete" asp-route-id="1" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                    <i class="fa fa-trash me-1"></i> Xóa
+                </a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Chỉnh sửa tài khoản -->
+<div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAccountModalLabel">Chỉnh sửa tài khoản</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="text-center mb-4">
+                        <img src="https://placehold.co/100x100?text=GV" class="rounded-circle mb-2" alt="Avatar">
+                        <div>
+                            <button type="button" class="btn btn-outline-secondary btn-sm">Đổi ảnh</button>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Họ tên</label>
+                            <input type="text" class="form-control" value="Nguyễn Văn A">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="giaovien@example.com">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Vai trò</label>
+                            <select class="form-select">
+                                <option selected>Giảng viên</option>
+                                <option>Sinh viên</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Trạng thái</label>
+                            <select class="form-select">
+                                <option selected>Hoạt động</option>
+                                <option>Tạm khóa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mật khẩu (để trống nếu không đổi)</label>
+                        <input type="password" class="form-control" placeholder="Nhập mật khẩu mới...">
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fa fa-save me-1"></i> Lưu thay đổi
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            Hủy
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="roleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tạo vai trò</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning py-2">
+                    Mọi chỉnh sửa sẽ được áp dụng cho tất cả người dùng thuộc vai trò này
+                </div>
+                <!-- Tên vai trò -->
+                <div class="mb-3">
+                    <label class="form-label">Tên vai trò <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" placeholder="Ví dụ: Giáo viên, Học sinh, Quản trị viên">
+                </div>
+                <!-- Mô tả -->
+                <div class="mb-4">
+                    <label class="form-label">Mô tả</label>
+                    <textarea class="form-control" rows="3" placeholder="Mô tả trách nhiệm của vai trò này..."></textarea>
+                </div>
+                <!-- Nhóm: Lớp học và Khóa học -->
+                <h6 class="fw-bold">Lớp học & Khóa học</h6>
+                <div class="row mb-3">
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Xem khóa học</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Tạo khóa học</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Chỉnh sửa khóa học</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Xóa khóa học</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Quản lý học sinh trong lớp</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Xem danh sách lớp học</div>
+                </div>
+                <!-- Nhóm: Bài giảng & Học liệu -->
+                <h6 class="fw-bold">Bài giảng & Học liệu</h6>
+                <div class="row mb-3">
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Tải lên tài liệu</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Chỉnh sửa tài liệu</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Xóa tài liệu</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Xem tài liệu</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Tải tài liệu xuống</div>
+                </div>
+                <!-- Nhóm: Bài tập & Kiểm tra -->
+                <h6 class="fw-bold">Bài tập & Kiểm tra</h6>
+                <div class="row mb-3">
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Tạo bài tập</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Chấm điểm</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Xem bài nộp</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Tạo bài kiểm tra</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Xem kết quả kiểm tra</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Cho phép làm lại bài kiểm tra</div>
+                </div>
+                <!-- Nhóm: Người dùng -->
+                <h6 class="fw-bold">Quản lý người dùng</h6>
+                <div class="row mb-3">
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Xem danh sách người dùng</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Thêm người dùng</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Chỉnh sửa thông tin</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Xóa người dùng</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Chỉ xem thông tin của bản thân</div>
+                    <div class="col-6 col-md-4"><input class="form-check-input me-1" type="checkbox">Xuất danh sách ra Excel</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary">Thêm vai trò</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Edit Role -->
+<div class="modal fade" id="editRoleModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa vai trò</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning py-2">
+                    Mọi chỉnh sửa sẽ được áp dụng cho tất cả người dùng thuộc vai trò này
+                </div>
+                <!-- Hidden ID -->
+                <input type="hidden" id="editRoleId">
+                <!-- Tên vai trò -->
+                <div class="mb-3">
+                    <label class="form-label">Tên vai trò <span class="text-danger">*</span></label>
+                    <input type="text" id="editRoleName" class="form-control" value="Vai trò 1">
+                </div>
+                <!-- Mô tả -->
+                <div class="mb-4">
+                    <label class="form-label">Mô tả</label>
+                    <textarea id="editRoleDescription" class="form-control" rows="3">Mô tả 1</textarea>
+                </div>
+                <!-- Nhóm: Lớp học và Khóa học -->
+                <h6 class="fw-bold">Lớp học & Khóa học</h6>
+                <div class="row mb-3">
+                    <div class="col-6 col-md-4"><input id="p_viewCourse" class="form-check-input me-1" type="checkbox">Xem khóa học</div>
+                    <div class="col-6 col-md-4"><input id="p_createCourse" class="form-check-input me-1" type="checkbox">Tạo khóa học</div>
+                    <div class="col-6 col-md-4"><input id="p_editCourse" class="form-check-input me-1" type="checkbox">Chỉnh sửa khóa học</div>
+                    <div class="col-6 col-md-4"><input id="p_deleteCourse" class="form-check-input me-1" type="checkbox">Xóa khóa học</div>
+                    <div class="col-6 col-md-4"><input id="p_manageStudents" class="form-check-input me-1" type="checkbox">Quản lý học sinh trong lớp</div>
+                    <div class="col-6 col-md-4"><input id="p_viewClasses" class="form-check-input me-1" type="checkbox">Xem danh sách lớp học</div>
+                </div>
+                <!-- Nhóm: Bài giảng & Học liệu -->
+                <h6 class="fw-bold">Bài giảng & Học liệu</h6>
+                <div class="row mb-3">
+                    <div class="col-6 col-md-4"><input id="p_uploadDoc" class="form-check-input me-1" type="checkbox">Tải lên tài liệu</div>
+                    <div class="col-6 col-md-4"><input id="p_editDoc" class="form-check-input me-1" type="checkbox">Chỉnh sửa tài liệu</div>
+                    <div class="col-6 col-md-4"><input id="p_deleteDoc" class="form-check-input me-1" type="checkbox">Xóa tài liệu</div>
+                    <div class="col-6 col-md-4"><input id="p_viewDoc" class="form-check-input me-1" type="checkbox">Xem tài liệu</div>
+                    <div class="col-6 col-md-4"><input id="p_downloadDoc" class="form-check-input me-1" type="checkbox">Tải tài liệu xuống</div>
+                </div>
+                <!-- Nhóm: Bài tập & Kiểm tra -->
+                <h6 class="fw-bold">Bài tập & Kiểm tra</h6>
+                <div class="row mb-3">
+                    <div class="col-6 col-md-4"><input id="p_createAssignment" class="form-check-input me-1" type="checkbox">Tạo bài tập</div>
+                    <div class="col-6 col-md-4"><input id="p_grade" class="form-check-input me-1" type="checkbox">Chấm điểm</div>
+                    <div class="col-6 col-md-4"><input id="p_viewSubmission" class="form-check-input me-1" type="checkbox">Xem bài nộp</div>
+                    <div class="col-6 col-md-4"><input id="p_createExam" class="form-check-input me-1" type="checkbox">Tạo bài kiểm tra</div>
+                    <div class="col-6 col-md-4"><input id="p_viewExamResult" class="form-check-input me-1" type="checkbox">Xem kết quả kiểm tra</div>
+                    <div class="col-6 col-md-4"><input id="p_allowRetake" class="form-check-input me-1" type="checkbox">Cho phép làm lại bài kiểm tra</div>
+                </div>
+                <!-- Nhóm: Người dùng -->
+                <h6 class="fw-bold">Quản lý người dùng</h6>
+                <div class="row mb-3">
+                    <div class="col-6 col-md-4"><input id="p_viewUsers" class="form-check-input me-1" type="checkbox">Xem danh sách người dùng</div>
+                    <div class="col-6 col-md-4"><input id="p_addUser" class="form-check-input me-1" type="checkbox">Thêm người dùng</div>
+                    <div class="col-6 col-md-4"><input id="p_editUser" class="form-check-input me-1" type="checkbox">Chỉnh sửa thông tin</div>
+                    <div class="col-6 col-md-4"><input id="p_deleteUser" class="form-check-input me-1" type="checkbox">Xóa người dùng</div>
+                    <div class="col-6 col-md-4"><input id="p_viewSelfOnly" class="form-check-input me-1" type="checkbox">Chỉ xem thông tin của bản thân</div>
+                    <div class="col-6 col-md-4"><input id="p_exportExcel" class="form-check-input me-1" type="checkbox">Xuất danh sách ra Excel</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
