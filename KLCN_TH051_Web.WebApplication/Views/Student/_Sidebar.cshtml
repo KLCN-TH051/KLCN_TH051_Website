@@ -1,0 +1,19 @@
+﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+@* Lấy dữ liệu từ ViewData *@
+<div class="col-3">
+    <div class="card">
+        <div class="card-body">
+            <h6 class="fw-bold mb-3">PROFILE DASHBOARD</h6>
+            <div class="list-group">
+                <a href="/Student/Courses" class="list-group-item list-group-item-action
+                    @(currentController == "Student" && currentAction == "Courses" ? "active" : "")">
+                    Khoá học đã đăng ký
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

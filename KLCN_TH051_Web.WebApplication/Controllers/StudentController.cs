@@ -2,9 +2,9 @@
 
 namespace KLCN_TH051_Web.WebApplication.Controllers
 {
-    public class CartController : Controller
+    public class StudentController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Courses()
         {
             return View();
         }

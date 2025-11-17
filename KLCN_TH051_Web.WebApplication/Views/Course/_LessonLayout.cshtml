@@ -1,0 +1,62 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Khóa học ASP.NET Core</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+</head>
+<body class="bg-light">
+    <!-- HEADER -->
+    <nav class="navbar navbar-light bg-primary text-white px-3">
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-primary text-white">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+
+            <h5 class="m-0">Khoá học ASP .NET Core</h5>
+
+            <!-- Progress ring -->
+            <div class="position-relative d-flex justify-content-center align-items-center"
+                 style="width: 40px; height: 40px;">
+
+                <!-- SVG circle -->
+                <svg width="40" height="40" style="transform: rotate(-90deg);">
+                    <circle cx="20" cy="20" r="16"
+                            stroke="rgba(255,255,255,0.3)"
+                            stroke-width="4"
+                            fill="none" />
+
+                    <circle cx="20" cy="20" r="16"
+                            stroke="white"
+                            stroke-width="4"
+                            fill="none"
+                            stroke-linecap="round"
+                            stroke-dasharray="100"
+                            stroke-dashoffset="91" />
+                    <!-- 9% = offset 100 - 9 = 91 -->
+                </svg>
+
+                <!-- Text -->
+                <span class="small position-absolute">9%</span>
+            </div>
+        </div>
+
+        <div>
+            <img src="https://placehold.co/40x40"
+                 class="rounded-circle" width="40" height="40" alt="avatar">
+        </div>
+    </nav>
+
+
+    <div class="container-fluid">
+		@RenderBody()
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</body>
+</html>

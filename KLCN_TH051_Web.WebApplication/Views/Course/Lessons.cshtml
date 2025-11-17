@@ -1,0 +1,69 @@
+﻿@{
+	Layout = "_LessonLayout";
+}
+<div class="row">
+    <!-- SIDEBAR -->
+    <div class="col-3 border-end bg-white 100vh overflow-auto">
+        <ul class="list-group list-group-flush mt-2">
+            <!-- CHƯƠNG 1 - Đã hoàn thành -->
+            <li class="list-group-item p-0">
+                <div class="p-2 text-success" data-bs-toggle="collapse" data-bs-target="#chapter1">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>Chương 1: Tên chương</strong>
+                </div>
+
+                <div id="chapter1" class="collapse show">
+                    <ul class="list-group list-group-flush ms-3">
+
+                        <!-- Bài 1 -->
+                        <li class="list-group-item text-success">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            Bài 1: Tên bài
+                        </li>
+
+                        <!-- Bài 2 -->
+                        <li class="list-group-item text-success">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            Bài 2: Tên bài
+                        </li>
+
+                    </ul>
+                </div>
+            </li>
+            <!-- CHƯƠNG 2 -->
+            <li class="list-group-item p-0">
+                <div class="p-2" data-bs-toggle="collapse" data-bs-target="#chapter2">
+                    <strong>Javascript Cơ bản</strong>
+                </div>
+
+                <div id="chapter2" class="collapse">
+                    <ul class="list-group list-group-flush ms-3">
+                        <li class="list-group-item">
+                            <i class="bi bi-journal-text me-2"></i>
+                            Bài 1: Tên bài
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-journal-text me-2"></i>
+                            Bài 2: Tên bài
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!-- MAIN CONTENT -->
+    <div class="col-9 p-3 100vh overflow-auto">
+        <div class="bg-white p-3 rounded shadow-sm">
+            <h5 class="fw-bold">GIỚI THIỆU</h5>
+            <p>
+                Thành phần cơ bản của React được gọi là <b>components</b>.
+                Syntax để viết HTML sử dụng Javascript để render. Bạn có thể tạo
+                ra một component bằng các gọi phương thức createClass của đối tượng React.
+            </p>
+            <p>
+                Có thể lồng nhiều component vào nhau thông qua lệnh return của phương thức render.
+            </p>
+        </div>
+        <button class="btn btn-primary mt-3">Bài sau</button>
+    </div>
+</div>
