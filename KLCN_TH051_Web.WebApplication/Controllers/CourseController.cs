@@ -18,5 +18,10 @@ namespace KLCN_TH051_Web.WebApplication.Controllers
         {
             return View();
         }
+
+        public IActionResult Lessons()
+        {
+            return View();
+        }
     }
 }

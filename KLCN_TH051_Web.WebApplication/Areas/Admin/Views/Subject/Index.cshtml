@@ -1,244 +1,220 @@
 ﻿@{
     ViewData["Title"] = "Quản lý môn học";
+    Layout = "_AdminLayout"; // DÒNG THẦN THÁNH – BẮT BUỘC PHẢI CÓ!!!
     var apiUrl = (ViewData["ApiUrl"]?.ToString() ?? "https://localhost:7134").TrimEnd('/');
     var apiBaseUrl = $"{apiUrl}/api/Subjects";
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="utf-8" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        .handle {
-            cursor: grab;
-        }
+<div class="container mt-4">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
+    <button id="btnAdd" class="btn btn-success mb-3">
+        <i class="bi bi-plus-lg"></i> Thêm môn học
+    </button>
+    <ul class="list-group" id="subjectList">
+        <!-- Danh sách sẽ được load bằng JS -->
+    </ul>
+</div>
 
-            .handle:active {
-                cursor: grabbing;
-            }
-    </style>
-</head>
-<body>
-    <div class="container mt-4">
-        <h2 class="mb-4">@ViewData["Title"]</h2>
-
-        <button id="btnAdd" class="btn btn-success mb-3">
-            <i class="bi bi-plus-lg"></i> Thêm môn học
-        </button>
-
-        <ul class="list-group" id="subjectList">
-            <!-- Danh sách sẽ được load bằng JS -->
-        </ul>
-    </div>
-
-    <!-- Modal Thêm/Sửa -->
-    <div class="modal fade" id="subjectModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Thêm môn học</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <label class="form-label">Tên môn học</label>
-                    <input type="text" id="subjectInput" class="form-control" placeholder="Nhập tên môn học" autofocus>
-                    <div id="inputError" class="text-danger mt-2" style="display:none;"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" id="btnSave" class="btn btn-primary">Lưu lại</button>
-                </div>
+<!-- Modal Thêm/Sửa -->
+<div class="modal fade" id="subjectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Thêm môn học</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Tên môn học</label>
+                <input type="text" id="subjectInput" class="form-control" placeholder="Nhập tên môn học" autofocus>
+                <div id="inputError" class="text-danger mt-2" style="display:none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="btnSave" class="btn btn-primary">Lưu lại</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modal Xác nhận xóa -->
-    <div class="modal fade" id="deleteModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title text-danger">Xác nhận xóa</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Bạn có chắc chắn muốn <strong>xóa</strong> môn học này không?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" id="btnConfirmDelete" class="btn btn-danger">Xóa</button>
-                </div>
+<!-- Modal Xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn <strong>xóa</strong> môn học này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="btnConfirmDelete" class="btn btn-danger">Xóa</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    const API_URL = "@Html.Raw(apiBaseUrl)"; // https://localhost:7134/api/Subjects
 
-    <script>
-        const API_URL = "@Html.Raw(apiBaseUrl)"; // https://localhost:7134/api/Subjects
+    let subjects = [];
+    let editingId = null;
+    let deleteId = null;
 
-        let subjects = [];
-        let editingId = null;
-        let deleteId = null;
+    // Hàm lấy token và header
+    function getHeaders() {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            alert('Phiên đăng nhập đã hết hạn!');
+            window.location.href = '/Admin/Account/Login';
+            return {};
+        }
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        };
+    }
 
-        // Hàm lấy token và header
-        function getHeaders() {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                alert('Phiên đăng nhập đã hết hạn!');
-                window.location.href = '/Admin/Account/Login';
-                return {};
+    // Fetch có tự động thêm token + xử lý 401
+    async function apiFetch(url, options = {}) {
+        const response = await fetch(url, {
+            ...options,
+            headers: getHeaders()
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            localStorage.removeItem('authToken');
+            alert('Phiên đăng nhập hết hạn! Đang chuyển về trang đăng nhập...');
+            window.location.href = '/Admin/Account/Login';
+            return null;
+        }
+        return response;
+    }
+
+    // Load danh sách
+    async function loadSubjects() {
+        try {
+            const res = await apiFetch(API_URL);
+            if (!res) return;
+            if (!res.ok) throw new Error('Không tải được dữ liệu');
+            subjects = await res.json();
+            renderList();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // Render danh sách
+    function renderList() {
+        const ul = document.getElementById('subjectList');
+        ul.innerHTML = subjects.length === 0
+            ? '<li class="list-group-item text-center text-muted py-4">Chưa có môn học nào</li>'
+            : '';
+
+        subjects.forEach(s => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex align-items-center justify-content-between py-3';
+            li.innerHTML = `
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-grip-vertical handle text-secondary fs-4"></i>
+                    <span class="fw-medium">${s.name}</span>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-outline-primary btn-sm btn-edit" data-id="${s.id}" title="Sửa">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm btn-delete" data-id="${s.id}" title="Xóa">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            `;
+            ul.appendChild(li);
+        });
+    }
+
+    // Thêm mới
+    document.getElementById('btnAdd').onclick = () => {
+        editingId = null;
+        document.getElementById('modalTitle').textContent = 'Thêm môn học mới';
+        document.getElementById('subjectInput').value = '';
+        document.getElementById('inputError').style.display = 'none';
+        new bootstrap.Modal('#subjectModal').show();
+    };
+
+    // Lưu (thêm hoặc sửa)
+    document.getElementById('btnSave').onclick = async () => {
+        const name = document.getElementById('subjectInput').value.trim();
+        const errDiv = document.getElementById('inputError');
+        errDiv.style.display = 'none';
+
+        if (!name) {
+            errDiv.textContent = 'Vui lòng nhập tên môn học!';
+            errDiv.style.display = 'block';
+            return;
+        }
+
+        try {
+            const res = editingId
+                ? await apiFetch(`${API_URL}/${editingId}`, { method: 'PUT', body: JSON.stringify({ name }) })
+                : await apiFetch(API_URL, { method: 'POST', body: JSON.stringify({ name }) });
+
+            if (!res) return;
+
+            if (res.ok) {
+                bootstrap.Modal.getInstance('#subjectModal').hide();
+                loadSubjects();
+            } else {
+                const error = await res.text();
+                let msg = 'Lỗi server';
+                try { const json = JSON.parse(error); msg = json.message || json.title || error; } catch {}
+                errDiv.textContent = msg;
+                errDiv.style.display = 'block';
             }
-            return {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-            };
+        } catch (e) {
+            errDiv.textContent = 'Lỗi kết nối mạng';
+            errDiv.style.display = 'block';
         }
+    };
 
-        // Fetch có tự động thêm token + xử lý 401
-        async function apiFetch(url, options = {}) {
-            const response = await fetch(url, {
-                ...options,
-                headers: getHeaders()
-            });
+    // Sửa
+    document.getElementById('subjectList').addEventListener('click', e => {
+        const editBtn = e.target.closest('.btn-edit');
+        const delBtn = e.target.closest('.btn-delete');
 
-            if (response.status === 401 || response.status === 403) {
-                localStorage.removeItem('authToken');
-                alert('Phiên đăng nhập hết hạn! Đang chuyển về trang đăng nhập...');
-                window.location.href = '/Admin/Account/Login';
-                return null;
-            }
-            return response;
-        }
-
-        // Load danh sách
-        async function loadSubjects() {
-            try {
-                const res = await apiFetch(API_URL);
-                if (!res) return;
-                if (!res.ok) throw new Error('Không tải được dữ liệu');
-                subjects = await res.json();
-                renderList();
-            } catch (err) {
-                console.error(err);
-            }
-        }
-
-        // Render danh sách
-        function renderList() {
-            const ul = document.getElementById('subjectList');
-            ul.innerHTML = subjects.length === 0
-                ? '<li class="list-group-item text-center text-muted py-4">Chưa có môn học nào</li>'
-                : '';
-
-            subjects.forEach(s => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item d-flex align-items-center justify-content-between py-3';
-                li.innerHTML = `
-                    <div class="d-flex align-items-center gap-3">
-                        <i class="bi bi-grip-vertical handle text-secondary fs-4"></i>
-                        <span class="fw-medium">${s.name}</span>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-outline-primary btn-sm btn-edit" data-id="${s.id}" title="Sửa">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-outline-danger btn-sm btn-delete" data-id="${s.id}" title="Xóa">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                `;
-                ul.appendChild(li);
-            });
-        }
-
-        // Thêm mới
-        document.getElementById('btnAdd').onclick = () => {
-            editingId = null;
-            document.getElementById('modalTitle').textContent = 'Thêm môn học mới';
-            document.getElementById('subjectInput').value = '';
+        if (editBtn) {
+            const id = editBtn.dataset.id;
+            const sub = subjects.find(x => x.id == id);
+            editingId = id;
+            document.getElementById('modalTitle').textContent = 'Sửa môn học';
+            document.getElementById('subjectInput').value = sub.name;
             document.getElementById('inputError').style.display = 'none';
             new bootstrap.Modal('#subjectModal').show();
-        };
+        }
 
-        // Lưu (thêm hoặc sửa)
-        document.getElementById('btnSave').onclick = async () => {
-            const name = document.getElementById('subjectInput').value.trim();
-            const errDiv = document.getElementById('inputError');
-            errDiv.style.display = 'none';
+        if (delBtn) {
+            deleteId = delBtn.dataset.id;
+            new bootstrap.Modal('#deleteModal').show();
+        }
+    });
 
-            if (!name) {
-                errDiv.textContent = 'Vui lòng nhập tên môn học!';
-                errDiv.style.display = 'block';
-                return;
-            }
+    // Xóa
+    document.getElementById('btnConfirmDelete').onclick = async () => {
+        const res = await apiFetch(`${API_URL}/${deleteId}`, { method: 'DELETE' });
+        if (res && res.ok) {
+            bootstrap.Modal.getInstance('#deleteModal').hide();
+            loadSubjects();
+        } else {
+            alert('Xóa thất bại!');
+        }
+    };
 
-            try {
-                const res = editingId
-                    ? await apiFetch(`${API_URL}/${editingId}`, { method: 'PUT', body: JSON.stringify({ name }) })
-                    : await apiFetch(API_URL, { method: 'POST', body: JSON.stringify({ name }) });
-
-                if (!res) return;
-
-                if (res.ok) {
-                    bootstrap.Modal.getInstance('#subjectModal').hide();
-                    loadSubjects();
-                } else {
-                    const error = await res.text();
-                    let msg = 'Lỗi server';
-                    try { const json = JSON.parse(error); msg = json.message || json.title || error; } catch {}
-                    errDiv.textContent = msg;
-                    errDiv.style.display = 'block';
-                }
-            } catch (e) {
-                errDiv.textContent = 'Lỗi kết nối mạng';
-                errDiv.style.display = 'block';
-            }
-        };
-
-        // Sửa
-        document.getElementById('subjectList').addEventListener('click', e => {
-            const editBtn = e.target.closest('.btn-edit');
-            const delBtn = e.target.closest('.btn-delete');
-
-            if (editBtn) {
-                const id = editBtn.dataset.id;
-                const sub = subjects.find(x => x.id == id);
-                editingId = id;
-                document.getElementById('modalTitle').textContent = 'Sửa môn học';
-                document.getElementById('subjectInput').value = sub.name;
-                document.getElementById('inputError').style.display = 'none';
-                new bootstrap.Modal('#subjectModal').show();
-            }
-
-            if (delBtn) {
-                deleteId = delBtn.dataset.id;
-                new bootstrap.Modal('#deleteModal').show();
-            }
-        });
-
-        // Xóa
-        document.getElementById('btnConfirmDelete').onclick = async () => {
-            const res = await apiFetch(`${API_URL}/${deleteId}`, { method: 'DELETE' });
-            if (res && res.ok) {
-                bootstrap.Modal.getInstance('#deleteModal').hide();
-                loadSubjects();
-            } else {
-                alert('Xóa thất bại!');
-            }
-        };
-
-        // Khởi động
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!localStorage.getItem('authToken')) {
-                window.location.href = '/Admin/Account/Login';
-            } else {
-                loadSubjects();
-            }
-        });
-    </script>
-</body>
-</html>
+    // Khởi động
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!localStorage.getItem('authToken')) {
+            window.location.href = '/Admin/Account/Login';
+        } else {
+            loadSubjects();
+        }
+    });
+</script>

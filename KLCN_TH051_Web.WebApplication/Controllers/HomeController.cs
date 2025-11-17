@@ -18,6 +18,16 @@ namespace KLCN_TH051_Web.WebApplication.Controllers
             return View();
         }
 
+        public IActionResult Cart()
+        {
+            return View();
+        }
+
+        public IActionResult Checkout()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();
