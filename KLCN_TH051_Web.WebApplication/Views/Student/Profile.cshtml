@@ -1,0 +1,73 @@
+﻿<div class="row">
+    <!-- Sidebar -->
+    <partial name="_Sidebar" />
+    <!-- MAIN CONTENT -->
+    <div class="col-9">
+        <ul class="nav nav-tabs mb-3" id="profileTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info"
+                        type="button" role="tab">
+                    THÔNG TIN TÀI KHOẢN
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="secure-tab" data-bs-toggle="tab" data-bs-target="#secure"
+                        type="button" role="tab">
+                    BẢO MẬT
+                </button>
+            </li>
+        </ul>
+        <div class="tab-content" id="profileTabContentWrapper">
+            <div class="tab-pane fade show active" id="info" role="tabpanel">
+                <form action="" method="post">
+                    <div class="d-flex align-items-center mb-3">
+                        <!-- Avatar -->
+                        <img src="https://placehold.co/120x120.png" alt="Avatar" class="profile-avatar">
+                        <button type="button" class="btn btn-primary ms-3">Đổi ảnh đại diện</button>
+                    </div>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Tên</label>
+                        <input type="text" class="form-control" id="username" value="Nguyễn Thanh" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Chức vụ</label>
+                        <input type="text" class="form-control" id="role" value="Student" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" value="thanh@gmail.com" disabled>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="secure" role="tabpanel">
+                <h5 class="mb-3 fw-bold">BẢO MẬT</h5>
+
+                <form class="security-form">
+
+                    <div class="mb-3">
+                        <input type="password"
+                               class="form-control security-input"
+                               placeholder="Mật khẩu cũ">
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="password"
+                               class="form-control security-input"
+                               placeholder="Mật khẩu mới">
+                    </div>
+
+                    <div class="mb-4">
+                        <input type="password"
+                               class="form-control security-input"
+                               placeholder="Xác nhận mật khẩu mới">
+                    </div>
+
+                    <button class="btn btn-primary security-btn">ĐỔI MẬT KHẨU</button>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
