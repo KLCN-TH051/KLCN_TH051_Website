@@ -1,4 +1,5 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Phân công giáo viên";
     var apiUrl = ViewData["ApiUrl"]?.ToString() ?? "";
 }
@@ -202,3 +203,88 @@
     // Load khi vào trang
     loadAssignments();
 </script>
+
+
+@* 
+<div class="card mb-3">
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between mb-3">
+            <h5 class="mb-0">Phân công giáo viên</h5>
+            <button class="btn btn-primary" id="btnAddAssign">+ Thêm phân công</button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignmentModal">+ Thêm</button>
+        </div>
+
+        <table class="table table-bordered table-striped align-middle" id="assignmentTable">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Giáo viên</th>
+                    <th>Môn học</th>
+                    <th class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="assignmentTableBody">
+                <!-- JS render -->
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<!-- ================= MODAL ADD/EDIT ================= -->
+<div class="modal fade" id="assignmentModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Phân công giáo viên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <form id="assignmentForm">
+                    <input type="hidden" id="assignmentId" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Giáo viên</label>
+                        <select id="teacherSelect" class="form-select" required></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Môn học</label>
+                        <select id="subjectSelect" class="form-select" required></select>
+                    </div>
+
+                    <button class="btn btn-success" type="submit">Lưu</button>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL DELETE ================= -->
+<div class="modal fade" id="deleteAssignModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>Bạn có chắc muốn xóa phân công này?</p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button class="btn btn-danger" id="btnConfirmDeleteAssign">Xóa</button>
+            </div>
+
+        </div>
+    </div>
+</div> *@
