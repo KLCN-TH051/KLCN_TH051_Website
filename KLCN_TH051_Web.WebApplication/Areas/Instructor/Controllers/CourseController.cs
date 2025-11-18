@@ -3,13 +3,16 @@
 namespace KLCN_TH051_Web.WebApplication.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
+    [Route("Instructor/[controller]")]
     public class CourseController : Controller
     {
+        private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _configuration;
 
-        public CourseController(IConfiguration configuration)
+        public CourseController(IConfiguration configuration, IWebHostEnvironment env)
         {
             _configuration = configuration;
+            _env = env;
         }
         public IActionResult Index()
         {
