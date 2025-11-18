@@ -326,5 +326,3 @@ document.getElementById("addRoleModal").addEventListener("show.bs.modal", async 
 // ==================== AUTO LOAD ====================
 
 document.addEventListener("DOMContentLoaded", loadRoles);
-
-
