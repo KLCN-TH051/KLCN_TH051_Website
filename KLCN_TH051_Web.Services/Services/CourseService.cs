@@ -177,5 +177,18 @@ namespace KLCN_TH051_Web.Services.Services
 
             return courses.Select(c => new CourseResponse(c)).ToList();
         }
+
+        // 2. Lấy khóa học của giáo viên
+        public async Task<List<CourseResponse>> GetCoursesByTeacherAsync(int teacherId)
+        {
+            var courses = await _context.Courses
+                .Where(c => c.CreatedByUserId == teacherId)
+                .Include(c => c.Subject)
+                .ToListAsync();
+
+            return courses.Select(c => new CourseResponse(c)).ToList();
+        }
+
+
     }
 }

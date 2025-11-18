@@ -20,5 +20,7 @@ namespace KLCN_TH051_Website.Common.Interfaces
         // Lấy chi tiết user theo id
         Task<UserWithRoleResponse?> GetAccountByIdAsync(int id);
         Task<ApiResponse<UserWithRoleResponse>> UpdateAccountAsync(int id, UpdateAccountRequest model);
+        // Lấy danh sách tất cả giáo viên
+        Task<List<UserWithRoleResponse>> GetTeachersAsync();
     }
 }

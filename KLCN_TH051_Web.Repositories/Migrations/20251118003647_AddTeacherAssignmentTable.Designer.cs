@@ -4,6 +4,7 @@ using KLCN_TH051_Web.Repositories.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KLCN_TH051_Web.Repositories.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251118003647_AddTeacherAssignmentTable")]
+    partial class AddTeacherAssignmentTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1216,9 +1219,6 @@ namespace KLCN_TH051_Web.Repositories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -1243,16 +1243,18 @@ namespace KLCN_TH051_Web.Repositories.Migrations
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TeacherId")
+                    b.Property<string>("TeacherId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TeacherId1")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
-
                     b.HasIndex("SubjectId");
 
-                    b.HasIndex("TeacherId");
+                    b.HasIndex("TeacherId1");
 
                     b.ToTable("TeacherAssignments");
                 });
@@ -1575,12 +1577,6 @@ namespace KLCN_TH051_Web.Repositories.Migrations
 
             modelBuilder.Entity("KLCN_TH051_Website.Common.Entities.TeacherAssignment", b =>
                 {
-                    b.HasOne("KLCN_TH051_Website.Common.Entities.Course", "Course")
-                        .WithMany("TeacherAssignments")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("KLCN_TH051_Website.Common.Entities.Subject", "Subject")
                         .WithMany()
                         .HasForeignKey("SubjectId")
@@ -1589,11 +1585,9 @@ namespace KLCN_TH051_Web.Repositories.Migrations
 
                     b.HasOne("KLCN_TH051_Website.Common.Entities.ApplicationUser", "Teacher")
                         .WithMany()
-                        .HasForeignKey("TeacherId")
+                        .HasForeignKey("TeacherId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Course");
 
                     b.Navigation("Subject");
 
@@ -1634,8 +1628,6 @@ namespace KLCN_TH051_Web.Repositories.Migrations
                     b.Navigation("Enrollments");
 
                     b.Navigation("Payments");
-
-                    b.Navigation("TeacherAssignments");
                 });
 
             modelBuilder.Entity("KLCN_TH051_Website.Common.Entities.Enrollment", b =>

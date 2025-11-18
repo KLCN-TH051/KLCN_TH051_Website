@@ -26,6 +26,14 @@ namespace YourProject.Areas.Admin.Controllers
             return View();
         }
 
+        public IActionResult TeacherAssignment()
+        {
+
+            ViewData["ApiUrl"] = _configuration["ApiUrl"];
+            return View();
+        }
+
+
 
         public IActionResult Index()
         {

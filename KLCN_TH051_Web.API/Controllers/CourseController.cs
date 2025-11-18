@@ -1,8 +1,10 @@
 ﻿using KLCN_TH051_Website.Common.DTO.Requests;
+using KLCN_TH051_Website.Common.DTO.Responses;
 using KLCN_TH051_Website.Common.Enums;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace KLCN_TH051_Web.API.Controllers
 {
@@ -17,6 +19,21 @@ namespace KLCN_TH051_Web.API.Controllers
             _courseService = courseService;
         }
 
+        // -----------------------------
+        [HttpGet("teacher")]
+        [Authorize(Roles = "Teacher")]
+        public async Task<ActionResult<List<CourseResponse>>> GetTeacherCourses()
+        {
+            // Lấy teacherId từ JWT token
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out int teacherId))
+            {
+                return Unauthorized("Không lấy được TeacherId từ token");
+            }
+
+            var courses = await _courseService.GetCoursesByTeacherAsync(teacherId);
+            return Ok(courses);
+        }
         // -----------------------------
         // 1. Giáo viên tạo khóa học Draft
         // -----------------------------

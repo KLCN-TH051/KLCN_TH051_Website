@@ -3,29 +3,18 @@
 namespace KLCN_TH051_Web.WebApplication.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    public class CourseController : Controller
+    public class AuthController : Controller
     {
         private readonly IConfiguration _configuration;
 
-        public CourseController(IConfiguration configuration)
+        public AuthController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
-        public IActionResult Index()
+        public IActionResult Login()
         {
-
-            ViewData["ApiUrl"] = _configuration["ApiUrl"];
-            ViewData["Title"] = "Khoá học giảng dạy";
-            return View();
-        }
-
-        public IActionResult Details()
-        {
-
             ViewData["ApiUrl"] = _configuration["ApiUrl"];
             return View();
         }
-
     }
-
 }

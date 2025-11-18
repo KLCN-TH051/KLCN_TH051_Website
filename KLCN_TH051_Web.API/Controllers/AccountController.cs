@@ -353,5 +353,12 @@ namespace KLCN_TH051_Web.API.Controllers
             if (!result.Success) return BadRequest(new { result.Message });
             return Ok(result.Data);
         }
+
+        [HttpGet("teachers")]
+        public async Task<ActionResult<List<UserWithRoleResponse>>> GetTeachers()
+        {
+            var teachers = await _accountService.GetTeachersAsync();
+            return Ok(teachers);
+        }
     }
 }

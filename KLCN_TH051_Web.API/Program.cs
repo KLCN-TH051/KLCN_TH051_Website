@@ -113,6 +113,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Role.Manage", policy => policy.RequireClaim("Permission", "Role.Manage"));
     // Thêm thoải mái ở đây nếu cần
 });
+// Đăng ký TeacherAssignmentService
+builder.Services.AddScoped<ITeacherAssignmentService, TeacherAssignmentService>();
 
 
 

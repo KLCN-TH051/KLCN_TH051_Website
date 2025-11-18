@@ -32,14 +32,10 @@ namespace KLCN_TH051_Website.Common.Entities
         public ApplicationUser? CreatedByUser { get; set; }
         //Trạng thái khóa học
         public CoursesStatus Status { get; set; } = CoursesStatus.Draft;
-
-        // Navigation property: một khóa học có nhiều Chapter
         public ICollection<Chapter>? Chapters { get; set; }
-        // Navigation property: một khóa học có nhiều Enrollment
         public ICollection<Enrollment>? Enrollments { get; set; }
-        // Navigation property: một khóa học có nhiều CourseRating
         public ICollection<CourseRating>? CourseRatings { get; set; }
-        // Navigation property: một khóa học có nhiều Payment
         public ICollection<Payment>? Payments { get; set; }
+        public ICollection<TeacherAssignment>? TeacherAssignments { get; set; }
     }
 }

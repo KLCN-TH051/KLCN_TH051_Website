@@ -281,7 +281,35 @@ namespace KLCN_TH051_Web.Services.Services
                 }
             };
         }
+        // -------------------------------
+        // Lấy danh sách giáo viên
+        // -------------------------------
+        public async Task<List<UserWithRoleResponse>> GetTeachersAsync()
+        {
+            // Lấy tất cả user
+            var users = await _userManager.Users.ToListAsync();
 
+            var teachers = new List<UserWithRoleResponse>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains("Teacher"))
+                {
+                    teachers.Add(new UserWithRoleResponse
+                    {
+                        Id = user.Id,
+                        FullName = user.FullName,
+                        Email = user.Email,
+                        Role = "Teacher",
+                        IsActive = user.LockoutEnd == null || user.LockoutEnd <= DateTimeOffset.Now,
+                        Avatar = user.Avatar
+                    });
+                }
+            }
+
+            return teachers;
+        }
 
     }
 }

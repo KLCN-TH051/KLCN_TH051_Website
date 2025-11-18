@@ -333,51 +333,82 @@
                     <li class="nav-item me-2">
                         <a class="nav-link" href="#" title="Tìm kiếm"><i class="fas fa-search"></i></a>
                     </li>
-                    <li
                     <li class="nav-item me-2">
                         <a class="nav-link" href="#" title="Thông báo"><i class="fas fa-bell"></i></a>
                     </li>
                     <li class="nav-item me-3">
                         <a class="nav-link" href="#" title="Yêu thích"><i class="fas fa-heart"></i></a>
                     </li>
-                    @* Phần dropdown đăng xuất cũ *@
-                    @* <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="~/images/avatar_default.png" alt="Avatar" class="rounded-circle" width="30" height="30" />
-                            <span class="d-none d-sm-inline ms-2">Teacher</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">Trang cá nhân</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" asp-controller="Account" asp-action="Logout">Đăng xuất</a></li>
-                        </ul>
-                    </li> *@
-                    @* Phần dropdown đăng xuất mới *@
+
+                    <!-- Dropdown tài khoản -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="~/images/avatar_default.png" alt="Avatar" class="rounded-circle" width="30" height="30" />
-                            <span class="d-none d-sm-inline ms-2">Teacher</span>
+                            <span class="d-none d-sm-inline ms-2" id="headerUserName">Tài khoản</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li>
-                                <a class="dropdown-item" asp-area="Instructor" asp-controller="Profile" asp-action="Index">
-                                    <i class="fas fa-user me-2"></i> Trang cá nhân
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <!-- Form POST để đăng xuất an toàn -->
-                                <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                        @* CSRF protection - bắt buộc khi dùng POST *@
-                                        @Html.AntiForgeryToken()
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
-                                    </button>
-                                </form>
-                            </li>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" id="headerDropdownMenu">
+                            <li><span class="dropdown-item">Đang tải...</span></li>
                         </ul>
                     </li>
                 </ul>
+
+                <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+                <script>
+                    // Hàm cập nhật header theo trạng thái login
+                    function updateHeader() {
+                        const token = localStorage.getItem("teacherToken");
+                        const nameSpan = document.getElementById("headerUserName");
+                        const dropdownMenu = document.getElementById("headerDropdownMenu");
+                        dropdownMenu.innerHTML = "";
+
+                        if (token) {
+                            try {
+                                const decoded = jwt_decode(token);
+                                const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+                                const fullName = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+
+                                nameSpan.textContent = fullName || "Teacher";
+
+                                // Dropdown nội dung
+                                dropdownMenu.innerHTML = `
+                                    <li>
+                                        <a class="dropdown-item" href="/Instructor/Profile/Index">
+                                            <i class="fas fa-user me-2"></i> Trang cá nhân
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a href="#" class="dropdown-item text-danger" id="logoutBtn">
+                                            <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                                        </a>
+                                    </li>
+                                `;
+
+                                // Gán sự kiện logout
+                                document.getElementById("logoutBtn").addEventListener("click", function(e){
+                                    e.preventDefault();
+                                    localStorage.removeItem("teacherToken");
+                                    localStorage.removeItem("teacherName");
+                                    window.location.href = "/Instructor/Auth/Login";
+                                });
+                            } catch (err) {
+                                console.error("Token không hợp lệ", err);
+                                // Xóa token nếu decode lỗi
+                                localStorage.removeItem("teacherToken");
+                                nameSpan.textContent = "Tài khoản";
+                                dropdownMenu.innerHTML = `<li><span class="dropdown-item">Chưa đăng nhập</span></li>`;
+                            }
+                        } else {
+                            // Chưa login
+                            nameSpan.textContent = "Tài khoản";
+                            dropdownMenu.innerHTML = `<li><a class="dropdown-item" href="/Instructor/Auth/Login">Đăng nhập</a></li>`;
+                        }
+                    }
+
+                    // Gọi khi load layout
+                    updateHeader();
+                </script>
+
             </div>
         </nav>
     </header>
