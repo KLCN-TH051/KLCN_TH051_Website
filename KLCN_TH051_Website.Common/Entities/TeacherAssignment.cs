@@ -15,8 +15,7 @@ namespace KLCN_TH051_Website.Common.Entities
 
             public int SubjectId { get; set; }
             public Subject Subject { get; set; }
-
-        public int CourseId { get; set; }           // Liên kết trực tiếp tới khóa học
-        public Course Course { get; set; }
+        public int? CourseId { get; set; }        // Cho phép null
+        public Course? Course { get; set; }
     }
 }

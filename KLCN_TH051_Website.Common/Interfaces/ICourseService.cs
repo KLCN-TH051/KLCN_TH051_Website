@@ -13,7 +13,7 @@ namespace KLCN_TH051_Website.Common.Interfaces
     {
         // CRUD
         // Tạo khóa học Draft (Name + SubjectId)
-        Task<CourseResponse> CreateDraftCourseAsync(string name, int subjectId, string creatorId);
+        Task<CourseResponse> CreateDraftCourseAsync(string name, int subjectId, int creatorId);
 
         // Cập nhật chi tiết khóa học
         Task<CourseResponse> UpdateCourseAsync(int id, UpdateCourseRequest request);

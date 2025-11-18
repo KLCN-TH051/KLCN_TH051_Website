@@ -33,7 +33,7 @@ namespace KLCN_TH051_Website.Common.Configurations
             builder.HasOne(t => t.Course)
                    .WithMany(c => c.TeacherAssignments)
                    .HasForeignKey(t => t.CourseId)
-                   .OnDelete(DeleteBehavior.Restrict);
+                   .OnDelete(DeleteBehavior.SetNull);
 
             // Nếu muốn tránh phân công trùng
             //builder.HasIndex(t => new { t.TeacherId, t.SubjectId })

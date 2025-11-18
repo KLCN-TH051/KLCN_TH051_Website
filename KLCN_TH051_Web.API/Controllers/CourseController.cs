@@ -41,8 +41,13 @@ namespace KLCN_TH051_Web.API.Controllers
         [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> CreateDraft([FromBody] CreateCourseRequest request)
         {
-            var userId = User?.Identity?.Name; // Hoặc lấy Id từ Claims
-            var course = await _courseService.CreateDraftCourseAsync(request.Name, request.SubjectId, userId!);
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdStr, out int userId))
+            {
+                return Unauthorized("Không lấy được UserId từ token");
+            }
+
+            var course = await _courseService.CreateDraftCourseAsync(request.Name, request.SubjectId, userId);
             return Ok(course);
         }
 

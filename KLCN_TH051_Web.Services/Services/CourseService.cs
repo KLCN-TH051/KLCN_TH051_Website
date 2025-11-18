@@ -29,14 +29,14 @@ namespace KLCN_TH051_Web.Services.Services
         // -----------------------------------
         // 1. Tạo khóa học Draft (Name + SubjectId)
         // -----------------------------------
-        public async Task<CourseResponse> CreateDraftCourseAsync(string name, int subjectId, string creatorId)
+        public async Task<CourseResponse> CreateDraftCourseAsync(string name, int subjectId, int creatorUserId)
         {
             var course = new Course
             {
-                Code = GenerateCourseCode(),
+                Code = GenerateCourseCode(),        // Sinh tự động mã khóa học
                 Name = name,
                 SubjectId = subjectId,
-                CreatedBy = creatorId,
+                CreatedByUserId = creatorUserId,    // Gán ID giáo viên
                 CreatedDate = DateTime.Now,
                 Status = CoursesStatus.Draft
             };
@@ -46,6 +46,7 @@ namespace KLCN_TH051_Web.Services.Services
 
             return new CourseResponse(course);
         }
+
 
         // -----------------------------------
         // 2. Cập nhật chi tiết khóa học
