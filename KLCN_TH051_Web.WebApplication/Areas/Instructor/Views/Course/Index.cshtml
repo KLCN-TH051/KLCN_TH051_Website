@@ -69,7 +69,7 @@
     const categorySelect = document.getElementById("categorySelect");
 
     // -----------------------------
-    // 1. Lấy teacherId từ JWT
+    // 1. Parse JWT để lấy teacherId
     // -----------------------------
     function parseJwt(token) {
         if (!token) return null;
@@ -82,25 +82,30 @@
     }
 
     const payload = parseJwt(token);
-    const teacherId = payload ? (payload["nameid"] || payload["sub"]) : null;
+    console.log("Payload JWT:", payload);
+
+    let teacherId = null;
+    if (payload) {
+        teacherId = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+    }
     console.log("TeacherId:", teacherId);
 
     // -----------------------------
     // 2. Load môn học của giáo viên
     // -----------------------------
     async function loadTeacherSubjects() {
-        if (!teacherId) {
-            console.error("Không lấy được teacherId từ token!");
-            return;
-        }
+        if (!token || !teacherId) return;
+
         try {
             const res = await axios.get(`${apiBase}/api/TeacherAssignments/teacher/${teacherId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
+            console.log("Data môn học trả về:", res.data);
+
             categorySelect.innerHTML = '<option value="">-- Chọn môn học --</option>';
 
-            if (res.data.length === 0) {
+            if (!res.data || res.data.length === 0) {
                 const opt = document.createElement("option");
                 opt.value = "";
                 opt.textContent = "Chưa được phân công môn học nào";
@@ -109,6 +114,7 @@
             }
 
             res.data.forEach(sub => {
+                if (!sub.subjectId || !sub.subjectName) return;
                 const option = document.createElement("option");
                 option.value = sub.subjectId;
                 option.textContent = sub.subjectName;
@@ -117,7 +123,7 @@
 
         } catch (err) {
             console.error("Lỗi load môn học:", err);
-            alert("Lỗi load môn học của giáo viên!");
+            alert("Lỗi load môn học của giáo viên! Kiểm tra console.");
         }
     }
 
@@ -125,15 +131,14 @@
     // 3. Load danh sách khóa học của giáo viên
     // -----------------------------
     async function loadCourses() {
-        if (!token) {
-            console.error("Không có token, giáo viên chưa đăng nhập");
-            return;
-        }
+        if (!token) return;
 
         try {
             const res = await axios.get(`${apiBase}/api/Course/teacher`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
+
+            console.log("Data khóa học:", res.data);
 
             tbody.innerHTML = "";
 
@@ -159,9 +164,7 @@
                             ${c.status}
                         </span>
                     </td>
-                    <td class="text-center">
-                        <!-- Thêm nút sửa/xóa nếu muốn -->
-                    </td>
+                    <td class="text-center"></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -172,7 +175,7 @@
     }
 
     // -----------------------------
-    // 4. Thêm khóa học mới
+    // 4. Tạo khóa học Draft và redirect sang chi tiết
     // -----------------------------
     document.getElementById("btnSubmitCourse").addEventListener("click", async () => {
         const name = document.getElementById("courseName").value.trim();
@@ -184,24 +187,31 @@
         }
 
         try {
-            const res = await axios.post(`${apiBase}/api/Course`, {
+            const res = await axios.post(`${apiBase}/api/Course/draft`, {
                 name: name,
                 subjectId: parseInt(subjectId)
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            alert("Tạo khóa học thành công!");
+            const course = res.data;
+            if (!course || !course.id) {
+                alert("Tạo khóa học thành công nhưng không lấy được courseId để chuyển trang!");
+                return;
+            }
+
+            // Reset form và đóng modal
             document.getElementById("courseForm").reset();
             const modalEl = document.getElementById("courseModal");
             const modal = bootstrap.Modal.getInstance(modalEl);
             modal.hide();
 
-            // Load lại danh sách khóa học
-            loadCourses();
+            // Redirect sang trang chi tiết
+            window.location.href = `/Instructor/Course/detail/${course.id}`;
+
         } catch (err) {
             console.error(err);
-            alert("Lỗi khi tạo khóa học!");
+            alert("Lỗi khi tạo khóa học! Kiểm tra console.");
         }
     });
 
@@ -215,3 +225,7 @@
     // -----------------------------
     loadCourses();
 </script>
+
+
+
+

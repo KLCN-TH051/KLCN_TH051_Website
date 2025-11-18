@@ -18,10 +18,10 @@ namespace KLCN_TH051_Web.WebApplication.Areas.Instructor.Controllers
             ViewData["Title"] = "Khoá học giảng dạy";
             return View();
         }
-
-        public IActionResult Details()
+        [HttpGet("/Instructor/Course/Detail/{id}")]
+        public IActionResult Details(int id)
         {
-
+            ViewData["CourseId"] = id;
             ViewData["ApiUrl"] = _configuration["ApiUrl"];
             return View();
         }

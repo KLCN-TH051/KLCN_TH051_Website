@@ -46,12 +46,12 @@ namespace KLCN_TH051_Web.Services.Services
         public async Task<List<TeacherSubjectResponse>> GetSubjectsByTeacherAsync(int teacherId)
         {
             return await _context.TeacherAssignments
-                .Where(t => t.TeacherId == teacherId)
+                .Where(t => t.TeacherId == teacherId && t.SubjectId != null)
                 .Include(t => t.Subject)
                 .Select(t => new TeacherSubjectResponse
                 {
                     SubjectId = t.SubjectId,
-                    SubjectName = t.Subject.Name
+                    SubjectName = t.Subject.Name ?? "Chưa có tên môn học"
                 })
                 .ToListAsync();
         }
