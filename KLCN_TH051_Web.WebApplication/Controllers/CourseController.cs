@@ -4,8 +4,15 @@ namespace KLCN_TH051_Web.WebApplication.Controllers
 {
     public class CourseController : Controller
     {
+        private readonly IConfiguration _configuration;
+
+        public CourseController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public IActionResult Index()
         {
+            ViewData["ApiUrl"] = _configuration["ApiUrl"];
             return View();
         }
 

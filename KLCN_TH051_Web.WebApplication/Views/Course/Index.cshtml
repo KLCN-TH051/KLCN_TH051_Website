@@ -1,4 +1,9 @@
-﻿<div class="container-fluid">
+﻿@{
+    var apiUrl = (ViewData["ApiUrl"]?.ToString() ?? "https://localhost:7134").TrimEnd('/');
+    ViewData["Title"] = "Danh sách khóa học";
+}
+
+<div class="container-fluid">
     <div class="row">
 
         <!-- SIDEBAR BỘ LỌC -->
@@ -46,49 +51,6 @@
                 <!-- CARD ITEM -->
                 <div class="col">
                     <div class="card h-100">
-                        <img src="https://via.placeholder.com/500x250/2ecc71/ffffff?text=NodeJS" class="card-img-top">
-                        <div class="card-body">
-                            <h5 class="card-title">Node JS</h5>
-                            <p class="card-text">Lập trình web với NodeJS</p>
-
-                            <!-- Rating -->
-                            <div class="mb-2 text-warning">
-                                ★★★★★
-                            </div>
-
-                            <small class="text-muted">GV: Nguyễn Đạt</small>
-                        </div>
-                        <div class="card-footer bg-white d-flex justify-content-between">
-                            <strong>Miễn phí</strong>
-                            <button class="btn btn-outline-primary btn-sm">
-                                🛒
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CARD ITEM -->
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="https://via.placeholder.com/500x250/e67e22/ffffff?text=HTML5" class="card-img-top">
-                        <div class="card-body">
-                            <h5 class="card-title">HTML5 cơ bản</h5>
-                            <p class="card-text">Khóa học nhập môn HTML5</p>
-
-                            <div class="mb-2 text-warning">★★★★☆</div>
-
-                            <small class="text-muted">GV: Hai Nguyen</small>
-                        </div>
-                        <div class="card-footer bg-white d-flex justify-content-between">
-                            <strong>110,000đ</strong>
-                            <button class="btn btn-outline-primary btn-sm">🛒</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CARD ITEM -->
-                <div class="col">
-                    <div class="card h-100">
                         <img src="https://via.placeholder.com/500x250/6c5ce7/ffffff?text=PHP" class="card-img-top">
                         <div class="card-body">
                             <h5 class="card-title">PHP nâng cao</h5>
@@ -121,3 +83,91 @@
 
     </div>
 </div>
+
+<script>
+       const API_URL = "@apiUrl/api/course/approved";
+
+    function getHeaders() {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            console.log("Không có token → xem như khách");
+            return { "Content-Type": "application/json" };
+        }
+        return {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        };
+    }
+
+    async function loadApprovedCourses() {
+        const container = document.querySelector(".row.row-cols-1");
+
+        // Hiển thị trạng thái loading
+        container.innerHTML = `
+            <div class="col text-center text-muted py-5">
+                Đang tải khóa học...
+            </div>
+        `;
+
+        try {
+            const res = await fetch(API_URL, { headers: getHeaders() });
+
+            if (!res.ok) {
+                container.innerHTML = `
+                    <div class="col text-center text-danger py-5">
+                        Không thể tải danh sách khóa học
+                    </div>
+                `;
+                return;
+            }
+
+            const courses = await res.json();
+
+            if (!courses || courses.length === 0) {
+                container.innerHTML = `
+                    <div class="col text-center text-muted py-5">
+                        Chưa có khóa học nào được duyệt
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = "";
+
+            courses.forEach(c => {
+                container.innerHTML += `
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <img src="${c.thumbnail ?? 'https://placehold.co/500x250'}"
+                                 class="card-img-top" alt="${c.name}">
+
+                            <div class="card-body">
+                                <h5 class="card-title">${c.name}</h5>
+                                <p class="card-text">${c.description ?? 'Không có mô tả'}</p>
+
+                                <div class="mb-2 text-warning">★★★★☆</div>
+
+                                <small class="text-muted">GV: ${c.teacherName ?? 'Chưa cập nhật'}</small>
+                            </div>
+
+                            <div class="card-footer bg-white d-flex justify-content-between">
+                                <strong>${(c.price ?? 0).toLocaleString('vi-VN')}đ</strong>
+                                <button class="btn btn-outline-primary btn-sm">🛒</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+        } catch (error) {
+            console.error(error);
+            container.innerHTML = `
+                <div class="col text-center text-danger py-5">
+                    Lỗi khi tải dữ liệu
+                </div>
+            `;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadApprovedCourses);
+</script>

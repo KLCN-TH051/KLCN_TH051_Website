@@ -22,6 +22,8 @@ namespace KLCN_TH051_Website.Common.DTO.Responses
         public string SubjectName { get; set; }
         public CoursesStatus Status { get; set; }
 
+        public string TeacherName { get; set; }
+
         public CourseResponse(Course course)
         {
             Id = course.Id;
@@ -35,6 +37,8 @@ namespace KLCN_TH051_Website.Common.DTO.Responses
             SubjectId = course.SubjectId;
             SubjectName = course.Subject?.Name ?? "";
             Status = course.Status;
+
+            TeacherName = course.CreatedByUser != null ? course.CreatedByUser.FullName : "Chưa cập nhật";
         }
     }
 }

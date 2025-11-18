@@ -1,4 +1,5 @@
-﻿@{
+﻿@* @{
+    var apiUrl = (ViewData["ApiUrl"]?.ToString() ?? "https://localhost:7134").TrimEnd('/');
     ViewData["Title"] = "Quản lý khóa học";
 }
 <!-- WRAPPER -->
@@ -17,28 +18,6 @@
 
             <tbody>
 
-                <!-- ITEM 1 -->
-                <tr>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <img src="https://placehold.co/80x60?text=IMG"
-                                 class="me-3 rounded" />
-                            <span>Khóa học lập trình .NET</span>
-                        </div>
-                    </td>
-
-                    <td>300.000đ</td>
-
-                    <td>
-                        Approved
-                    </td>
-
-                    <td>
-                        <button class="btn btn-danger btn-sm">
-                            Xóa
-                        </button>
-                    </td>
-                </tr>
 
                 <!-- ITEM 2 -->
                 <tr>
@@ -104,3 +83,241 @@
     </nav>
 
 </div>
+
+<script>
+    const API_URL = "@apiUrl/api/course/all";
+    // Ví dụ: https://localhost:7134/api/course/all
+
+    function getHeaders() {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            alert("Phiên đăng nhập hết hạn!");
+            window.location.href = "/Admin/Auth/Login";
+            return {};
+        }
+        return {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        };
+    }
+
+    // Hàm gọi fetch có tự động xử lý 401
+    async function apiFetch(url) {
+        const response = await fetch(url, { headers: getHeaders() });
+
+        if (response.status === 401 || response.status === 403) {
+            localStorage.removeItem("authToken");
+            alert("Hết phiên đăng nhập!");
+            window.location.href = "/Admin/Auth/Login";
+            return null;
+        }
+
+        return response;
+    }
+
+    async function loadCourses() {
+        const tbody = document.querySelector("tbody");
+        tbody.innerHTML = `
+            <tr><td colspan="4" class="text-center text-muted">Đang tải dữ liệu...</td></tr>
+        `;
+
+        const res = await apiFetch(API_URL);
+        if (!res || !res.ok) {
+            tbody.innerHTML = `
+                <tr><td colspan="4" class="text-center text-danger">Không thể tải dữ liệu</td></tr>
+            `;
+            return;
+        }
+
+        const courses = await res.json();
+
+        if (courses.length === 0) {
+            tbody.innerHTML = `
+                <tr><td colspan="4" class="text-center text-muted py-4">Chưa có khóa học nào</td></tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = "";
+
+        courses.forEach(c => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="${c.thumbnailUrl ?? 'https://placehold.co/80x60?text=IMG'}"
+                                 class="me-3 rounded" width="80" height="60">
+                            <span>${c.name}</span>
+                        </div>
+                    </td>
+
+                    <td>${(c.price ?? 0).toLocaleString('vi-VN')}đ</td>
+
+                    <td>${c.status}</td>
+
+                    <td>
+                        <button class="btn btn-danger btn-sm">Xóa</button>
+                        <button class="btn btn-success btn-sm">Chấp nhận</button>
+                        <button class="btn btn-secondary btn-sm">Từ chối</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (!localStorage.getItem("authToken")) {
+            window.location.href = "/Admin/Auth/Login";
+        } else {
+            loadCourses();
+        }
+    });
+</script>
+ *@
+
+@{
+    var apiUrl = (ViewData["ApiUrl"]?.ToString() ?? "https://localhost:7134").TrimEnd('/');
+    ViewData["Title"] = "Quản lý khóa học";
+}
+<!-- WRAPPER -->
+<div class="card shadow-sm p-4">
+    <!-- TABLE -->
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>Khóa học</th>
+                    <th>Giá</th>
+                    <th>Trạng thái</th>
+                    <th>Tùy chọn</th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- PAGINATION -->
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+            <li class="page-item">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item active"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+
+            <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+
+<script>
+    const API_URL = "@apiUrl/api/course/all";
+
+    function getHeaders() {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            alert("Phiên đăng nhập hết hạn!");
+            window.location.href = "/Admin/Auth/Login";
+            return {};
+        }
+        return {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        };
+    }
+
+    async function apiFetch(url, method = "GET") {
+        const response = await fetch(url, {
+            method: method,
+            headers: getHeaders()
+        });
+
+        if (response.status === 401 || response.status === 403) {
+            localStorage.removeItem("authToken");
+            alert("Hết phiên đăng nhập!");
+            window.location.href = "/Admin/Auth/Login";
+            return null;
+        }
+        return response;
+    }
+
+    // ================================
+    // 🔥 GỌI API CẬP NHẬT STATUS
+    // ================================
+    async function updateStatus(courseId, statusValue) {
+        const url = `@apiUrl/api/course/${courseId}/status?status=${statusValue}`;
+        const res = await apiFetch(url, "POST");
+
+        if (res && res.ok) {
+            alert("Cập nhật trạng thái thành công!");
+            loadCourses(); // load lại dữ liệu
+        } else {
+            alert("Không thể cập nhật trạng thái!");
+        }
+    }
+
+    // ================================
+    // 🔥 LOAD KHÓA HỌC
+    // ================================
+    async function loadCourses() {
+        const tbody = document.querySelector("tbody");
+        tbody.innerHTML = `
+            <tr><td colspan="4" class="text-center text-muted">Đang tải dữ liệu...</td></tr>
+        `;
+
+        const res = await apiFetch(API_URL);
+
+        if (!res || !res.ok) {
+            tbody.innerHTML = `
+                <tr><td colspan="4" class="text-center text-danger">Không thể tải dữ liệu</td></tr>
+            `;
+            return;
+        }
+
+        const courses = await res.json();
+        tbody.innerHTML = "";
+
+        courses.forEach(c => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="${c.thumbnailUrl ?? 'https://placehold.co/80x60?text=IMG'}"
+                                 class="me-3 rounded" width="80" height="60">
+                            <span>${c.name}</span>
+                        </div>
+                    </td>
+
+                    <td>${(c.price ?? 0).toLocaleString('vi-VN')}đ</td>
+
+                    <td>${c.status}</td>
+
+                    <td>
+                        <button class="btn btn-danger btn-sm">Xóa</button>
+
+                        ${c.status === 0
+                            ? `
+                                <button class="btn btn-success btn-sm" onclick="updateStatus(${c.id}, 1)">Chấp nhận</button>
+                                <button class="btn btn-secondary btn-sm" onclick="updateStatus(${c.id}, 2)">Từ chối</button>
+                              `
+                            : ""
+                        }
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadCourses);
+</script>

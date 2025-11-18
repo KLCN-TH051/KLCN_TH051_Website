@@ -169,10 +169,20 @@ namespace KLCN_TH051_Web.Services.Services
         // -----------------------------------
         // 8. Lấy khóa học đã duyệt (Student view)
         // -----------------------------------
+        //public async Task<List<CourseResponse>> GetApprovedCoursesAsync()
+        //{
+        //    var courses = await _context.Courses
+        //        .Include(c => c.Subject)
+        //        .Where(c => c.Status == CoursesStatus.Approved)
+        //        .ToListAsync();
+
+        //    return courses.Select(c => new CourseResponse(c)).ToList();
+        //}
         public async Task<List<CourseResponse>> GetApprovedCoursesAsync()
         {
             var courses = await _context.Courses
                 .Include(c => c.Subject)
+                .Include(c => c.CreatedByUser) // Phải có để lấy tên giảng viên
                 .Where(c => c.Status == CoursesStatus.Approved)
                 .ToListAsync();
 
