@@ -74,21 +74,22 @@
             </form>
 
             <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
             <script>
                 const apiBase = "@apiBaseUrl";
                 const token = localStorage.getItem("teacherToken");
-                const courseId = window.location.pathname.split("/").pop(); // Lấy id từ URL
+                const courseId = window.location.pathname.split("/").pop();
 
-                // DOM elements
+                // DOM
                 const courseName = document.getElementById("courseName");
                 const courseCategory = document.getElementById("courseCategory");
                 const courseDescription = document.getElementById("courseDescription");
                 const coursePrice = document.getElementById("coursePrice");
                 const freeCheck = document.getElementById("freeCheck");
 
-                // -----------------------------
-                // Load chi tiết khóa học
-                // -----------------------------
+                // ===============================
+                // LOAD CHI TIẾT KHÓA HỌC
+                // ===============================
                 async function loadCourseDetail() {
                     try {
                         const res = await axios.get(`${apiBase}/api/Course/${courseId}`, {
@@ -96,23 +97,57 @@
                         });
 
                         const course = res.data;
+
                         courseName.value = course.name;
                         courseDescription.value = course.description;
                         coursePrice.value = course.price || 0;
                         freeCheck.checked = course.isFree || false;
 
-                        // Load môn học vào combobox
-                        courseCategory.innerHTML = `<option value="${course.subjectId}" selected>${course.subjectName}</option>`;
-
-                    } catch (err) {
-                        console.error("Lỗi load chi tiết khóa học:", err);
+                        courseCategory.innerHTML =
+                            `<option value="${course.subjectId}" selected>${course.subjectName}</option>`;
+                    }
+                    catch (err) {
+                        console.error(err);
                         alert("Không thể load chi tiết khóa học!");
                     }
                 }
 
-                // Gọi khi trang load
+                // GỌI HÀM LOAD KHI MỚI VÀO TRANG
                 loadCourseDetail();
+
+
+                // ===============================
+                // CẬP NHẬT KHÓA HỌC
+                // ===============================
+                document.getElementById("courseForm").addEventListener("submit", async function (e) {
+                    e.preventDefault();
+
+                    const updateModel = {
+                        name: courseName.value,
+                        subjectId: Number(courseCategory.value),
+                        description: courseDescription.value,
+                        price: Number(coursePrice.value),
+                        isFree: freeCheck.checked
+                    };
+
+                    try {
+                        await axios.put(`${apiBase}/api/Course/${courseId}`, updateModel, {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                "Content-Type": "application/json"
+                            }
+                        });
+
+                        alert("Cập nhật khóa học thành công!");
+                    }
+                    catch (error) {
+                        console.error("Lỗi cập nhật:", error);
+                        alert("Không thể cập nhật khóa học!");
+                    }
+                });
             </script>
+
+
 
             <hr class="my-4" />
 
