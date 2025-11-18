@@ -1,4 +1,5 @@
-﻿@{
+﻿@*
+@{
     ViewData["Title"] = "Quản lý tài khoản";
     var apiUrl = ViewData["ApiUrl"]?.ToString();
 }
@@ -179,3 +180,114 @@
 
     document.addEventListener('DOMContentLoaded', loadAccounts);
 </script>
+*@
+@* View: User.cshtml
+   Chỉ chứa HTML — không có JavaScript *@
+
+<div class="card mb-3">
+    <div class="card-body table-responsive">
+
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Ảnh</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Vai trò</th>
+                    <th>Ngày tạo</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Tùy chọn</th>
+                </tr>
+            </thead>
+
+            <tbody id="accountTableBody">
+                <!-- JS sẽ render -->
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
+<!-- ======================= MODAL CHỈNH SỬA TÀI KHOẢN ======================= -->
+<div class="modal fade" id="editAccountModal">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content p-3">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa tài khoản</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <form id="editAccountForm">
+
+                    <!-- Ảnh đại diện -->
+                    <div class="text-center mb-4">
+                        <img id="editAvatar"
+                             src="https://placehold.co/100x100"
+                             class="rounded-circle mb-2" />
+                        <br />
+                        <button type="button"
+                                class="btn btn-outline-secondary btn-sm"
+                                id="btnChangeAvatar">
+                            Đổi ảnh
+                        </button>
+                    </div>
+
+                    <!-- Họ tên + Email -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="editFullName">Họ tên</label>
+                            <input id="editFullName" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="editEmail">Email</label>
+                            <input id="editEmail" class="form-control" type="email" />
+                        </div>
+                    </div>
+
+                    <!-- Vai trò + Trạng thái -->
+                    <div class="row mb-3">
+
+                        <div class="col-md-6">
+                            <label for="editRole">Vai trò</label>
+                            <select id="editRole" class="form-select">
+                                <option>Giảng viên</option>
+                                <option>Sinh viên</option>
+                                <option>Admin</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="editStatus">Trạng thái</label>
+                            <select id="editStatus" class="form-select">
+                                <option value="true">Hoạt động</option>
+                                <option value="false">Tạm khóa</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <!-- Mật khẩu -->
+                    <label for="editPassword">Mật khẩu (nếu đổi)</label>
+                    <input id="editPassword"
+                           class="form-control mb-3"
+                           type="password"
+                           placeholder="Nhập mật khẩu mới..." />
+
+                    <!-- Nút lưu -->
+                    <button type="submit" class="btn btn-primary">
+                        Lưu thay đổi
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>

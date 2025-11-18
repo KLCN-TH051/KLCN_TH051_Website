@@ -1,4 +1,5 @@
-﻿@{
+﻿@*
+@{
     ViewData["Title"] = "Quản lý tài khoản";
     var apiUrl = ViewData["ApiUrl"]?.ToString();
 }
@@ -18,7 +19,6 @@
 </ul>
 
 <div class="tab-content">
-
     <!-- ================= TAB TÀI KHOẢN ================= -->
     <div class="tab-pane fade show active" id="tabAccounts">
         <div class="card mb-3">
@@ -71,7 +71,7 @@
             </a>
         </div>
     </div>
-
+</div>
 <!-- SAMPLE popup -->
 <div class="modal fade" id="editAccountModal">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -478,4 +478,50 @@
         }, { once: true });
     });
 </script>
+*@
 
+
+@{
+    ViewData["Title"] = "Quản lý tài khoản";
+    var apiUrl = ViewData["ApiUrl"]?.ToString();
+}
+
+<!-- Load FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<!-- ===================== NAV TABS ===================== -->
+<ul class="nav nav-tabs mb-3" id="accountTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabAccounts" type="button">
+            Tài khoản
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabRoles" type="button">
+            Vai trò
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content">
+
+    <!-- ===================== TAB TÀI KHOẢN ===================== -->
+    <div class="tab-pane fade show active" id="tabAccounts">
+        @await Html.PartialAsync("~/Areas/Admin/Views/Account/User.cshtml")
+    </div>
+
+    <!-- ===================== TAB VAI TRÒ ===================== -->
+    <div class="tab-pane fade" id="tabRoles">
+        @await Html.PartialAsync("Role")
+    </div>
+
+</div>
+
+<!-- ===================== GẮN API URL CHO JS ===================== -->
+<body data-api-account="@($"{apiUrl}/api/Account")"
+      data-api-roles="@($"{apiUrl}/api/Roles")">
+
+</body>
+
+<!-- ===================== NHÚNG FILE JS EXTERNAL ===================== -->
+<script src="~/js/ad_account.js"></script>

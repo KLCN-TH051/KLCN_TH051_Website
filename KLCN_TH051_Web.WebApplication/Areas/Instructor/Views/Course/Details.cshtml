@@ -71,6 +71,9 @@
                 <button type="submit" class="btn btn-primary mb-4">
                     <i class="bi bi-save"></i> Lưu thông tin khóa học
                 </button>
+                <button type="button" id="submitCourseButton" class="btn btn-primary mb-4">
+                    <i class="bi bi-send"></i> Gửi khóa học
+                </button>
             </form>
 
             <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -80,7 +83,7 @@
                 const token = localStorage.getItem("teacherToken");
                 const courseId = window.location.pathname.split("/").pop();
 
-                // DOM
+                // DOM Elements
                 const courseName = document.getElementById("courseName");
                 const courseCategory = document.getElementById("courseCategory");
                 const courseDescription = document.getElementById("courseDescription");
@@ -115,7 +118,6 @@
                 // GỌI HÀM LOAD KHI MỚI VÀO TRANG
                 loadCourseDetail();
 
-
                 // ===============================
                 // CẬP NHẬT KHÓA HỌC
                 // ===============================
@@ -143,6 +145,30 @@
                     catch (error) {
                         console.error("Lỗi cập nhật:", error);
                         alert("Không thể cập nhật khóa học!");
+                    }
+                });
+
+                // ===============================
+                // GỬI KHÓA HỌC
+                // ===============================
+                document.getElementById("submitCourseButton").addEventListener("click", async function (e) {
+                    e.preventDefault(); // Ngừng hành động mặc định của button
+
+                    // Cấu hình API URL
+                    const courseId = window.location.pathname.split("/").pop(); // Lấy courseId từ URL
+
+                    try {
+                        // Gọi API để submit khóa học (chuyển trạng thái từ Draft -> Pending)
+                        const res = await axios.post(`${apiBase}/api/Course/${courseId}/submit`, {}, {
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+
+                        if (res.status === 200) {
+                            alert("Khóa học đã được gửi và chuyển sang trạng thái Pending!");
+                        }
+                    } catch (error) {
+                        console.error("Lỗi khi gửi khóa học:", error);
+                        alert("Không thể gửi khóa học!");
                     }
                 });
             </script>
