@@ -40,7 +40,7 @@ namespace KLCN_TH051_Web.API.Controllers
 
         // POST: api/Subjects
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "Subject.Create")]
         public async Task<ActionResult<SubjectResponse>> Create([FromBody] CreateSubjectRequest request)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -50,7 +50,7 @@ namespace KLCN_TH051_Web.API.Controllers
 
         // PUT: api/Subjects/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "Subject.Edit")]
         public async Task<ActionResult<SubjectResponse>> Update(int id, [FromBody] UpdateSubjectRequest request)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -61,7 +61,7 @@ namespace KLCN_TH051_Web.API.Controllers
 
         // DELETE: api/Subjects/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "Subject.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
