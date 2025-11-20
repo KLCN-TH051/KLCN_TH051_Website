@@ -2,6 +2,7 @@
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -17,8 +18,16 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+// Nếu muốn dùng ViewData toàn cục cho Layout
+app.Use(async (context, next) =>
+{
+    context.Items["ApiUrl"] = builder.Configuration["ApiUrl"];
+    await next.Invoke();
+});
 app.UseAuthorization();
+
+
+
 
 app.MapControllerRoute(
     name: "areas",
