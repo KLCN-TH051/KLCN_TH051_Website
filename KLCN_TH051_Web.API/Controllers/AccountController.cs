@@ -353,7 +353,10 @@ namespace KLCN_TH051_Web.API.Controllers
             if (!result.Success) return BadRequest(new { result.Message });
             return Ok(result.Data);
         }
-
+        /// <summary>
+        /// Lấy danh sách giáo viên
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("teachers")]
         public async Task<ActionResult<List<UserWithRoleResponse>>> GetTeachers()
         {
