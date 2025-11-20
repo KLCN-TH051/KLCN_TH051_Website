@@ -22,17 +22,20 @@ namespace KLCN_TH051_Web.Services.Services
     public class AccountService : IAccountService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
         private readonly JwtHelper _jwtHelper; 
 
         public AccountService(
             UserManager<ApplicationUser> userManager,
+            RoleManager<ApplicationRole> roleManager,
             IConfiguration configuration,
             IEmailService emailService,
             JwtHelper jwtHelper) 
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _configuration = configuration;
             _emailService = emailService;
             _jwtHelper = jwtHelper;
@@ -131,7 +134,8 @@ namespace KLCN_TH051_Web.Services.Services
             var roles = await _userManager.GetRolesAsync(user);
 
             // ✅ Gọi JwtHelper để sinh token
-            var token = _jwtHelper.GenerateToken(user, roles);
+            var token = _jwtHelper.GenerateToken(user, roles, _roleManager);
+
 
             response.Success = true;
             response.Message = "Đăng nhập thành công.";

@@ -1,4 +1,5 @@
-﻿using KLCN_TH051_Website.Common.Entities;
+﻿using KLCN_TH051_Website.Common.Configurations;
+using KLCN_TH051_Website.Common.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -17,7 +18,7 @@ namespace KLCN_TH051_Website.Common.Helpers
             var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-            // === 1. TẠO ROLES ===
+            // 1. Tạo Roles nếu chưa có
             string[] roles = { "Admin", "Teacher", "Student" };
             foreach (var roleName in roles)
             {
@@ -27,7 +28,7 @@ namespace KLCN_TH051_Website.Common.Helpers
                 }
             }
 
-            // === 2. TẠO ADMIN USER ===
+            // 2. Tạo Admin user nếu chưa có
             var adminEmail = "admin@example.com";
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
@@ -48,56 +49,39 @@ namespace KLCN_TH051_Website.Common.Helpers
                 }
             }
 
-            // === 3. THÊM PHÂN QUYỀN (PERMISSIONS) CHO ADMIN ===
+            // 3. Reset quyền cho Admin
             var adminRole = await roleManager.FindByNameAsync("Admin");
             if (adminRole != null)
             {
-                var adminPermissions = new[]
+                // Xóa hết claim cũ
+                var existingClaims = await roleManager.GetClaimsAsync(adminRole);
+                foreach (var claim in existingClaims.Where(c => c.Type == "Permission"))
                 {
-                    "Subject.Create", "Subject.Edit", "Subject.Delete", "Subject.View",
-                    "Course.Create", "Course.Edit", "Course.Delete", "Course.View",
-                    "User.Create", "User.Edit", "User.Delete", "User.View",
-                    "Role.View", "Role.Manage", "Permission.Manage",
-                    "Dashboard.View", "Report.View"
-                };
+                    await roleManager.RemoveClaimAsync(adminRole, claim);
+                }
 
-                var existingClaims = await roleManager.GetClaimsAsync(adminRole); // ← LẤY TẤT CẢ CLAIM HIỆN TẠI
-
-                foreach (var perm in adminPermissions)
+                // Gán toàn bộ quyền mới từ Permissions.All
+                foreach (var perm in Permissions.All)
                 {
-                    if (!existingClaims.Any(c => c.Type == "Permission" && c.Value == perm))
-                    {
-                        await roleManager.AddClaimAsync(adminRole, new Claim("Permission", perm));
-                    }
+                    await roleManager.AddClaimAsync(adminRole, new Claim("Permission", perm));
                 }
             }
 
-            // === 4. GÁN QUYỀN CHO TEACHER ===
-            var teacherRole = await roleManager.FindByNameAsync("Teacher");
-            if (teacherRole != null)
-            {
-                var teacherPerms = new[] { "Subject.View", "Course.View", "Dashboard.View" };
-                var existing = await roleManager.GetClaimsAsync(teacherRole);
+            // chi them khong xoa 
+            //var adminRole = await roleManager.FindByNameAsync("Admin");
+            //if (adminRole != null)
+            //{
+            //    var existingClaims = await roleManager.GetClaimsAsync(adminRole);
 
-                foreach (var perm in teacherPerms)
-                {
-                    if (!existing.Any(c => c.Type == "Permission" && c.Value == perm))
-                    {
-                        await roleManager.AddClaimAsync(teacherRole, new Claim("Permission", perm));
-                    }
-                }
-            }
-
-            // === 5. GÁN QUYỀN CHO STUDENT ===
-            var studentRole = await roleManager.FindByNameAsync("Student");
-            if (studentRole != null)
-            {
-                var existing = await roleManager.GetClaimsAsync(studentRole);
-                if (!existing.Any(c => c.Type == "Permission" && c.Value == "Course.View"))
-                {
-                    await roleManager.AddClaimAsync(studentRole, new Claim("Permission", "Course.View"));
-                }
-            }
+            //    foreach (var perm in Permissions.All)
+            //    {
+            //        // Chỉ thêm những quyền chưa có
+            //        if (!existingClaims.Any(c => c.Type == "Permission" && c.Value == perm))
+            //        {
+            //            await roleManager.AddClaimAsync(adminRole, new Claim("Permission", perm));
+            //        }
+            //    }
+            //}
         }
     }
 }

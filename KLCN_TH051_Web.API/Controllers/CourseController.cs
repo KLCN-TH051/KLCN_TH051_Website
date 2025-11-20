@@ -21,7 +21,7 @@ namespace KLCN_TH051_Web.API.Controllers
 
         // -----------------------------
         [HttpGet("teacher")]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Policy = "Course.TeacherView")]
         public async Task<ActionResult<List<CourseResponse>>> GetTeacherCourses()
         {
             // Lấy teacherId từ JWT token
@@ -38,7 +38,7 @@ namespace KLCN_TH051_Web.API.Controllers
         // 1. Giáo viên tạo khóa học Draft
         // -----------------------------
         [HttpPost("draft")]
-        [Authorize(Roles = "Teacher,Admin")]
+        [Authorize(Policy = "Course.Create")]
         public async Task<IActionResult> CreateDraft([FromBody] CreateCourseRequest request)
         {
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -55,7 +55,7 @@ namespace KLCN_TH051_Web.API.Controllers
         // 2. Cập nhật chi tiết khóa học
         // -----------------------------
         [HttpPut("{id}")]
-        [Authorize(Roles = "Teacher,Admin")]
+        [Authorize(Policy = "Course.Edit")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCourseRequest request)
         {
             var course = await _courseService.UpdateCourseAsync(id, request);
@@ -66,7 +66,7 @@ namespace KLCN_TH051_Web.API.Controllers
         // 3. Gửi khóa học Draft → Pending
         // -----------------------------
         [HttpPost("{id}/submit")]
-        [Authorize(Roles = "Teacher,Admin")]
+        [Authorize(Policy = "Course.Submit")]
         public async Task<IActionResult> Submit(int id)
         {
             var course = await _courseService.SubmitCourseAsync(id);
@@ -77,7 +77,7 @@ namespace KLCN_TH051_Web.API.Controllers
         // 4. Admin duyệt/từ chối khóa học
         // -----------------------------
         [HttpPost("{id}/status")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "Course.Approve")]
         public async Task<IActionResult> UpdateStatus(int id, [FromQuery] CoursesStatus status)
         {
             var course = await _courseService.UpdateCourseStatusAsync(id, status);
@@ -88,7 +88,7 @@ namespace KLCN_TH051_Web.API.Controllers
         // 5. Xóa khóa học
         // -----------------------------
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Teacher,Admin")]
+        [Authorize(Policy = "Course.Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _courseService.DeleteCourseAsync(id);
@@ -100,7 +100,6 @@ namespace KLCN_TH051_Web.API.Controllers
         // 6. Lấy khóa học theo Id
         // -----------------------------
         [HttpGet("{id}")]
-        [Authorize]
         public async Task<IActionResult> Get(int id)
         {
             var course = await _courseService.GetCourseByIdAsync(id);
@@ -112,7 +111,7 @@ namespace KLCN_TH051_Web.API.Controllers
         // 7. Lấy tất cả khóa học (Admin/Teacher)
         // -----------------------------
         [HttpGet("all")]
-        [Authorize(Roles = "Teacher,Admin")]
+        [Authorize(Policy = "Course.ViewAll")]
         public async Task<IActionResult> GetAll()
         {
             var courses = await _courseService.GetAllCoursesAsync();
@@ -123,7 +122,6 @@ namespace KLCN_TH051_Web.API.Controllers
         // 8. Lấy khóa học đã duyệt (Student)
         // -----------------------------
         [HttpGet("approved")]
-        [Authorize(Roles = "Student,Teacher,Admin")]
         public async Task<IActionResult> GetApproved()
         {
             var courses = await _courseService.GetApprovedCoursesAsync();

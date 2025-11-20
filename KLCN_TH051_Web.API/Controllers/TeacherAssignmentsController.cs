@@ -1,6 +1,7 @@
 ﻿using KLCN_TH051_Website.Common.DTO.Requests;
 using KLCN_TH051_Website.Common.DTO.Responses;
 using KLCN_TH051_Website.Common.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KLCN_TH051_Web.API.Controllers
@@ -21,6 +22,7 @@ namespace KLCN_TH051_Web.API.Controllers
         // Lấy tất cả phân công
         // -----------------------------------
         [HttpGet]
+        [Authorize(Policy = "TeacherAssignment.ViewAll")]
         public async Task<ActionResult<List<TeacherAssignmentResponse>>> GetAll()
         {
             var assignments = await _service.GetAllAsync();
@@ -32,6 +34,7 @@ namespace KLCN_TH051_Web.API.Controllers
         // Lấy danh sách môn học theo giáo viên
         // -----------------------------------
         [HttpGet("teacher/{teacherId}")]
+        [Authorize(Policy = "TeacherAssignment.ViewByTeacher")]
         public async Task<ActionResult<List<TeacherSubjectResponse>>> GetSubjectsByTeacher(int teacherId)
         {
             var subjects = await _service.GetSubjectsByTeacherAsync(teacherId);
@@ -43,6 +46,8 @@ namespace KLCN_TH051_Web.API.Controllers
         // Tạo phân công mới
         // -----------------------------------
         [HttpPost]
+        [Authorize(Policy = "User.Create")]
+        [Authorize(Policy = "TeacherAssignment.Create")]
         public async Task<ActionResult<TeacherAssignmentResponse>> Create([FromBody] CreateTeacherAssignmentRequest request)
         {
             var assignment = await _service.CreateAsync(request);
@@ -54,6 +59,7 @@ namespace KLCN_TH051_Web.API.Controllers
         // Update phân công
         // -----------------------------------
         [HttpPut("{id}")]
+        [Authorize(Policy = "TeacherAssignment.Edit")]
         public async Task<ActionResult<TeacherAssignmentResponse>> Update(int id, [FromBody] UpdateTeacherAssignmentRequest request)
         {
             var assignment = await _service.UpdateAsync(id, request);
@@ -65,6 +71,7 @@ namespace KLCN_TH051_Web.API.Controllers
         // Xóa phân công
         // -----------------------------------
         [HttpDelete("{id}")]
+        [Authorize(Policy = "TeacherAssignment.Delete")]
         public async Task<ActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);

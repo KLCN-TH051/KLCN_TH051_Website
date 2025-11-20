@@ -106,11 +106,21 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("Course.Create", policy => policy.RequireClaim("Permission", "Course.Create"));
     options.AddPolicy("Course.Edit", policy => policy.RequireClaim("Permission", "Course.Edit"));
+    options.AddPolicy("Course.Submit", policy => policy.RequireClaim("Permission", "Course.Submit"));
+    options.AddPolicy("Course.Approve", policy => policy.RequireClaim("Permission", "Course.Approve"));
     options.AddPolicy("Course.Delete", policy => policy.RequireClaim("Permission", "Course.Delete"));
+    options.AddPolicy("Course.ViewAll", policy => policy.RequireClaim("Permission", "Course.ViewAll"));
     options.AddPolicy("Course.View", policy => policy.RequireClaim("Permission", "Course.View"));
+    options.AddPolicy("Course.TeacherView", policy => policy.RequireClaim("Permission", "Course.TeacherView"));
 
     options.AddPolicy("User.Manage", policy => policy.RequireClaim("Permission", "User.Create", "User.Edit", "User.Delete"));
     options.AddPolicy("Role.Manage", policy => policy.RequireClaim("Permission", "Role.Manage"));
+
+    options.AddPolicy("TeacherAssignment.ViewAll", policy => policy.RequireClaim("Permission", "TeacherAssignment.ViewAll"));
+    options.AddPolicy("TeacherAssignment.ViewByTeacher", policy => policy.RequireClaim("Permission", "TeacherAssignment.ViewByTeacher"));
+    options.AddPolicy("TeacherAssignment.Create", policy => policy.RequireClaim("Permission", "TeacherAssignment.Create"));
+    options.AddPolicy("TeacherAssignment.Edit", policy => policy.RequireClaim("Permission", "TeacherAssignment.Edit"));
+    options.AddPolicy("TeacherAssignment.Delete", policy => policy.RequireClaim("Permission", "TeacherAssignment.Delete"));
     // Thêm thoải mái ở đây nếu cần
 });
 // Đăng ký TeacherAssignmentService
@@ -186,10 +196,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-        var context = services.GetRequiredService<AppDbContext>();
-        context.Database.Migrate(); // Tự động tạo DB + migrate
-
-        await SeedData.Initialize(services); // ← Seed Role + Permission + Admin
+        await SeedData.Initialize(services);
         Console.WriteLine("Seed dữ liệu thành công!");
     }
     catch (Exception ex)
