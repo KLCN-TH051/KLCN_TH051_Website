@@ -46,7 +46,6 @@ namespace KLCN_TH051_Web.API.Controllers
         // Tạo phân công mới
         // -----------------------------------
         [HttpPost]
-        [Authorize(Policy = "User.Create")]
         [Authorize(Policy = "TeacherAssignment.Create")]
         public async Task<ActionResult<TeacherAssignmentResponse>> Create([FromBody] CreateTeacherAssignmentRequest request)
         {

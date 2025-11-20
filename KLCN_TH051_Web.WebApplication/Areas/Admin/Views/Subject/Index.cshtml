@@ -69,6 +69,7 @@
 
 @section Scripts {
     <script src="~/js/api/subjectApi.js"></script>
+    <script src="~/js/components/toast.js"></script>
     <script>
         let editId = null; // lưu id đang edit
         let deleteId = null; // lưu id đang xóa
@@ -105,41 +106,56 @@
                 document.getElementById("modalTitle").innerText = "Thêm môn học";
                 document.getElementById("subjectNameInput").value = "";
                 document.getElementById("subjectDescInput").value = "";
+                document.getElementById("inputError").style.display = "none";
                 subjectModal.show();
             });
 
             // Lưu Thêm/Sửa
-            document.getElementById("btnSave").addEventListener("click", () => {
-                const name = document.getElementById("subjectNameInput").value.trim();
-                const desc = document.getElementById("subjectDescInput").value.trim();
-                if(!name){
-                    document.getElementById("inputError").innerText = "Tên môn học không được để trống!";
-                    document.getElementById("inputError").style.display = "block";
-                    return;
-                }
-                document.getElementById("inputError").style.display = "none";
+        document.getElementById("btnSave").addEventListener("click", async () => {
+            const name = document.getElementById("subjectNameInput").value.trim();
+            const desc = document.getElementById("subjectDescInput").value.trim();
 
-                const data = { name: name, description: desc };
+            if(!name){
+                document.getElementById("inputError").innerText = "Tên môn học không được để trống!";
+                document.getElementById("inputError").style.display = "block";
+                return;
+            }
+            document.getElementById("inputError").style.display = "none";
+
+            const data = { name: name, description: desc };
+
+            try {
                 if(editId){ // sửa
-                    SubjectApi.update(editId, data).then(res => {
-                        subjectModal.hide();
-                        loadSubjects();
-                    });
+                    await SubjectApi.update(editId, data);
+                    subjectModal.hide();
+                    loadSubjects();
+                    Toast.show("Cập nhật môn học thành công!", "success");
                 } else { // thêm
-                    SubjectApi.create(data).then(res => {
-                        subjectModal.hide();
-                        loadSubjects();
-                    });
+                    await SubjectApi.create(data);
+                    subjectModal.hide();
+                    loadSubjects();
+                    Toast.show("Thêm môn học thành công!", "success");
                 }
-            });
+            } catch (err) {
+                // err là object { message: "Môn học đã tồn tại" } từ BE
+                const msg = err?.message || "Lỗi khi lưu môn học";
+                Toast.show(msg, "danger");
+            }
+        });
+
 
             // Xác nhận xóa
             document.getElementById("btnConfirmDelete").addEventListener("click", () => {
                 if(deleteId){
-                    SubjectApi.delete(deleteId).then(res => {
-                        deleteModal.hide();
-                        loadSubjects();
-                    });
+                    SubjectApi.delete(deleteId)
+                        .then(res => {
+                            deleteModal.hide();
+                            loadSubjects();
+                            Toast.show("Xóa môn học thành công!", "success");
+                        })
+                        .catch(err => {
+                            Toast.show("Lỗi khi xóa môn học", "danger");
+                        });
                 }
             });
         });
@@ -150,6 +166,7 @@
             document.getElementById("modalTitle").innerText = "Sửa môn học";
             document.getElementById("subjectNameInput").value = name;
             document.getElementById("subjectDescInput").value = desc;
+            document.getElementById("inputError").style.display = "none";
             subjectModal.show();
         }
 
@@ -160,4 +177,5 @@
         }
     </script>
 }
+
 

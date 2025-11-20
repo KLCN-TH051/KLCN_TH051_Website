@@ -44,8 +44,16 @@ namespace KLCN_TH051_Web.API.Controllers
         public async Task<ActionResult<SubjectResponse>> Create([FromBody] CreateSubjectRequest request)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var result = await _subjectService.CreateAsync(request, userId);
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+
+            try
+            {
+                var result = await _subjectService.CreateAsync(request, userId);
+                return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         // PUT: api/Subjects/5
@@ -54,10 +62,19 @@ namespace KLCN_TH051_Web.API.Controllers
         public async Task<ActionResult<SubjectResponse>> Update(int id, [FromBody] UpdateSubjectRequest request)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var result = await _subjectService.UpdateAsync(id, request, userId);
-            if (result == null) return NotFound();
-            return Ok(result);
+
+            try
+            {
+                var result = await _subjectService.UpdateAsync(id, request, userId);
+                if (result == null) return NotFound();
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
+
 
         // DELETE: api/Subjects/5
         [HttpDelete("{id}")]

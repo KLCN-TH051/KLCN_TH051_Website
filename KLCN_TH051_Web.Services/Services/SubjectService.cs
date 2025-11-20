@@ -24,9 +24,15 @@ namespace KLCN_TH051_Web.Services.Services
         // Tạo môn học
         public async Task<SubjectResponse> CreateAsync(CreateSubjectRequest request, int? adminUserId = null)
         {
+            // Kiểm tra trùng tên
+            bool exists = await _context.Subjects
+                .AnyAsync(s => !s.IsDeleted && s.Name.ToLower() == request.Name.Trim().ToLower());
+            if (exists)
+                throw new InvalidOperationException("Môn học đã tồn tại.");
+
             var subject = new Subject
             {
-                Name = request.Name,
+                Name = request.Name.Trim(),
                 Description = request.Description,
                 CreatedByUserId = adminUserId,
                 CreatedBy = adminUserId?.ToString(),
@@ -46,8 +52,17 @@ namespace KLCN_TH051_Web.Services.Services
             var subject = await _context.Subjects.FindAsync(id);
             if (subject == null || subject.IsDeleted) return null;
 
-            if (!string.IsNullOrWhiteSpace(request.Name))
-                subject.Name = request.Name;
+            // Kiểm tra trùng tên nếu có thay đổi
+            if (!string.IsNullOrWhiteSpace(request.Name) &&
+                request.Name.Trim().ToLower() != subject.Name.ToLower())
+            {
+                bool exists = await _context.Subjects
+                    .AnyAsync(s => !s.IsDeleted && s.Name.ToLower() == request.Name.Trim().ToLower() && s.Id != id);
+                if (exists)
+                    throw new InvalidOperationException("Môn học đã tồn tại.");
+
+                subject.Name = request.Name.Trim();
+            }
 
             if (request.Description != null)
                 subject.Description = request.Description;
@@ -58,6 +73,7 @@ namespace KLCN_TH051_Web.Services.Services
             await _context.SaveChangesAsync();
             return new SubjectResponse(subject);
         }
+
 
         // Soft delete
         public async Task<bool> DeleteAsync(int id, int? adminUserId = null)

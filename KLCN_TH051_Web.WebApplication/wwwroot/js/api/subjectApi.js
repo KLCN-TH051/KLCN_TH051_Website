@@ -19,22 +19,27 @@ window.SubjectApi = {
     // Tạo môn học mới
     create: function (data) {
         return BaseApi.post("/Subjects", data)
-            .then(res => res)
-            .catch(err => {
-                console.error("Lỗi khi tạo môn học:", err);
-                return null;
+            .then(res => {
+                // giả sử BE trả về { success: true/false, message, data }
+                if (res.success === false) {
+                    throw { message: res.message };
+                }
+                return res.data; // trả về object môn học
             });
     },
+
 
     // Cập nhật môn học theo id
     update: function (id, data) {
         return BaseApi.put(`/Subjects/${id}`, data)
-            .then(res => res)
-            .catch(err => {
-                console.error(`Lỗi khi cập nhật môn học ID ${id}:`, err);
-                return null;
+            .then(res => {
+                if (res.success === false) {   // kiểm tra BE trả lỗi
+                    throw { message: res.message };
+                }
+                return res.data;               // trả về môn học đã cập nhật
             });
     },
+
 
     // Xóa môn học theo id
     delete: function (id) {
