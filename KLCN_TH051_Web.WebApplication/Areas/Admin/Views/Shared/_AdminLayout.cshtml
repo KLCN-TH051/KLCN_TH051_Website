@@ -124,7 +124,7 @@
         window.API_URL = "@Configuration["ApiUrl"]"; // URL từ appsettings.json
     </script>
 
-    <script src="~/js/core/BaseApi.js"></script>
+    <script type="module" src="@Url.Content("~/js/core/BaseApi.js")"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @RenderSection("Scripts", required: false)

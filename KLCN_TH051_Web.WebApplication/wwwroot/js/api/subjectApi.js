@@ -1,6 +1,7 @@
 ﻿// wwwroot/js/api/subjectApi.js
-window.SubjectApi = {
-    // Lấy danh sách tất cả môn học
+import BaseApi from "../core/BaseApi.js";
+
+const SubjectApi = {
     getAll: function () {
         return BaseApi.get("/Subjects")
             .then(res => {
@@ -16,32 +17,26 @@ window.SubjectApi = {
             });
     },
 
-    // Tạo môn học mới
     create: function (data) {
         return BaseApi.post("/Subjects", data)
             .then(res => {
-                // giả sử BE trả về { success: true/false, message, data }
                 if (res.success === false) {
                     throw { message: res.message };
                 }
-                return res.data; // trả về object môn học
+                return res.data;
             });
     },
 
-
-    // Cập nhật môn học theo id
     update: function (id, data) {
         return BaseApi.put(`/Subjects/${id}`, data)
             .then(res => {
-                if (res.success === false) {   // kiểm tra BE trả lỗi
+                if (res.success === false) {
                     throw { message: res.message };
                 }
-                return res.data;               // trả về môn học đã cập nhật
+                return res.data;
             });
     },
 
-
-    // Xóa môn học theo id
     delete: function (id) {
         return BaseApi.delete(`/Subjects/${id}`)
             .then(res => res)
@@ -51,3 +46,6 @@ window.SubjectApi = {
             });
     }
 };
+
+// Xuất module để các file con import
+export default SubjectApi;
