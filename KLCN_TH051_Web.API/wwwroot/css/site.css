@@ -1,0 +1,176 @@
+﻿html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+}
+
+/************************************************************/
+/* Layout giúp footer luôn dính ?áy */
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+footer {
+    margin-top: auto !important;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+    footer h6 {
+        text-align: center !important;
+    }
+
+    footer p, footer td {
+        text-align: center !important;
+    }
+
+    footer table {
+        margin: 0 auto;
+    }
+}
+
+/* ===============================
+   HEADER V?I TR?NG THÁI NG??I DÙNG
+   =============================== */
+
+.sub-header {
+    background-color: #0a4275;
+    font-size: 0.9rem;
+}
+
+.edu-navbar {
+    background-color: #1572A1;
+}
+
+    .edu-navbar .navbar-brand span {
+        color: #fff;
+    }
+
+    .edu-navbar .nav-link {
+        color: #f1f5f9 !important;
+        font-weight: 500;
+        margin: 0 0.4rem;
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+        .edu-navbar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff !important;
+        }
+
+        .edu-navbar .nav-link.active {
+            background-color: #1e90ff !important;
+            color: #fff !important;
+            font-weight: 600;
+        }
+
+    /* Dropdown và avatar */
+    .edu-navbar .dropdown-menu {
+        background-color: #ffffff;
+        border: none;
+        border-radius: 0.5rem;
+        min-width: 200px;
+    }
+
+    .edu-navbar .dropdown-item {
+        color: #0a4275;
+        font-weight: 500;
+    }
+
+        .edu-navbar .dropdown-item:hover {
+            background-color: #e9f5ff;
+            color: #0d6efd;
+        }
+
+        .edu-navbar .dropdown-item.text-danger:hover {
+            background-color: #fee2e2;
+        }
+
+/* Avatar nh? h?n trên mobile */
+@media (max-width: 768px) {
+    .edu-navbar .dropdown-toggle img {
+        width: 28px;
+        height: 28px;
+    }
+
+    .sub-header {
+        text-align: center;
+        flex-direction: column;
+    }
+}
+
+/*Layout Share Admin*/
+/* Thêm padding ở top bằng chiều cao của navbar (56px) */
+body {
+   /* padding-top: 56px;*/
+}
+
+/* Container chính dùng flexbox */
+.main-layout-container {
+    display: flex;
+    /* Chiều cao 100% trừ đi navbar */
+    min-height: calc(100vh - 56px);
+}
+
+/* 2. Sidebar (Menu bên trái) */
+.sidebar-nav {
+    width: 250px; /* Độ rộng của sidebar */
+    background-color: #212529; /* Màu dark/black giống trong hình */
+    padding-top: 20px;
+    flex-shrink: 0; /* Không cho sidebar co lại khi màn hình hẹp */
+}
+
+    .sidebar-nav .nav-link {
+        color: #adb5bd; /* Màu chữ sáng cho link */
+        padding: 10px 20px;
+        font-size: 0.95rem;
+    }
+
+        .sidebar-nav .nav-link:hover {
+            color: #fff; /* Màu trắng khi hover */
+            background-color: #343a40; /* Màu nền khi hover */
+        }
+
+        /* Icon trong sidebar */
+        .sidebar-nav .nav-link i {
+            width: 20px; /* Căn lề cho icon */
+            margin-right: 10px;
+        }
+
+
+/* 3. Vùng Nội dung chính (Content Area) */
+.main-content {
+    flex-grow: 1; /* Cho phép vùng nội dung lấp đầy phần còn lại */
+    padding: 24px;
+    /* Màu nền xám nhạt giống trong hình */
+    background-color: #f4f6f9;
+}

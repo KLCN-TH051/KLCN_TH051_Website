@@ -1,0 +1,46 @@
+﻿
+/*Layout Share Admin*/
+/* Thêm padding ở top bằng chiều cao của navbar (56px) */
+body {
+    padding-top: 56px;
+}
+
+/* Container chính dùng flexbox */
+.main-layout-container {
+    display: flex;
+    /* Chiều cao 100% trừ đi navbar */
+    min-height: calc(100vh - 56px);
+}
+
+/* 2. Sidebar (Menu bên trái) */
+.sidebar-nav {
+    width: 250px; /* Độ rộng của sidebar */
+    background-color: #212529; /* Màu dark/black giống trong hình */
+    padding-top: 20px;
+    flex-shrink: 0; /* Không cho sidebar co lại khi màn hình hẹp */
+}
+
+    .sidebar-nav .nav-link {
+        color: #adb5bd; /* Màu chữ sáng cho link */
+        padding: 10px 20px;
+        font-size: 0.95rem;
+    }
+
+        .sidebar-nav .nav-link:hover {
+            color: #fff; /* Màu trắng khi hover */
+            background-color: #343a40; /* Màu nền khi hover */
+        }
+
+        /* Icon trong sidebar */
+        .sidebar-nav .nav-link i {
+            width: 20px; /* Căn lề cho icon */
+            margin-right: 10px;
+        }
+
+/* 3. Vùng Nội dung chính (Content Area) */
+.main-content {
+    flex-grow: 1; /* Cho phép vùng nội dung lấp đầy phần còn lại */
+    padding: 24px;
+    /* Màu nền xám nhạt giống trong hình */
+    background-color: #f4f6f9;
+}

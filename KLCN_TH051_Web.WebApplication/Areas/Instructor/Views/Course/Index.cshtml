@@ -1,6 +1,5 @@
 ﻿@{
     ViewData["Title"] = "Khoá học giảng dạy";
-    var apiBaseUrl = ViewData["ApiUrl"]?.ToString() ?? "https://localhost:7134";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -27,226 +26,44 @@
 </div>
 
 <!-- Modal Thêm/Sửa khóa học -->
-<div class="modal fade" id="courseModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+<div class="modal fade" id="courseModal" tabindex="-1" aria-hidden="true"> 
+     <div class="modal-dialog modal-dialog-centered"> 
+         <div class="modal-content"> 
 
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="courseModalLabel">Thêm khóa học</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
+             <div class="modal-header"> 
+                 <h5 class="modal-title fw-bold" id="courseModalLabel">Thêm khóa học</h5> 
+                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button> 
+             </div> 
 
-            <div class="modal-body">
-                <form id="courseForm">
-                    <input type="hidden" id="courseId" />
-                    <div class="mb-3">
-                        <label class="form-label">Tên khóa học</label>
-                        <input type="text" class="form-control" id="courseName" placeholder="Nhập tên khóa học">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Môn học</label>
-                        <select class="form-select" id="categorySelect">
-                            <option value="">-- Chọn môn học --</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
+             <div class="modal-body"> 
+                 <form id="courseForm"> 
+                     <input type="hidden" id="courseId" /> 
+                     <div class="mb-3"> 
+                         <label class="form-label">Tên khóa học</label> 
+                         <input type="text" class="form-control" id="courseName" placeholder="Nhập tên khóa học"> 
+                     </div> 
+                     <div class="mb-3"> 
+                         <label class="form-label">Môn học</label> 
+                         <select class="form-select" id="categorySelect"> 
+                             <option value=""> Chọn môn học </option> 
+                         </select> 
+                     </div> 
+                 </form> 
+            </div> 
 
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button class="btn btn-primary" id="btnSubmitCourse">Lưu</button>
-            </div>
+           <div class="modal-footer"> 
+                 <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button> 
+                <button class="btn btn-primary" id="btnSubmitCourse">Lưu</button> 
+            </div> 
 
-        </div>
-    </div>
+        </div> 
+</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script>
-    const apiBase = "@apiBaseUrl";
-    const token = localStorage.getItem("teacherToken");
-    const tbody = document.querySelector("table tbody");
-    const categorySelect = document.getElementById("categorySelect");
 
-    // -----------------------------
-    // 1. Parse JWT để lấy teacherId
-    // -----------------------------
-    function parseJwt(token) {
-        if (!token) return null;
-        try {
-            const payload = token.split('.')[1];
-            return JSON.parse(atob(payload));
-        } catch {
-            return null;
-        }
-    }
+@section Scripts {
+    <script type="module" src="~/js/modules/course/course.listTeachers.js"></script>
+    <script type="module" src="~/js/modules/course/course.insert.js"></script>
+}
 
-    const payload = parseJwt(token);
-    console.log("Payload JWT:", payload);
 
-    let teacherId = null;
-    if (payload) {
-        teacherId = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
-    }
-    console.log("TeacherId:", teacherId);
-
-    // -----------------------------
-    // 2. Load môn học của giáo viên
-    // -----------------------------
-    async function loadTeacherSubjects() {
-        if (!token || !teacherId) return;
-
-        try {
-            const res = await axios.get(`${apiBase}/api/TeacherAssignments/teacher/${teacherId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            console.log("Data môn học trả về:", res.data);
-
-            categorySelect.innerHTML = '<option value="">-- Chọn môn học --</option>';
-
-            if (!res.data || res.data.length === 0) {
-                const opt = document.createElement("option");
-                opt.value = "";
-                opt.textContent = "Chưa được phân công môn học nào";
-                categorySelect.appendChild(opt);
-                return;
-            }
-
-            res.data.forEach(sub => {
-                if (!sub.subjectId || !sub.subjectName) return;
-                const option = document.createElement("option");
-                option.value = sub.subjectId;
-                option.textContent = sub.subjectName;
-                categorySelect.appendChild(option);
-            });
-
-        } catch (err) {
-            console.error("Lỗi load môn học:", err);
-            alert("Lỗi load môn học của giáo viên! Kiểm tra console.");
-        }
-    }
-
-    // -----------------------------
-    // 3. Load danh sách khóa học của giáo viên
-    // -----------------------------
-    async function loadCourses() {
-        if (!token) return;
-
-        try {
-            const res = await axios.get(`${apiBase}/api/Course/teacher`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            console.log("Data khóa học:", res.data);
-
-            tbody.innerHTML = "";
-
-            if (!res.data || res.data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="text-center">Chưa có khóa học nào</td></tr>`;
-                return;
-            }
-
-            res.data.forEach(c => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <img src="${c.thumbnail || 'https://placehold.co/80x50'}"
-                                 class="rounded me-2" style="width:80px;height:50px;object-fit:cover;">
-                            <span>${c.name}</span>
-                        </div>
-                    </td>
-                    <td>${c.price?.toLocaleString() || "0"}đ</td>
-                    <td>
-                        <span class="badge ${c.status === "Approved" ? "bg-success" :
-                                             c.status === "Pending" ? "bg-warning" : "bg-secondary"}">
-                            ${c.status}
-                        </span>
-                    </td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-primary me-1" onclick="window.location.href='/Instructor/Course/detail/${c.id}'">
-                            <i class="bi bi-pencil"></i> Sửa
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteCourse(${c.id})">
-                            <i class="bi bi-trash"></i> Xóa
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        } catch (err) {
-            console.error("Lỗi load khóa học:", err);
-            alert("Lỗi load khóa học của giáo viên!");
-        }
-    }
-
-    // -----------------------------
-    // 4. Tạo khóa học Draft và redirect sang chi tiết
-    // -----------------------------
-    document.getElementById("btnSubmitCourse").addEventListener("click", async () => {
-        const name = document.getElementById("courseName").value.trim();
-        const subjectId = categorySelect.value;
-
-        if (!name || !subjectId) {
-            alert("Vui lòng nhập đầy đủ tên khóa học và môn học!");
-            return;
-        }
-
-        try {
-            const res = await axios.post(`${apiBase}/api/Course/draft`, {
-                name: name,
-                subjectId: parseInt(subjectId)
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
-            const course = res.data;
-            if (!course || !course.id) {
-                alert("Tạo khóa học thành công nhưng không lấy được courseId để chuyển trang!");
-                return;
-            }
-
-            // Reset form và đóng modal
-            document.getElementById("courseForm").reset();
-            const modalEl = document.getElementById("courseModal");
-            const modal = bootstrap.Modal.getInstance(modalEl);
-            modal.hide();
-
-            // Redirect sang trang chi tiết
-            window.location.href = `/Instructor/Course/detail/${course.id}`;
-
-        } catch (err) {
-            console.error(err);
-            alert("Lỗi khi tạo khóa học! Kiểm tra console.");
-        }
-    });
-
-    // -----------------------------
-    // 5. Xóa khóa học
-    // -----------------------------
-    async function deleteCourse(courseId) {
-        if (!confirm("Bạn có chắc muốn xóa khóa học này?")) return;
-
-        try {
-            await axios.delete(`${apiBase}/api/Course/${courseId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            alert("Xóa khóa học thành công!");
-            loadCourses();
-        } catch (err) {
-            console.error(err);
-            alert("Lỗi khi xóa khóa học!");
-        }
-    }
-
-    // -----------------------------
-    // 6. Load môn học khi modal mở
-    // -----------------------------
-    document.getElementById("courseModal").addEventListener("show.bs.modal", loadTeacherSubjects);
-
-    // -----------------------------
-    // 7. Load khóa học khi trang load
-    // -----------------------------
-    loadCourses();
-</script>

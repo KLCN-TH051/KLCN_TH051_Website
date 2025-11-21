@@ -1,5 +1,4 @@
-﻿// wwwroot/js/core/BaseApi.js
-const BaseApi = {
+﻿const BaseApi = {
     getToken() {
         return localStorage.getItem("authToken") || "";
     },
@@ -34,15 +33,19 @@ const BaseApi = {
         }).then(this.handleResponse);
     },
 
-    post(path, data) {
-        return fetch(this.getFullUrl(path), {
+    post(path, data, options = {}) {
+        let fetchOptions = {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
                 "Authorization": "Bearer " + this.getToken()
             },
-            body: JSON.stringify(data)
-        }).then(this.handleResponse);
+            body: data
+        };
+        if (!options.isFormData) {
+            fetchOptions.headers["Content-Type"] = "application/json";
+            fetchOptions.body = JSON.stringify(data);
+        }
+        return fetch(this.getFullUrl(path), fetchOptions).then(this.handleResponse);
     },
 
     put(path, data) {
@@ -78,5 +81,4 @@ const BaseApi = {
     }
 };
 
-// Xuất module để import
 export default BaseApi;

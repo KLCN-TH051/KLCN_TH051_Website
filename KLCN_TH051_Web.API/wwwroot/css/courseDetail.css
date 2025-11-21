@@ -1,0 +1,17 @@
+﻿.handle {
+    cursor: grab;
+}
+
+.sortable-ghost {
+    opacity: .5;
+}
+
+.chapter-card {
+    background: #f8f9fa;
+    border-left: 4px solid #0d6efd;
+}
+
+.lesson-item {
+    background-color: #e9f4ff;
+    border-radius: 6px;
+}

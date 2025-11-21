@@ -3,7 +3,7 @@
 namespace KLCN_TH051_Web.WebApplication.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
-    [Route("Instructor/[controller]")]
+    [Route("Instructor/[controller]/[action]")]
     public class CourseController : Controller
     {
         private readonly IWebHostEnvironment _env;

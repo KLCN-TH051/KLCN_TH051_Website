@@ -1,9 +1,10 @@
 ﻿@{
     ViewData["Title"] = "Đăng nhập giáo viên";
     Layout = null;
-    var apiUrl = ViewData["ApiUrl"]?.ToString() ?? "";
-}
 
+    // Xóa dấu "/" dư ở cuối API URL
+    var apiUrl = (ViewData["ApiUrl"]?.ToString() ?? "").TrimEnd('/');
+}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
 
 <div class="container mt-5" style="max-width:400px;">
@@ -22,18 +23,19 @@
     </div>
 </div>
 
-<!-- Thêm thư viện jwt-decode -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
 <script>
-    const apiLogin = "@(apiUrl)/api/Account/login";
+    const apiLogin = "@apiUrl" + "/api/account/login";
 
     document.getElementById("btnLogin").addEventListener("click", async () => {
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
         const errorDiv = document.getElementById("loginError");
+
         errorDiv.style.display = "none";
+        errorDiv.textContent = "";
 
         if (!email || !password) {
             errorDiv.textContent = "Vui lòng nhập email và mật khẩu!";
@@ -44,31 +46,52 @@
         try {
             const res = await axios.post(apiLogin, { email, password });
 
-            if (res.data.success) {
-                const token = res.data.data; // Token JWT trả về từ API
-                localStorage.setItem("teacherToken", token);
-
-                // Giải mã JWT để lấy thông tin role
-                const decoded = jwt_decode(token);
-
-                const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
-                const fullName = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-
-                if (role === "Teacher") {
-                    localStorage.setItem("teacherName", fullName || "");
-                    // Chuyển hướng đến trang giáo viên
-                    window.location.href = "/Instructor/course/Index";
-                } else {
-                    errorDiv.textContent = "Chỉ tài khoản giáo viên mới được phép đăng nhập!";
-                    errorDiv.style.display = "block";
-                }
-            } else {
+            if (!res.data.success) {
                 errorDiv.textContent = res.data.message || "Đăng nhập thất bại!";
                 errorDiv.style.display = "block";
+                return;
             }
+
+            // Lấy token từ API
+            const token = res.data.data?.token ?? res.data.data;
+
+            if (!token) {
+                errorDiv.textContent = "API không trả về token!";
+                errorDiv.style.display = "block";
+                return;
+            }
+
+            // Lưu token
+            localStorage.setItem("authToken", token);
+
+            // Decode JWT
+            const jwtPayload = jwt_decode(token);
+
+            const role = jwtPayload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+            const fullName = jwtPayload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+            const teacherId = jwtPayload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+
+            if (role !== "Teacher") {
+                errorDiv.textContent = "Chỉ tài khoản giáo viên mới được phép đăng nhập!";
+                errorDiv.style.display = "block";
+                return;
+            }
+
+            // Lưu thông tin giáo viên
+            localStorage.setItem("teacherName", fullName || "");
+            localStorage.setItem("teacherId", teacherId);
+
+            // Chuyển hướng
+            window.location.href = "/Instructor/Course/Index";
+
         } catch (err) {
-            console.error(err);
-            errorDiv.textContent = err.response?.data?.message || "Lỗi khi gọi API!";
+            console.error("LOGIN ERROR:", err);
+
+            const msg = err.response?.data?.message
+                || "Không thể kết nối API!"
+                || err.message;
+
+            errorDiv.textContent = msg;
             errorDiv.style.display = "block";
         }
     });
