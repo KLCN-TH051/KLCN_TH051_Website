@@ -79,5 +79,21 @@ namespace KLCN_TH051_Web.API.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("{id}")]
+        [Authorize(Policy = "TeacherAssignment.View")]
+        public async Task<ActionResult<TeacherAssignmentResponse>> GetById(int id)
+        {
+            try
+            {
+                var data = await _service.GetByIdAsync(id);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
     }
 }

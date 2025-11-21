@@ -136,5 +136,28 @@ namespace KLCN_TH051_Web.Services.Services
             await _context.SaveChangesAsync();
             return true;
         }
+        // -----------------------------------
+        // 6. Lấy phân công theo Id
+        // -----------------------------------
+        public async Task<TeacherAssignmentResponse> GetByIdAsync(int id)
+        {
+            var entity = await _context.TeacherAssignments
+                .Include(t => t.Teacher)
+                .Include(t => t.Subject)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (entity == null)
+                throw new Exception("Phân công không tồn tại.");
+
+            return new TeacherAssignmentResponse
+            {
+                Id = entity.Id,
+                TeacherId = entity.TeacherId,
+                TeacherName = entity.Teacher?.FullName,
+                SubjectId = entity.SubjectId,
+                SubjectName = entity.Subject?.Name
+            };
+        }
+
     }
 }

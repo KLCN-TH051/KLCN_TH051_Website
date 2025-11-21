@@ -17,5 +17,7 @@ namespace KLCN_TH051_Website.Common.Interfaces
 
         // Thêm method Update
         Task<TeacherAssignmentResponse> UpdateAsync(int id, UpdateTeacherAssignmentRequest request);
+
+        Task<TeacherAssignmentResponse> GetByIdAsync(int id);
     }
 }

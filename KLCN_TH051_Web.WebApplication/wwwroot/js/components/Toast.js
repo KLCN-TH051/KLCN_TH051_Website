@@ -1,4 +1,6 @@
-﻿window.Toast = (function () {
+﻿// wwwroot/js/components/Toast.js
+
+const Toast = (function () {
 
     // Tạo toast container nếu chưa có
     function ensureContainer() {
@@ -42,7 +44,10 @@
     }
 
     return {
-        show: show
+        show
     };
 
 })();
+
+// Xuất module theo chuẩn ES6
+export default Toast;

@@ -1,6 +1,7 @@
 ﻿// modules/subject/subject.insert.js
 import { loadSubjects } from "./subject.list.js";
 import SubjectApi from "../../api/subjectApi.js";
+import Toast from "../../components/Toast.js"; // <-- import Toast
 
 export function insertSubject() {
     const name = document.getElementById("subjectNameInput").value.trim();

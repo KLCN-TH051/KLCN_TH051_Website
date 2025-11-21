@@ -40,7 +40,8 @@ namespace KLCN_TH051_Website.Common.Configurations
         "TeacherAssignment.ViewByTeacher",
         "TeacherAssignment.Create",
         "TeacherAssignment.Edit",
-        "TeacherAssignment.Delete"
+        "TeacherAssignment.Delete",
+        "TeacherAssignment.View"
     };
     }
 }

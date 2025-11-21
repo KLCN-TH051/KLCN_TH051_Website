@@ -1,6 +1,7 @@
 ﻿// modules/subject/subject.delete.js
 import { loadSubjects } from "./subject.list.js";
 import SubjectApi from "../../api/subjectApi.js";
+import Toast from "../../components/Toast.js"; // <-- import Toast
 
 export function deleteSubject(id) {
     if (!id) return Promise.reject("Chưa chọn ID xóa");
@@ -15,4 +16,3 @@ export function deleteSubject(id) {
             return Promise.reject(err);
         });
 }
-
