@@ -14,6 +14,14 @@
         return url + "api/" + path;
     },
 
+    getFileUrl(path) {
+        // Trả về URL đầy đủ của static file (images, avatars,...)
+        const url = window.API_URL || "";
+        if (!url.endsWith("/")) url += "/";
+        if (path.startsWith("/")) path = path.substring(1);
+        return url + path; // không thêm "api/", vì đây là static file
+    },
+
     handleResponse(res) {
         if (!res.ok) {
             return res.text().then(text => {

@@ -1,13 +1,17 @@
 ﻿@{
     ViewData["Title"] = "Chi tiết khóa học";
-    var apiBaseUrl = ViewData["ApiUrl"]?.ToString() ?? "https://localhost:7134";
+    // var apiBaseUrl = ViewData["ApiUrl"]?.ToString() ?? "https://localhost:7134";
 }
 <link href="~/css/coursedetail.css" rel="stylesheet" />
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
             <!-- ================== THÔNG TIN KHOÁ HỌC ================== -->
-            <h4 class="mb-4">Cập nhật khóa học</h4>
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h4 class="mb-0">Cập nhật khóa học</h4>
+                <span id="courseStatus" class="fs-4">Đang tải...</span>
+            </div>
+
             <form id="courseForm">
                 <div class="row">
                     <div class="col-md-8 mb-3">
@@ -42,6 +46,16 @@
                             <input type="checkbox" class="form-check-input" id="freeCheck">
                             <label class="form-check-label" for="freeCheck">Miễn phí</label>
                         </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Ngày bắt đầu</label>
+                        <input type="datetime-local" class="form-control" id="startDate">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Ngày kết thúc</label>
+                        <input type="datetime-local" class="form-control" id="endDate">
                     </div>
                 </div>
 
