@@ -108,6 +108,25 @@
     </div>
 </div>
 
+<!-- Modal Xóa -->
+<div class="modal fade" id="deleteChapterModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Xác nhận xóa chương</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn <strong>xóa</strong> chương này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="btnConfirmDeleteChapter" class="btn btn-danger">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- ========================== MODAL SỬA CHƯƠNG ========================== -->
 <div class="modal fade" id="updateChapterModal" tabindex="-1">
@@ -266,6 +285,7 @@
     <script type="module" src="~/js/modules/chapter/chapter.loadlist.js"></script>
     <script type="module" src="~/js/modules/chapter/chapter.insert.js"></script>
     <script type="module" src="~/js/modules/chapter/chapter.update.js"></script>
+    <script type="module" src="~/js/modules/chapter/chapter.delete.js"></script>
 }
 
 

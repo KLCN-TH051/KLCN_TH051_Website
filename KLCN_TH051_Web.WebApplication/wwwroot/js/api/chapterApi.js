@@ -22,8 +22,8 @@ const ChapterApi = {
     },
 
     // 5. Xóa chapter
-    delete(id) {
-        return BaseApi.delete(`chapters/${id}`);
+    delete(courseId, id) {
+        return BaseApi.delete(`courses/${courseId}/chapters/${id}`);
     },
 
     // 6. Reorder chapter (POST /api/courses/{courseId}/chapters/reorder)
