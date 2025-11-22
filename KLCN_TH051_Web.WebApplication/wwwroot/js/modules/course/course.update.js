@@ -47,7 +47,6 @@ async function loadCourseDetail() {
         document.getElementById("courseName").value = course.name;
         document.getElementById("coursePrice").value = course.price ?? "";
         document.getElementById("courseDescription").value = course.description ?? "";
-        document.getElementById("freeCheck").checked = course.isFree ?? false;
 
         currentImage = course.thumbnail ?? null;
         previewImg.src = currentImage ? BaseApi.getFileUrl(`images/courses/${currentImage}`) : "";
@@ -129,7 +128,6 @@ document.getElementById("courseForm").addEventListener("submit", async e => {
     const subjectId = document.getElementById("courseCategory").value;
     const price = Number(document.getElementById("coursePrice").value);
     const description = document.getElementById("courseDescription").value;
-    const isFree = document.getElementById("freeCheck").checked;
     const startDate = document.getElementById("startDate").value;
     const endDate = document.getElementById("endDate").value;
 
@@ -146,7 +144,6 @@ document.getElementById("courseForm").addEventListener("submit", async e => {
         subjectId,
         price,
         description,
-        isFree,
         thumbnail: imageName,
         startDate: startDate ? new Date(startDate).toISOString() : null,
         endDate: endDate ? new Date(endDate).toISOString() : null
