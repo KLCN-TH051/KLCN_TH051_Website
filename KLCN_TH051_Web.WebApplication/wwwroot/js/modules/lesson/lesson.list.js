@@ -141,10 +141,10 @@ function getLessonTypeText(lesson) {
 // ==============================
 // Hàm global để edit/delete
 // ==============================
-window.editLesson = (type, id) => {
-    console.log("Edit lesson", type, id);
-    Toast.show("Chức năng chỉnh sửa sẽ được triển khai sau.", "info");
-};
+//window.editLesson = (type, id) => {
+//    console.log("Edit lesson", type, id);
+//    Toast.show("Chức năng chỉnh sửa sẽ được triển khai sau.", "info");
+//};
 
 window.deleteLesson = async id => {
     if (!confirm("Bạn có chắc muốn xóa bài học này?")) return;
