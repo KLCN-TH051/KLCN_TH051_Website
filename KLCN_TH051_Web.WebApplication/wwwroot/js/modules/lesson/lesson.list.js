@@ -11,7 +11,7 @@ export const LessonType = {
 };
 
 // ==============================
-// Cache lesson theo chapterId để render nhanh
+// Cache lesson theo chapterId
 // ==============================
 const lessonCache = {};
 
@@ -22,13 +22,19 @@ export async function loadLessonList(chapterId) {
     const container = document.getElementById(`lesson-list-${chapterId}`);
     if (!container) return;
 
-    // Nếu cache đã có dữ liệu, render từ cache
-    if (Array.isArray(lessonCache[chapterId])) {
-        const lessons = lessonCache[chapterId];
+    // ==========================
+    // Helper render nội dung
+    // ==========================
+    const render = (lessons) => {
         container.innerHTML = lessons.length
             ? lessons.map(renderLessonItem).join("")
             : `<p class="text-muted fst-italic">Chưa có bài học nào.</p>`;
-        return lessons;
+    };
+
+    // Nếu đã có cache → render ngay
+    if (Array.isArray(lessonCache[chapterId])) {
+        render(lessonCache[chapterId]);
+        return lessonCache[chapterId];
     }
 
     container.innerHTML = `<p class="text-muted">Đang tải bài học...</p>`;
@@ -37,12 +43,20 @@ export async function loadLessonList(chapterId) {
         const lessons = await LessonApi.getLessons(chapterId) || [];
         lessonCache[chapterId] = lessons;
 
-        container.innerHTML = lessons.length
-            ? lessons.map(renderLessonItem).join("")
-            : `<p class="text-muted fst-italic">Chưa có bài học nào.</p>`;
+        render(lessons);
+
+        // ==========================
+        // MutationObserver chống mất text
+        // ==========================
+        const observer = new MutationObserver(() => {
+            if (!container.hasChildNodes() || container.textContent.trim() === "") {
+                render(lessons);
+            }
+        });
+
+        observer.observe(container, { childList: true, subtree: true });
 
         return lessons;
-
     } catch (err) {
         console.error(err);
         container.innerHTML = `<p class="text-danger">Không thể tải bài học.</p>`;
@@ -58,14 +72,15 @@ export function appendLessonToDOM(chapterId, lesson) {
     const container = document.getElementById(`lesson-list-${chapterId}`);
     if (!container) return;
 
+    if (!Array.isArray(lessonCache[chapterId])) lessonCache[chapterId] = [];
+
+    // Xoá text mặc định nếu chỉ có thông báo
     const defaultTexts = ["Chưa có bài học", "Đang tải"];
     if (defaultTexts.some(txt => container.textContent.includes(txt))) {
         container.innerHTML = "";
     }
 
     container.insertAdjacentHTML("beforeend", renderLessonItem(lesson));
-
-    if (!Array.isArray(lessonCache[chapterId])) lessonCache[chapterId] = [];
     lessonCache[chapterId].push(lesson);
 }
 
