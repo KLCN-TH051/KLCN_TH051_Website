@@ -12,8 +12,6 @@ namespace KLCN_TH051_Website.Common.DTO.Requests
         public ContentType? Type { get; set; }          
         public string? TextContent { get; set; }
         public string? ImageUrl { get; set; }
-        public string? ImageCaption { get; set; }
-        public string? Format { get; set; }
         public int? Order { get; set; }
     }
 }
