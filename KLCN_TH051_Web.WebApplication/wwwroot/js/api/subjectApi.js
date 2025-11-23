@@ -41,7 +41,12 @@ const SubjectApi = {
         return BaseApi.delete(`/Subjects/${id}`)
             .then(res => res)
             .catch(err => {
-                console.error(`Lỗi khi xóa môn học ID ${id}:`, err);
+                if (err.response) {
+                    // Lỗi từ server, có thể là 400/404/409
+                    console.error(`Lỗi khi xóa môn học ID ${id}:`, err.response.data.message || err.response.statusText);
+                } else {
+                    console.error(`Lỗi khi xóa môn học ID ${id}:`, err.message);
+                }
                 return null;
             });
     }

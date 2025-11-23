@@ -21,8 +21,8 @@ namespace KLCN_TH051_Website.Common.Configurations
                    .IsRequired()
                    .HasMaxLength(500);
 
-            builder.Property(l => l.Description)
-                   .HasMaxLength(1000);
+            //builder.Property(l => l.Description)
+            //       .HasMaxLength(1000);
 
             builder.Property(l => l.OrderNumber)
                    .IsRequired();

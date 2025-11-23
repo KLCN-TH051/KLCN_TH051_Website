@@ -21,15 +21,25 @@ namespace KLCN_TH051_Web.Services.Services
             _context = context;
         }
 
-        // Tạo lesson mới
+        // ============================
+        // CREATE LESSON
+        // ============================
         public async Task<LessonResponse> CreateLessonAsync(int chapterId, CreateLessonRequest request, string creatorId)
         {
-            // Tìm chapter
             var chapter = await _context.Chapters.FindAsync(chapterId);
             if (chapter == null)
                 throw new Exception("Chapter not found");
 
-            // Tự động xác định OrderNumber
+            // ❗ Check duplicate title in same chapter
+            bool isTitleExist = await _context.Lessons
+                .AnyAsync(l => l.ChapterId == chapterId
+                            && !l.IsDeleted
+                            && l.Title.ToLower() == request.Title.ToLower());
+
+            if (isTitleExist)
+                throw new Exception("Lesson title already exists in this chapter");
+
+            // Auto OrderNumber
             int maxOrder = await _context.Lessons
                 .Where(l => l.ChapterId == chapterId && !l.IsDeleted)
                 .MaxAsync(l => (int?)l.OrderNumber) ?? 0;
@@ -38,7 +48,6 @@ namespace KLCN_TH051_Web.Services.Services
             {
                 ChapterId = chapterId,
                 Title = request.Title,
-                Description = request.Description,
                 DurationMinutes = request.DurationMinutes,
                 IsFree = request.IsFree,
                 Type = request.Type,
@@ -53,10 +62,13 @@ namespace KLCN_TH051_Web.Services.Services
             return new LessonResponse(lesson);
         }
 
-        // Lấy danh sách lesson theo chapter
+        // ============================
+        // GET LIST LESSONS BY CHAPTER
+        // ============================
         public async Task<List<LessonResponse>> GetLessonsByChapterAsync(int chapterId, bool includeDeleted = false)
         {
             var query = _context.Lessons.Where(l => l.ChapterId == chapterId);
+
             if (!includeDeleted)
                 query = query.Where(l => !l.IsDeleted);
 
@@ -64,7 +76,9 @@ namespace KLCN_TH051_Web.Services.Services
             return lessons.Select(l => new LessonResponse(l)).ToList();
         }
 
-        // Lấy chi tiết lesson
+        // ============================
+        // GET LESSON DETAIL
+        // ============================
         public async Task<LessonResponse> GetLessonByIdAsync(int id, bool includeDeleted = false)
         {
             var lesson = await _context.Lessons.FindAsync(id);
@@ -74,18 +88,31 @@ namespace KLCN_TH051_Web.Services.Services
             return new LessonResponse(lesson);
         }
 
-        // Cập nhật lesson
+        // ============================
+        // UPDATE LESSON
+        // ============================
         public async Task<LessonResponse> UpdateLessonAsync(int id, UpdateLessonRequest request, string updaterId)
         {
             var lesson = await _context.Lessons.FindAsync(id);
             if (lesson == null || lesson.IsDeleted)
                 throw new Exception("Lesson not found");
 
+            // ❗ Only when Title changes → check duplicate
+            if (!string.IsNullOrEmpty(request.Title) &&
+                request.Title.ToLower() != lesson.Title.ToLower())
+            {
+                bool isTitleExist = await _context.Lessons
+                    .AnyAsync(l => l.ChapterId == lesson.ChapterId
+                                && !l.IsDeleted
+                                && l.Id != id
+                                && l.Title.ToLower() == request.Title.ToLower());
+
+                if (isTitleExist)
+                    throw new Exception("Lesson title already exists in this chapter");
+            }
+
             if (!string.IsNullOrEmpty(request.Title))
                 lesson.Title = request.Title;
-
-            if (!string.IsNullOrEmpty(request.Description))
-                lesson.Description = request.Description;
 
             if (request.DurationMinutes.HasValue)
                 lesson.DurationMinutes = request.DurationMinutes.Value;
@@ -93,7 +120,6 @@ namespace KLCN_TH051_Web.Services.Services
             if (request.IsFree.HasValue)
                 lesson.IsFree = request.IsFree.Value;
 
-            // Cập nhật loại bài học nếu có
             if (request.Type.HasValue)
                 lesson.Type = request.Type.Value;
 
@@ -105,7 +131,9 @@ namespace KLCN_TH051_Web.Services.Services
             return new LessonResponse(lesson);
         }
 
-        // Xóa lesson (soft delete)
+        // ============================
+        // DELETE LESSON
+        // ============================
         public async Task DeleteLessonAsync(int id, string deleterId)
         {
             var lesson = await _context.Lessons.FindAsync(id);
@@ -119,7 +147,9 @@ namespace KLCN_TH051_Web.Services.Services
             await _context.SaveChangesAsync();
         }
 
-        // Reorder lessons
+        // ============================
+        // REORDER LESSONS
+        // ============================
         public async Task ReorderLessonsAsync(int chapterId, List<int> lessonIdsInNewOrder)
         {
             var lessons = await _context.Lessons

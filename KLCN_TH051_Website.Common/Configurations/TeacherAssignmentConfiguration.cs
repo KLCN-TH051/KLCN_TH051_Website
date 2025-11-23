@@ -28,7 +28,7 @@ namespace KLCN_TH051_Website.Common.Configurations
             builder.HasOne(t => t.Subject)
                 .WithMany()
                 .HasForeignKey(t => t.SubjectId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(t => t.Course)
                    .WithMany(c => c.TeacherAssignments)

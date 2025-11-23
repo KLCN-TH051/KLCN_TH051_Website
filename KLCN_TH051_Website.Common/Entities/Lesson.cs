@@ -11,7 +11,7 @@ namespace KLCN_TH051_Website.Common.Entities
     {
         public int Id { get; set; }           // PK
         public string Title { get; set; }
-        public string Description { get; set; }
+        //public string Description { get; set; }
         public int OrderNumber { get; set; }     // Thứ tự bài học trong Chapter
         public int DurationMinutes { get; set; } // Thời lượng ước tính
         public int ChapterId { get; set; }    // FK

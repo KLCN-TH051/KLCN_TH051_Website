@@ -12,7 +12,6 @@ namespace KLCN_TH051_Website.Common.DTO.Responses
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }
         public int OrderNumber { get; set; }
         public int DurationMinutes { get; set; }
         public bool IsFree { get; set; }
@@ -22,7 +21,6 @@ namespace KLCN_TH051_Website.Common.DTO.Responses
         {
             Id = lesson.Id;
             Title = lesson.Title;
-            Description = lesson.Description;
             OrderNumber = lesson.OrderNumber;
             DurationMinutes = lesson.DurationMinutes;
             IsFree = lesson.IsFree;
