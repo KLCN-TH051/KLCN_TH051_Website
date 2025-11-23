@@ -24,8 +24,6 @@ namespace KLCN_TH051_Website.Common.DTO.Responses
             Type = block.Type;
             TextContent = block.TextContent;
             ImageUrl = block.ImageUrl;
-            ImageCaption = block.ImageCaption;
-            Format = block.Format;
             Order = block.Order;
         }
     }

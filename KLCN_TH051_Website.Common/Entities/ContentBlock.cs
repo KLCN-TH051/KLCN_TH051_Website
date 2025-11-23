@@ -15,8 +15,6 @@ namespace KLCN_TH051_Website.Common.Entities
         public ContentType Type { get; set; } // Text hoặc Image
         public string? TextContent { get; set; } // Nếu Type = Text
         public string? ImageUrl { get; set; }    // Nếu Type = Image
-        public string? ImageCaption { get; set; } // Nếu Type = Image
-        public string? Format { get; set; } // Ví dụ: "HTML", "Markdown"
         public int Order { get; set; } = 0; // Thứ tự hiển thị
     }
 }

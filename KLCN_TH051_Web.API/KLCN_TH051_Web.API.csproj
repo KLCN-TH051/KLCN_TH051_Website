@@ -31,6 +31,7 @@
     <Folder Include="DTOs\" />
     <Folder Include="wwwroot\Images\courses\" />
     <Folder Include="wwwroot\Images\avatars\" />
+    <Folder Include="wwwroot\Images\contents\" />
     <Folder Include="wwwroot\js\" />
   </ItemGroup>
 

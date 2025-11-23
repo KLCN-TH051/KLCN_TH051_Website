@@ -39,14 +39,6 @@ namespace KLCN_TH051_Website.Common.Configurations
                    .HasMaxLength(500)
                    .IsRequired(false);
 
-            builder.Property(cb => cb.ImageCaption)
-                   .HasMaxLength(300)
-                   .IsRequired(false);
-
-            builder.Property(cb => cb.Format)
-                   .HasMaxLength(50)
-                   .IsRequired(false);
-
             // Order number (default = 0)
             builder.Property(cb => cb.Order)
                    .HasDefaultValue(0);

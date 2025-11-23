@@ -43,8 +43,6 @@ namespace KLCN_TH051_Web.Services.Services
                 Type = request.Type,
                 TextContent = request.TextContent,
                 ImageUrl = request.ImageUrl,
-                ImageCaption = request.ImageCaption,
-                Format = request.Format,
                 Order = maxOrder + 1,
                 CreatedBy = creatorId,
                 CreatedDate = DateTime.Now
@@ -85,8 +83,6 @@ namespace KLCN_TH051_Web.Services.Services
             block.Type = request.Type ?? block.Type;
             block.TextContent = request.TextContent ?? block.TextContent;
             block.ImageUrl = request.ImageUrl ?? block.ImageUrl;
-            block.ImageCaption = request.ImageCaption ?? block.ImageCaption;
-            block.Format = request.Format ?? block.Format;
 
             block.LastUpdatedBy = updaterId;
             block.LastUpdatedDate = DateTime.Now;
