@@ -7,13 +7,6 @@
         localStorage.setItem("authToken", token);
     },
 
-    getFullUrl(path) {
-        let url = window.API_URL || "";
-        if (!url.endsWith("/")) url += "/";
-        if (path.startsWith("/")) path = path.substring(1);
-        return url + "api/" + path;
-    },
-
     getFileUrl(path) {
         // Trả về URL đầy đủ của static file (images, avatars,...)
         const url = window.API_URL || "";
