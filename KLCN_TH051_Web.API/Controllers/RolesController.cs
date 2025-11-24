@@ -50,27 +50,6 @@ namespace KLCN_TH051_Web.API.Controllers
 
             return Ok(result);
         }
-        // lý do khong dùng phương thức này vì đã có put rồi không dung post nữa
-
-        //[HttpPost("{roleName}/assign-permissions")]
-        //public async Task<IActionResult> AssignPermissions(string roleName, [FromBody] List<string> permissions)
-        //{
-        //    var role = await _roleManager.FindByNameAsync(roleName);
-        //    if (role == null) return NotFound("Role không tồn tại");
-
-        //    var existingClaims = await _roleManager.GetClaimsAsync(role);
-        //    var currentPermClaims = existingClaims.Where(c => c.Type == "Permission").ToList();
-
-        //    foreach (var perm in permissions)
-        //    {
-        //        if (!currentPermClaims.Any(c => c.Value == perm))
-        //        {
-        //            await _roleManager.AddClaimAsync(role, new Claim("Permission", perm));
-        //        }
-        //    }
-
-        //    return Ok("Gán quyền thành công");
-        //}
 
         // 2. CẬP NHẬT TOÀN BỘ QUYỀN CHO ROLE (checkbox list) ← QUAN TRỌNG NHẤT!!!
         [HttpPut("{roleName}/permissions")]
@@ -137,5 +116,27 @@ namespace KLCN_TH051_Web.API.Controllers
             return Ok(allClaims);
         }
 
+
+        // lý do khong dùng phương thức này vì đã có put rồi không dung post nữa
+
+        //[HttpPost("{roleName}/assign-permissions")]
+        //public async Task<IActionResult> AssignPermissions(string roleName, [FromBody] List<string> permissions)
+        //{
+        //    var role = await _roleManager.FindByNameAsync(roleName);
+        //    if (role == null) return NotFound("Role không tồn tại");
+
+        //    var existingClaims = await _roleManager.GetClaimsAsync(role);
+        //    var currentPermClaims = existingClaims.Where(c => c.Type == "Permission").ToList();
+
+        //    foreach (var perm in permissions)
+        //    {
+        //        if (!currentPermClaims.Any(c => c.Value == perm))
+        //        {
+        //            await _roleManager.AddClaimAsync(role, new Claim("Permission", perm));
+        //        }
+        //    }
+
+        //    return Ok("Gán quyền thành công");
+        //}
     }
 }
