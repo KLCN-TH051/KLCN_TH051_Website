@@ -118,6 +118,11 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("TeacherAssignment.Edit", policy => policy.RequireClaim("Permission", "TeacherAssignment.Edit"));
     options.AddPolicy("TeacherAssignment.Delete", policy => policy.RequireClaim("Permission", "TeacherAssignment.Delete"));
     options.AddPolicy("TeacherAssignment.View", policy => policy.RequireClaim("Permission", "TeacherAssignment.View"));
+
+    options.AddPolicy("User.Create", policy => policy.RequireClaim("Permission", "User.Create"));
+    options.AddPolicy("User.Edit", policy => policy.RequireClaim("Permission", "User.Edit"));
+    options.AddPolicy("User.Delete", policy => policy.RequireClaim("Permission", "User.Delete"));
+    options.AddPolicy("User.View", policy => policy.RequireClaim("Permission", "User.View"));
     // Thêm thoải mái ở đây nếu cần
 });
 // Đăng ký TeacherAssignmentService

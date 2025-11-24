@@ -27,6 +27,7 @@ namespace KLCN_TH051_Website.Common.Configurations
         "Course.TeacherView",
 
         // User
+        "User.ViewAll",
         "User.Create",
         "User.Edit",
         "User.Delete",
