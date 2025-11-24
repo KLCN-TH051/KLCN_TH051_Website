@@ -7,12 +7,21 @@
         localStorage.setItem("authToken", token);
     },
 
+    // 👉 BẠN THIẾU HÀM NÀY NÊN NÓ BỊ LỖI
+    getFullUrl(path) {
+        let base = window.API_URL || "";
+
+        if (!base.endsWith("/")) base += "/";
+        if (path.startsWith("/")) path = path.substring(1);
+
+        return base + "api/" + path;
+    },
+
     getFileUrl(path) {
-        // Trả về URL đầy đủ của static file (images, avatars,...)
-        const url = window.API_URL || "";
+        let url = window.API_URL || "";
         if (!url.endsWith("/")) url += "/";
         if (path.startsWith("/")) path = path.substring(1);
-        return url + path; // không thêm "api/", vì đây là static file
+        return url + path;
     },
 
     handleResponse(res) {

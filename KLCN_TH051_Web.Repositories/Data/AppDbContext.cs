@@ -32,7 +32,6 @@ namespace KLCN_TH051_Web.Repositories.Data
 
         public DbSet<Answer> Answers { get; set; }
         public DbSet<Chapter> Chapters { get; set; }
-        public DbSet<ContentBlock> ContentBlocks { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseRating> CourseRatings { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
@@ -44,7 +43,6 @@ namespace KLCN_TH051_Web.Repositories.Data
         public DbSet<QuizAttempt> QuizAttempts { get; set; }
         public DbSet<Quiz> Quizzes { get; set; }
         public DbSet<Subject> Subjects { get; set; }
-        public DbSet<VideoContent> VideoContents { get; set; }
         public DbSet<Banner> Banners { get; set; }
         public DbSet<TeacherAssignment> TeacherAssignments { get; set; }
 
