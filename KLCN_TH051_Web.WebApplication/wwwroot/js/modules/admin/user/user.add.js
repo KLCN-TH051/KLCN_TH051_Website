@@ -14,6 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
         createModal.show();
     });
 
+    // Gọi khi modal Add mở
+    const createModalEl = document.getElementById("createAccountModal");
+    createModalEl.addEventListener("show.bs.modal", () => {
+        loadRoles();
+    });
+
     // Submit form tạo user
     createForm.addEventListener("submit", async (e) => {
         e.preventDefault();
