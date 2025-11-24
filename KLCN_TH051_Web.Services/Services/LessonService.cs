@@ -2,6 +2,7 @@
 using KLCN_TH051_Website.Common.DTO.Requests;
 using KLCN_TH051_Website.Common.DTO.Responses;
 using KLCN_TH051_Website.Common.Entities;
+using KLCN_TH051_Website.Common.Enums;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,39 +22,18 @@ namespace KLCN_TH051_Web.Services.Services
             _context = context;
         }
 
-        // ============================
-        // CREATE LESSON
-        // ============================
-        public async Task<LessonResponse> CreateLessonAsync(int chapterId, CreateLessonRequest request, string creatorId)
+        public async Task<LessonResponse> CreateLessonAsync(CreateLessonRequest request, int chapterId, string createdBy)
         {
-            var chapter = await _context.Chapters.FindAsync(chapterId);
-            if (chapter == null)
-                throw new Exception("Chapter not found");
-
-            // ❗ Check duplicate title in same chapter
-            bool isTitleExist = await _context.Lessons
-                .AnyAsync(l => l.ChapterId == chapterId
-                            && !l.IsDeleted
-                            && l.Title.ToLower() == request.Title.ToLower());
-
-            if (isTitleExist)
-                throw new Exception("Lesson title already exists in this chapter");
-
-            // Auto OrderNumber
-            int maxOrder = await _context.Lessons
-                .Where(l => l.ChapterId == chapterId && !l.IsDeleted)
-                .MaxAsync(l => (int?)l.OrderNumber) ?? 0;
-
+            // chapterId được service nhận trực tiếp, không cần từ request
             var lesson = new Lesson
             {
-                ChapterId = chapterId,
                 Title = request.Title,
-                DurationMinutes = request.DurationMinutes,
-                IsFree = request.IsFree,
                 Type = request.Type,
-                OrderNumber = maxOrder + 1,
-                CreatedBy = creatorId,
-                CreatedDate = DateTime.Now
+                IsFree = request.IsFree,
+                ChapterId = chapterId,
+                CreatedDate = DateTime.Now,
+                CreatedBy = createdBy,
+                IsDeleted = false
             };
 
             _context.Lessons.Add(lesson);
@@ -62,111 +42,76 @@ namespace KLCN_TH051_Web.Services.Services
             return new LessonResponse(lesson);
         }
 
-        // ============================
-        // GET LIST LESSONS BY CHAPTER
-        // ============================
-        public async Task<List<LessonResponse>> GetLessonsByChapterAsync(int chapterId, bool includeDeleted = false)
+
+        public async Task<LessonResponse> UpdateLessonContentAsync(int lessonId, UpdateLessonContentRequest request, string updatedBy)
         {
-            var query = _context.Lessons.Where(l => l.ChapterId == chapterId);
+            var lesson = await _context.Lessons.FindAsync(lessonId);
+            if (lesson == null) throw new Exception("Lesson not found");
+            if (lesson.Type != LessonType.Content) throw new Exception("Lesson type is not Content");
 
-            if (!includeDeleted)
-                query = query.Where(l => !l.IsDeleted);
+            lesson.Title = request.Title ?? lesson.Title;
+            lesson.Content = request.Content ?? lesson.Content;
+            lesson.IsFree = request.IsFree ?? lesson.IsFree;
+            lesson.OrderNumber = request.OrderNumber ?? lesson.OrderNumber;
 
-            var lessons = await query.OrderBy(l => l.OrderNumber).ToListAsync();
-            return lessons.Select(l => new LessonResponse(l)).ToList();
-        }
-
-        // ============================
-        // GET LESSON DETAIL
-        // ============================
-        public async Task<LessonResponse> GetLessonByIdAsync(int id, bool includeDeleted = false)
-        {
-            var lesson = await _context.Lessons.FindAsync(id);
-            if (lesson == null || (!includeDeleted && lesson.IsDeleted))
-                throw new Exception("Lesson not found");
-
-            return new LessonResponse(lesson);
-        }
-
-        // ============================
-        // UPDATE LESSON
-        // ============================
-        public async Task<LessonResponse> UpdateLessonAsync(int id, UpdateLessonRequest request, string updaterId)
-        {
-            var lesson = await _context.Lessons.FindAsync(id);
-            if (lesson == null || lesson.IsDeleted)
-                throw new Exception("Lesson not found");
-
-            // ❗ Only when Title changes → check duplicate
-            if (!string.IsNullOrEmpty(request.Title) &&
-                request.Title.ToLower() != lesson.Title.ToLower())
-            {
-                bool isTitleExist = await _context.Lessons
-                    .AnyAsync(l => l.ChapterId == lesson.ChapterId
-                                && !l.IsDeleted
-                                && l.Id != id
-                                && l.Title.ToLower() == request.Title.ToLower());
-
-                if (isTitleExist)
-                    throw new Exception("Lesson title already exists in this chapter");
-            }
-
-            if (!string.IsNullOrEmpty(request.Title))
-                lesson.Title = request.Title;
-
-            if (request.DurationMinutes.HasValue)
-                lesson.DurationMinutes = request.DurationMinutes.Value;
-
-            if (request.IsFree.HasValue)
-                lesson.IsFree = request.IsFree.Value;
-
-            if (request.Type.HasValue)
-                lesson.Type = request.Type.Value;
-
-            lesson.LastUpdatedBy = updaterId;
             lesson.LastUpdatedDate = DateTime.Now;
+            lesson.LastUpdatedBy = updatedBy;
 
             await _context.SaveChangesAsync();
-
             return new LessonResponse(lesson);
         }
 
-        // ============================
-        // DELETE LESSON
-        // ============================
-        public async Task DeleteLessonAsync(int id, string deleterId)
+        public async Task<LessonResponse> UpdateLessonVideoAsync(int lessonId, UpdateLessonVideoRequest request, string updatedBy)
         {
-            var lesson = await _context.Lessons.FindAsync(id);
-            if (lesson == null || lesson.IsDeleted)
-                throw new Exception("Lesson not found");
+            var lesson = await _context.Lessons.FindAsync(lessonId);
+            if (lesson == null) throw new Exception("Lesson not found");
+            if (lesson.Type != LessonType.Video) throw new Exception("Lesson type is not Video");
+
+            lesson.Title = request.Title ?? lesson.Title;
+            lesson.VideoUrl = request.VideoUrl ?? lesson.VideoUrl;
+            lesson.IsFree = request.IsFree ?? lesson.IsFree;
+            lesson.DurationMinutes = request.DurationMinutes ?? lesson.DurationMinutes;
+            lesson.OrderNumber = request.OrderNumber ?? lesson.OrderNumber;
+
+            lesson.LastUpdatedDate = DateTime.Now;
+            lesson.LastUpdatedBy = updatedBy;
+
+            await _context.SaveChangesAsync();
+            return new LessonResponse(lesson);
+        }
+
+        public async Task<bool> DeleteLessonAsync(int lessonId, string deletedBy)
+        {
+            var lesson = await _context.Lessons.FindAsync(lessonId);
+            if (lesson == null) return false;
 
             lesson.IsDeleted = true;
-            lesson.DeletedBy = deleterId;
             lesson.DeletedTime = DateTime.Now;
+            lesson.DeletedBy = deletedBy;
 
             await _context.SaveChangesAsync();
+            return true;
         }
 
-        // ============================
-        // REORDER LESSONS
-        // ============================
-        public async Task ReorderLessonsAsync(int chapterId, List<int> lessonIdsInNewOrder)
+        public async Task<LessonResponse> GetLessonByIdAsync(int lessonId)
+        {
+            var lesson = await _context.Lessons
+                .Include(l => l.Chapter)
+                .FirstOrDefaultAsync(l => l.Id == lessonId && !l.IsDeleted);
+
+            if (lesson == null) return null;
+
+            return new LessonResponse(lesson);
+        }
+
+        public async Task<IEnumerable<LessonResponse>> GetLessonsByChapterAsync(int chapterId)
         {
             var lessons = await _context.Lessons
-                .Where(l => l.ChapterId == chapterId && lessonIdsInNewOrder.Contains(l.Id))
+                .Where(l => l.ChapterId == chapterId && !l.IsDeleted)
+                .OrderBy(l => l.OrderNumber)
                 .ToListAsync();
 
-            if (lessons.Count != lessonIdsInNewOrder.Count)
-                throw new Exception("Invalid lesson Ids");
-
-            for (int i = 0; i < lessonIdsInNewOrder.Count; i++)
-            {
-                var lesson = lessons.First(l => l.Id == lessonIdsInNewOrder[i]);
-                lesson.OrderNumber = i + 1;
-            }
-
-            await _context.SaveChangesAsync();
+            return lessons.Select(l => new LessonResponse(l));
         }
-
     }
 }

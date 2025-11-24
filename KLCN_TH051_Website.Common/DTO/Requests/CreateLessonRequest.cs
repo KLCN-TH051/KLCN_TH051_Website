@@ -10,8 +10,7 @@ namespace KLCN_TH051_Website.Common.DTO.Requests
     public  class CreateLessonRequest
     {
         public string Title { get; set; }
-        public int DurationMinutes { get; set; }
-        public bool IsFree { get; set; } = false;
         public LessonType Type { get; set; }
+        public bool IsFree { get; set; } = false;
     }
 }

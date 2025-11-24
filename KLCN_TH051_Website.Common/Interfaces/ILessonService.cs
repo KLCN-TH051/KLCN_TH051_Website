@@ -8,24 +8,16 @@ using System.Threading.Tasks;
 
 namespace KLCN_TH051_Website.Common.Interfaces
 {
-    public  interface ILessonService
+    public interface ILessonService
     {
-        // Tạo lesson mới trong chapter (OrderNumber tự động)
-        Task<LessonResponse> CreateLessonAsync(int chapterId, CreateLessonRequest request, string creatorId);
+        // chapterId được truyền trực tiếp vào service, không nằm trong request
+        Task<LessonResponse> CreateLessonAsync(CreateLessonRequest request, int chapterId, string createdBy);
 
-        // Lấy danh sách lesson theo chapter (học sinh không thấy lesson đã xóa)
-        Task<List<LessonResponse>> GetLessonsByChapterAsync(int chapterId, bool includeDeleted = false);
-
-        // Lấy chi tiết lesson
-        Task<LessonResponse> GetLessonByIdAsync(int id, bool includeDeleted = false);
-
-        // Cập nhật lesson
-        Task<LessonResponse> UpdateLessonAsync(int id, UpdateLessonRequest request, string updaterId);
-
-        // Xóa lesson (soft delete)
-        Task DeleteLessonAsync(int id, string deleterId);
-
-        // Tuỳ chọn: đổi thứ tự lesson theo danh sách Id
-        Task ReorderLessonsAsync(int chapterId, List<int> lessonIdsInNewOrder);
+        Task<LessonResponse> UpdateLessonContentAsync(int lessonId, UpdateLessonContentRequest request, string updatedBy);
+        Task<LessonResponse> UpdateLessonVideoAsync(int lessonId, UpdateLessonVideoRequest request, string updatedBy);
+        Task<bool> DeleteLessonAsync(int lessonId, string deletedBy);
+        Task<LessonResponse> GetLessonByIdAsync(int lessonId);
+        Task<IEnumerable<LessonResponse>> GetLessonsByChapterAsync(int chapterId);
     }
+
 }
