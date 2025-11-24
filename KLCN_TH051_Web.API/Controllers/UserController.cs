@@ -14,12 +14,12 @@ namespace KLCN_TH051_Web.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IAccountService _accountService;
 
         public UserController(
             UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
+            RoleManager<ApplicationRole> roleManager,
             IAccountService accountService)
         {
             _userManager = userManager;
@@ -60,13 +60,12 @@ namespace KLCN_TH051_Web.API.Controllers
             {
                 if (!await _roleManager.RoleExistsAsync(model.Role))
                 {
-                    await _roleManager.CreateAsync(new IdentityRole(model.Role));
+                    await _roleManager.CreateAsync(new ApplicationRole { Name = model.Role });
                 }
                 await _userManager.AddToRoleAsync(user, model.Role);
             }
 
             var roles = await _userManager.GetRolesAsync(user);
-
             var response = new UserWithRoleResponse
             {
                 Id = user.Id,
@@ -82,7 +81,7 @@ namespace KLCN_TH051_Web.API.Controllers
         }
 
         /// <summary>
-        /// Lấy danh sách tất cả tài khoản
+        /// Lấy tất cả tài khoản
         /// </summary>
         [HttpGet]
         [Authorize(Policy = "User.View")]
@@ -110,7 +109,7 @@ namespace KLCN_TH051_Web.API.Controllers
         }
 
         /// <summary>
-        /// Lấy chi tiết 1 tài khoản theo Id
+        /// Lấy chi tiết tài khoản theo Id
         /// </summary>
         [HttpGet("{id}")]
         [Authorize(Policy = "User.View")]
@@ -121,7 +120,6 @@ namespace KLCN_TH051_Web.API.Controllers
                 return NotFound(new { message = "Tài khoản không tồn tại" });
 
             var roles = await _userManager.GetRolesAsync(user);
-
             var response = new UserWithRoleResponse
             {
                 Id = user.Id,
@@ -137,7 +135,7 @@ namespace KLCN_TH051_Web.API.Controllers
         }
 
         /// <summary>
-        /// Cập nhật thông tin tài khoản
+        /// Cập nhật tài khoản
         /// </summary>
         [HttpPut("{id}")]
         [Authorize(Policy = "User.Edit")]
@@ -164,14 +162,13 @@ namespace KLCN_TH051_Web.API.Controllers
                     await _userManager.RemoveFromRolesAsync(user, currentRoles);
                     if (!await _roleManager.RoleExistsAsync(model.Role))
                     {
-                        await _roleManager.CreateAsync(new IdentityRole(model.Role));
+                        await _roleManager.CreateAsync(new ApplicationRole { Name = model.Role });
                     }
                     await _userManager.AddToRoleAsync(user, model.Role);
                 }
             }
 
             var updatedRoles = await _userManager.GetRolesAsync(user);
-
             var response = new UserWithRoleResponse
             {
                 Id = user.Id,
@@ -184,6 +181,21 @@ namespace KLCN_TH051_Web.API.Controllers
             };
 
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Xóa tài khoản
+        /// </summary>
+        [HttpDelete("{id}")]
+        [Authorize(Policy = "User.Delete")]
+        public async Task<IActionResult> DeleteAccount(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return NotFound(new { message = "Tài khoản không tồn tại" });
+
+            await _userManager.DeleteAsync(user);
+            return Ok(new { message = "Tài khoản đã xóa" });
         }
 
         /// <summary>
