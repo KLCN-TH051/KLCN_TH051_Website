@@ -23,8 +23,6 @@ namespace KLCN_TH051_Website.Common.Entities
 
         // Một lesson có nhiều nội dung
         public ICollection<LessonProgress>? LessonProgresses { get; set; }
-        public ICollection<ContentBlock>? ContentBlocks { get; set; }
-        public ICollection<VideoContent>? VideoContents { get; set; }
         public ICollection<Quiz>? Quizzes{ get; set; }
         public ICollection<LessonComment>? LessonComments { get; set; }
     }

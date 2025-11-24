@@ -73,10 +73,6 @@ builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
 // Đăng ký LessonService
 builder.Services.AddScoped<ILessonService, LessonService>();
-// Đăng ký ContentBlockService
-builder.Services.AddScoped<IContentBlockService, ContentBlockService>();
-// Đăng ký VideoContentService
-builder.Services.AddScoped<IVideoContentService, VideoContentService>();
 // Đăng ký QuizService
 builder.Services.AddScoped<IQuizService, QuizService>();
 // Đăng ký QuestionService
