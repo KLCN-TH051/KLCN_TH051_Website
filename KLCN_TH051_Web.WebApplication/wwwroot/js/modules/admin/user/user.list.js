@@ -6,6 +6,16 @@ document.addEventListener("DOMContentLoaded", () => {
     loadUsers();
 });
 
+// Lắng nghe yêu cầu refresh từ file khác
+document.addEventListener("refreshUserList", () => {
+    console.log("Refreshing user list...");
+    loadUsers();
+});
+
+// Cho debug / gọi thủ công ngoài console
+window.loadUsers = loadUsers;
+
+
 // Hàm load danh sách user
 async function loadUsers() {
     const tableBody = document.getElementById("accountTableBody");

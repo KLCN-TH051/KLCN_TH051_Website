@@ -31,18 +31,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const result = await UserApi.update(editingUserId, updatedUser);
-            console.log("Updated:", result);
 
             alert("Cập nhật thành công!");
             editModal.hide();
 
-            // Reload lại danh sách user
-            if (window.loadUsers) window.loadUsers();
+            // Gửi yêu cầu refresh danh sách
+            document.dispatchEvent(new Event("refreshUserList"));
 
         } catch (error) {
-            console.error("Lỗi khi cập nhật user:", error);
+            console.error("Lỗi cập nhật user:", error);
             alert("Không thể cập nhật tài khoản!");
         }
+
     });
 
 });
