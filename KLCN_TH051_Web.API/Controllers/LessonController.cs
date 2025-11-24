@@ -1,4 +1,5 @@
 ﻿using KLCN_TH051_Website.Common.DTO.Requests;
+using KLCN_TH051_Website.Common.DTO.Responses;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,74 +16,79 @@ namespace KLCN_TH051_Web.API.Controllers
             _lessonService = lessonService;
         }
 
-        // --------------------------------------------------------------------
-        // CREATE LESSON
-        // POST api/chapters/{chapterId}/lessons
-        // --------------------------------------------------------------------
+        // POST: api/chapters/{chapterId}/lessons
         [HttpPost]
-        public async Task<IActionResult> CreateLesson(int chapterId, [FromBody] CreateLessonRequest request)
+        public async Task<ActionResult<LessonResponse>> CreateLesson(int chapterId, [FromBody] CreateLessonRequest request)
         {
-            string creatorId = User.Identity?.Name ?? "system";
-            var result = await _lessonService.CreateLessonAsync(chapterId, request, creatorId);
-            return Ok(result);
+            try
+            {
+                string createdBy = User.Identity?.Name ?? "system";
+                var lesson = await _lessonService.CreateLessonAsync(request, chapterId, createdBy);
+                return CreatedAtAction(nameof(GetLessonById), new { chapterId = chapterId, lessonId = lesson.Id }, lesson);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // --------------------------------------------------------------------
-        // GET LESSON LIST
-        // GET api/chapters/{chapterId}/lessons
-        // --------------------------------------------------------------------
-        [HttpGet]
-        public async Task<IActionResult> GetLessonsByChapter(int chapterId)
+        // PUT: api/chapters/{chapterId}/lessons/{lessonId}/content
+        [HttpPut("{lessonId}/content")]
+        public async Task<ActionResult<LessonResponse>> UpdateLessonContent(int chapterId, int lessonId, [FromBody] UpdateLessonContentRequest request)
         {
-            var result = await _lessonService.GetLessonsByChapterAsync(chapterId);
-            return Ok(result);
+            try
+            {
+                string updatedBy = User.Identity?.Name ?? "system";
+                var lesson = await _lessonService.UpdateLessonContentAsync(lessonId, request, updatedBy);
+                return Ok(lesson);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // --------------------------------------------------------------------
-        // GET LESSON DETAIL
-        // GET api/chapters/{chapterId}/lessons/{id}
-        // --------------------------------------------------------------------
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetLessonById(int chapterId, int id)
+        // PUT: api/chapters/{chapterId}/lessons/{lessonId}/video
+        [HttpPut("{lessonId}/video")]
+        public async Task<ActionResult<LessonResponse>> UpdateLessonVideo(int chapterId, int lessonId, [FromBody] UpdateLessonVideoRequest request)
         {
-            var result = await _lessonService.GetLessonByIdAsync(id);
-            return Ok(result);
+            try
+            {
+                string updatedBy = User.Identity?.Name ?? "system";
+                var lesson = await _lessonService.UpdateLessonVideoAsync(lessonId, request, updatedBy);
+                return Ok(lesson);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // --------------------------------------------------------------------
-        // UPDATE LESSON
-        // PUT api/chapters/{chapterId}/lessons/{id}
-        // --------------------------------------------------------------------
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLesson(int chapterId, int id, [FromBody] UpdateLessonRequest request)
+        // DELETE: api/chapters/{chapterId}/lessons/{lessonId}
+        [HttpDelete("{lessonId}")]
+        public async Task<ActionResult> DeleteLesson(int chapterId, int lessonId)
         {
-            string updaterId = User.Identity?.Name ?? "system";
-            var result = await _lessonService.UpdateLessonAsync(id, request, updaterId);
-            return Ok(result);
-        }
-
-        // --------------------------------------------------------------------
-        // DELETE LESSON (soft delete)
-        // DELETE api/chapters/{chapterId}/lessons/{id}
-        // --------------------------------------------------------------------
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLesson(int chapterId, int id)
-        {
-            string deleterId = User.Identity?.Name ?? "system";
-            await _lessonService.DeleteLessonAsync(id, deleterId);
+            string deletedBy = User.Identity?.Name ?? "system";
+            var result = await _lessonService.DeleteLessonAsync(lessonId, deletedBy);
+            if (!result) return NotFound();
             return NoContent();
         }
 
-        // --------------------------------------------------------------------
-        // REORDER LESSONS
-        // POST api/chapters/{chapterId}/lessons/reorder
-        // BODY: [3,1,2]
-        // --------------------------------------------------------------------
-        [HttpPost("reorder")]
-        public async Task<IActionResult> ReorderLessons(int chapterId, [FromBody] List<int> lessonIdsInNewOrder)
+        // GET: api/chapters/{chapterId}/lessons/{lessonId}
+        [HttpGet("{lessonId}")]
+        public async Task<ActionResult<LessonResponse>> GetLessonById(int chapterId, int lessonId)
         {
-            await _lessonService.ReorderLessonsAsync(chapterId, lessonIdsInNewOrder);
-            return Ok(new { message = "Lesson order updated successfully" });
+            var lesson = await _lessonService.GetLessonByIdAsync(lessonId);
+            if (lesson == null) return NotFound();
+            return Ok(lesson);
+        }
+
+        // GET: api/chapters/{chapterId}/lessons
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<LessonResponse>>> GetLessonsByChapter(int chapterId)
+        {
+            var lessons = await _lessonService.GetLessonsByChapterAsync(chapterId);
+            return Ok(lessons);
         }
     }
 }
