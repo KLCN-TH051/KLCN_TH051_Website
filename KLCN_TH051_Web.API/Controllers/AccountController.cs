@@ -280,79 +280,79 @@ namespace KLCN_TH051_Web.API.Controllers
         /// [POST] Admin tạo tài khoản giáo viên
         /// 
         /// </summary>
-        [HttpPost("create-teacher")]
-        [Authorize(Roles = "Admin")]  // chỉ admin mới được tạo
-        public async Task<IActionResult> CreateTeacher([FromBody] RegisterTeacherRequest model)
-        {
-            // Lấy creatorId từ token
-            var creatorId = User.FindFirst("id")?.Value
-                            ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //[HttpPost("create-teacher")]
+        //[Authorize(Roles = "Admin")]  // chỉ admin mới được tạo
+        //public async Task<IActionResult> CreateTeacher([FromBody] RegisterTeacherRequest model)
+        //{
+        //    // Lấy creatorId từ token
+        //    var creatorId = User.FindFirst("id")?.Value
+        //                    ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            if (creatorId == null)
-            {
-                return Unauthorized(new
-                {
-                    success = false,
-                    message = "Không xác định được tài khoản tạo."
-                });
-            }
+        //    if (creatorId == null)
+        //    {
+        //        return Unauthorized(new
+        //        {
+        //            success = false,
+        //            message = "Không xác định được tài khoản tạo."
+        //        });
+        //    }
 
-            var result = await _accountService.CreateTeacherAsync(model, creatorId);
+        //    var result = await _accountService.CreateTeacherAsync(model, creatorId);
 
-            // Trả ra kết quả chuẩn REST
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
+        //    // Trả ra kết quả chuẩn REST
+        //    if (!result.Success)
+        //    {
+        //        return BadRequest(result);
+        //    }
 
-            return Ok(result);
-        }
-        // 
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAllAccounts()
-        {
-            var users = await _userManager.Users.ToListAsync();
+        //    return Ok(result);
+        //}
+        //// 
+        //[HttpGet]
+        //[Authorize(Roles = "Admin")]
+        //public async Task<IActionResult> GetAllAccounts()
+        //{
+        //    var users = await _userManager.Users.ToListAsync();
 
-            var result = new List<UserWithRoleResponse>();
+        //    var result = new List<UserWithRoleResponse>();
 
-            foreach (var u in users)
-            {
-                var roles = await _userManager.GetRolesAsync(u);
+        //    foreach (var u in users)
+        //    {
+        //        var roles = await _userManager.GetRolesAsync(u);
 
-                result.Add(new UserWithRoleResponse
-                {
-                    Id = u.Id,
-                    FullName = u.FullName ?? "",
-                    Email = u.Email ?? "",
-                    Role = roles.FirstOrDefault() ?? "",
-                    Avatar = u.Avatar,              // theo migration
-                    IsActive = u.IsActive,          // hoặc check LockoutEnd nếu muốn
-                    CreatedDate = u.CreatedDate
-                });
-            }
+        //        result.Add(new UserWithRoleResponse
+        //        {
+        //            Id = u.Id,
+        //            FullName = u.FullName ?? "",
+        //            Email = u.Email ?? "",
+        //            Role = roles.FirstOrDefault() ?? "",
+        //            Avatar = u.Avatar,              // theo migration
+        //            IsActive = u.IsActive,          // hoặc check LockoutEnd nếu muốn
+        //            CreatedDate = u.CreatedDate
+        //        });
+        //    }
 
-            return Ok(result);
-        }
-        /// <summary>
-        /// Lấy chi tiết 1 tài khoản
-        /// </summary>
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var user = await _accountService.GetAccountByIdAsync(id);
-            if (user == null) return NotFound(new { message = "Tài khoản không tồn tại" });
-            return Ok(user);
-        }
+        //    return Ok(result);
+        //}
+        ///// <summary>
+        ///// Lấy chi tiết 1 tài khoản
+        ///// </summary>
+        //[HttpGet("{id:int}")]
+        //public async Task<IActionResult> GetById(int id)
+        //{
+        //    var user = await _accountService.GetAccountByIdAsync(id);
+        //    if (user == null) return NotFound(new { message = "Tài khoản không tồn tại" });
+        //    return Ok(user);
+        //}
 
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateAccount(int id, [FromBody] UpdateAccountRequest model)
-        {
-            var result = await _accountService.UpdateAccountAsync(id, model);
-            if (!result.Success) return BadRequest(new { result.Message });
-            return Ok(result.Data);
-        }
+        //[HttpPut("{id}")]
+        //[Authorize(Roles = "Admin")]
+        //public async Task<IActionResult> UpdateAccount(int id, [FromBody] UpdateAccountRequest model)
+        //{
+        //    var result = await _accountService.UpdateAccountAsync(id, model);
+        //    if (!result.Success) return BadRequest(new { result.Message });
+        //    return Ok(result.Data);
+        //}
         /// <summary>
         /// Lấy danh sách giáo viên
         /// </summary>
