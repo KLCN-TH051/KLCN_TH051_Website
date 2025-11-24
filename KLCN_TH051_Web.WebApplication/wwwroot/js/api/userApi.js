@@ -1,4 +1,4 @@
-﻿import BaseApi from "./baseApi";
+﻿import BaseApi from "../core/BaseApi.js";
 
 const UserApi = {
     // Lấy tất cả tài khoản
