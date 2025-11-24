@@ -84,7 +84,7 @@ namespace KLCN_TH051_Web.API.Controllers
         /// Lấy tất cả tài khoản
         /// </summary>
         [HttpGet]
-        [Authorize(Policy = "User.View")]
+        [Authorize(Policy = "User.ViewAll")]
         public async Task<IActionResult> GetAllAccounts()
         {
             var users = await _userManager.Users.ToListAsync();

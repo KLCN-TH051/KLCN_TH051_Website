@@ -28,6 +28,7 @@ namespace KLCN_TH051_Website.Common.Configurations
 
         // User
         "User.ViewAll",
+        "User.View",
         "User.Create",
         "User.Edit",
         "User.Delete",
