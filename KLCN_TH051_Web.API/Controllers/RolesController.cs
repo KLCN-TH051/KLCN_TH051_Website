@@ -95,6 +95,21 @@ namespace KLCN_TH051_Web.API.Controllers
             return result.Succeeded ? Ok("Xóa quyền thành công") : BadRequest("Lỗi");
         }
 
+        // GET: api/roles/all
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllRoles()
+        {
+            var roles = await _roleManager.Roles
+                .Select(r => new
+                {
+                    r.Id,
+                    r.Name
+                })
+                .ToListAsync();
+
+            return Ok(roles);
+        }
+
         [HttpGet("claim-values")]
         public async Task<IActionResult> GetClaimValues()
         {
