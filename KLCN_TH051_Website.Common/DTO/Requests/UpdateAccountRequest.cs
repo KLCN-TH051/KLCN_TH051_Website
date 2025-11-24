@@ -13,5 +13,6 @@ namespace KLCN_TH051_Website.Common.DTO.Requests
         public string? Role { get; set; }       // Nếu muốn admin đổi role
         public bool? IsActive { get; set; }     // Kích hoạt / khóa tài khoản
         public string? Avatar { get; set; }     // URL ảnh đại diện
+        public string? NewPassword { get; set; }
     }
 }
