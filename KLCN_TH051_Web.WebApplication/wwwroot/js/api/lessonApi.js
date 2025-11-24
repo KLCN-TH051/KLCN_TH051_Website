@@ -1,57 +1,35 @@
-﻿//import BaseApi from "../core/BaseApi.js";
+﻿import BaseApi from "../core/BaseApi.js";
 
-//const LessonApi = {
-//    // ========================
-//    // CREATE LESSON
-//    // POST /api/chapters/{chapterId}/lessons
-//    // ========================
-//    createLesson(chapterId, data) {
-//        return BaseApi.post(`chapters/${chapterId}/lessons`, data);
-//    },
+const LessonApi = {
+    // 1. Tạo bài học mới
+    createLesson: (chapterId, data) => {
+        return BaseApi.post(`chapters/${chapterId}/lessons`, data);
+    },
 
-//    // ========================
-//    // GET LIST LESSONS
-//    // GET /api/chapters/{chapterId}/lessons
-//    // ========================
-//    getLessons(chapterId) {
-//        return BaseApi.get(`chapters/${chapterId}/lessons`);
-//    },
+    // 2. Cập nhật nội dung bài học
+    updateLessonContent: (chapterId, lessonId, data) => {
+        return BaseApi.put(`chapters/${chapterId}/lessons/${lessonId}/content`, data);
+    },
 
-//    // ========================
-//    // GET LESSON DETAIL
-//    // GET /api/chapters/{chapterId}/lessons/{id}
-//    // ========================
-//    getLessonById(chapterId, lessonId) {
-//        return BaseApi.get(`chapters/${chapterId}/lessons/${lessonId}`);
-//    },
+    // 3. Cập nhật video bài học
+    updateLessonVideo: (chapterId, lessonId, data) => {
+        return BaseApi.put(`chapters/${chapterId}/lessons/${lessonId}/video`, data);
+    },
 
-//    // ========================
-//    // UPDATE LESSON
-//    // PUT /api/chapters/{chapterId}/lessons/{id}
-//    // ========================
-//    updateLesson(chapterId, lessonId, data) {
-//        return BaseApi.put(`chapters/${chapterId}/lessons/${lessonId}`, data);
-//    },
+    // 4. Xóa bài học
+    deleteLesson: (chapterId, lessonId) => {
+        return BaseApi.delete(`chapters/${chapterId}/lessons/${lessonId}`);
+    },
 
-//    // ========================
-//    // DELETE LESSON
-//    // DELETE /api/chapters/{chapterId}/lessons/{id}
-//    // ========================
-//    deleteLesson(chapterId, lessonId) {
-//        return BaseApi.delete(`chapters/${chapterId}/lessons/${lessonId}`);
-//    },
+    // 5. Lấy chi tiết bài học theo Id
+    getLessonById: (chapterId, lessonId) => {
+        return BaseApi.get(`chapters/${chapterId}/lessons/${lessonId}`);
+    },
 
-//    // ========================
-//    // REORDER LESSONS
-//    // POST /api/chapters/{chapterId}/lessons/reorder
-//    // BODY: [3,1,2]
-//    // ========================
-//    reorderLessons(chapterId, lessonIds) {
-//        return BaseApi.post(
-//            `chapters/${chapterId}/lessons/reorder`,
-//            lessonIds
-//        );
-//    }
-//};
+    // 6. Lấy danh sách bài học theo chapter
+    getLessonsByChapter: (chapterId) => {
+        return BaseApi.get(`chapters/${chapterId}/lessons`);
+    }
+};
 
-//export default LessonApi;
+export default LessonApi;
