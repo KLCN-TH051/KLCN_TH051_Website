@@ -19,6 +19,10 @@ const RoleApi = {
     // 4. Lấy tất cả giá trị permission hiện có (claim values)
     getClaimValues: () => {
         return BaseApi.get("roles/claim-values");
+    },
+    // 5. Lấy tất cả role (chỉ Id + Name)
+     getAllRoles: () => {
+        return BaseApi.get("roles/all");
     }
 };
 
