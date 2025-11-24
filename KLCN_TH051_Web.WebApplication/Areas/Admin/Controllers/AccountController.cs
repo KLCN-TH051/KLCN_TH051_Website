@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace YourProject.Areas.Admin.Controllers
+namespace KLCN_TH051_Web.WebApplication.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class AccountController : Controller
