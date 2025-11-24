@@ -24,7 +24,8 @@ namespace KLCN_TH051_Website.Common.Configurations
                    .HasMaxLength(500);
 
             builder.Property(q => q.Description)
-                   .HasMaxLength(1000);
+                   .HasMaxLength(1000)
+                   .IsRequired(false);
 
             builder.Property(q => q.Type)
                    .IsRequired(); // Enum QuizType, EF Core tự map thành int hoặc string tùy cấu hình
@@ -40,22 +41,9 @@ namespace KLCN_TH051_Website.Common.Configurations
 
             // Quan hệ với Lesson
             builder.HasOne(q => q.Lesson)
-                   .WithMany(l => l.Quizzes)
-                   .HasForeignKey(q => q.LessonId)
+                   .WithOne()
+                   .HasForeignKey<Quiz>(q => q.LessonId)
                    .OnDelete(DeleteBehavior.Cascade);
-
-            //// Quan hệ với Questions
-            //builder.HasMany(q => q.Questions)
-            //       .WithOne(qn => qn.Quiz)
-            //       .HasForeignKey(qn => qn.QuizId)
-            //       .OnDelete(DeleteBehavior.Cascade);
-
-            //// Quan hệ với QuizAttempts
-            //builder.HasMany(q => q.Attempts)
-            //       .WithOne(a => a.Quiz)
-            //       .HasForeignKey(a => a.QuizId)
-            //       .OnDelete(DeleteBehavior.Cascade);
-
             // ----------------------------
             // Cấu hình các cột từ BaseEntity
             // ----------------------------

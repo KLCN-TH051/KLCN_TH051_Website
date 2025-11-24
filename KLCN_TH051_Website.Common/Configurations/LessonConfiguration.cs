@@ -18,61 +18,79 @@ namespace KLCN_TH051_Website.Common.Configurations
             builder.HasKey(l => l.Id);
 
             builder.Property(l => l.Title)
-                   .IsRequired()
-                   .HasMaxLength(500);
-
-            //builder.Property(l => l.Description)
-            //       .HasMaxLength(1000);
+                .IsRequired()
+                .HasMaxLength(500);
 
             builder.Property(l => l.OrderNumber)
-                   .IsRequired();
+                .IsRequired();
 
             builder.Property(l => l.DurationMinutes)
-                   .IsRequired();
+                .IsRequired();
 
             builder.Property(l => l.IsFree)
-                   .IsRequired();
+                .HasDefaultValue(false);
 
             // ----------------------------
-            // Thêm trường Type
+            // Enum Type
             // ----------------------------
             builder.Property(l => l.Type)
-                   .IsRequired()
-                   .HasConversion<int>(); // Content=1, Video=2, Quiz=3
+                .IsRequired()
+                .HasConversion<int>()
+                .HasComment("1 = Content, 2 = Video, 3 = Quiz");
 
-            // Liên kết với Chapter
+            // ----------------------------
+            // Content: JSON từ Tiptap
+            // ----------------------------
+            builder.Property(l => l.Content)
+                .HasColumnType("nvarchar(max)")
+                .IsRequired(false);
+
+            // ----------------------------
+            // VideoUrl: link youtube
+            // ----------------------------
+            builder.Property(l => l.VideoUrl)
+                .HasMaxLength(1000)
+                .IsRequired(false);
+
+            // ----------------------------
+            // Relation: Chapter - Lesson
+            // ----------------------------
             builder.HasOne(l => l.Chapter)
-                   .WithMany(c => c.Lessons)
-                   .HasForeignKey(l => l.ChapterId)
-                   .OnDelete(DeleteBehavior.Cascade);
+                .WithMany(c => c.Lessons)
+                .HasForeignKey(l => l.ChapterId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // ----------------------------
-            // Cấu hình các cột từ BaseEntity
+            // Index tối ưu load bài học
             // ----------------------------
+            builder.HasIndex(l => new { l.ChapterId, l.OrderNumber });
 
-            builder.Property(c => c.CreatedDate)
-                   .HasDefaultValueSql("GETDATE()"); // default ngày tạo
+            // ----------------------------
+            // BaseEntity fields
+            // ----------------------------
+            builder.Property(l => l.CreatedDate)
+                .HasDefaultValueSql("GETDATE()");
 
-            builder.Property(c => c.LastUpdatedDate)
-                   .IsRequired(false); // optional
+            builder.Property(l => l.LastUpdatedDate)
+                .IsRequired(false);
 
-            builder.Property(c => c.DeletedTime)
-                   .IsRequired(false); // optional
+            builder.Property(l => l.IsDeleted)
+                .HasDefaultValue(false);
 
-            builder.Property(c => c.IsDeleted)
-                   .HasDefaultValue(false); // mặc định false
+            builder.Property(l => l.DeletedTime)
+                .IsRequired(false);
 
-            builder.Property(c => c.CreatedBy)
-                   .HasMaxLength(50)
-                   .IsRequired(false);
+            builder.Property(l => l.CreatedBy)
+                .HasMaxLength(50)
+                .IsRequired(false);
 
-            builder.Property(c => c.LastUpdatedBy)
-                   .HasMaxLength(50)
-                   .IsRequired(false);
+            builder.Property(l => l.LastUpdatedBy)
+                .HasMaxLength(50)
+                .IsRequired(false);
 
-            builder.Property(c => c.DeletedBy)
-                   .HasMaxLength(50)
-                   .IsRequired(false);
+            builder.Property(l => l.DeletedBy)
+                .HasMaxLength(50)
+                .IsRequired(false);
         }
     }
 }
