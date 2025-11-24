@@ -1,12 +1,8 @@
 ﻿import ChapterApi from "../../api/chapterApi.js";
 import Toast from "../../components/Toast.js";
-import { loadLessonList, renderLessonItem } from "../lesson/lesson.list.js";
 
 const courseId = window.location.pathname.split("/").pop();
 const chapterListContainer = document.getElementById("chapterList");
-
-// cache lesson để render nhanh
-const lessonCache = {};
 
 export async function loadChapterList() {
     if (!courseId) return;
@@ -20,64 +16,30 @@ export async function loadChapterList() {
             return;
         }
 
-        // Duyệt từng chapter
-        chapters.forEach(async chapter => {
+        // Duyệt từng chapter và chỉ render chapter
+        chapters.forEach(chapter => {
             const card = document.createElement("div");
             card.classList.add("chapter-card", "card", "mb-3");
             card.dataset.chapterId = chapter.id;
 
             card.innerHTML = `
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-grip-vertical me-2 handle"></i>
-                    <h6 class="mb-0 fw-bold">Chương ${chapter.order}: ${chapter.name}</h6>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-grip-vertical me-2 handle"></i>
+                        <h6 class="mb-0 fw-bold">Chương ${chapter.order}: ${chapter.name}</h6>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editChapter(${chapter.id})">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger me-1" onclick="deleteChapter(${chapter.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
                 </div>
-                <div>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editChapter(${chapter.id})">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger me-1" onclick="deleteChapter(${chapter.id})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#chapterContent${chapter.id}">
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
-                </div>
-            </div>
-<div id="chapterContent${chapter.id}" class="collapse">
-    <div class="card-body">
-        <button class="btn btn-sm btn-success mb-3 lesson-insert-btn" data-bs-toggle="modal" data-bs-target="#addLessonModal">
-            <i class="bi bi-plus"></i> Thêm bài học
-        </button>
-        <p id="lesson-list-${chapter.id}" class="text-muted">Đang tải bài học...</p>
-    </div>
-</div>
             `;
 
             chapterListContainer.appendChild(card);
-
-            // Preload lesson ngay
-            try {
-                const lessons = await loadLessonList(chapter.id); // trả về lesson
-                lessonCache[chapter.id] = lessons;
-            } catch (err) {
-                console.error(err);
-            }
-
-            // Khi mở collapse, render từ cache nếu có
-            const collapseEl = card.querySelector(`#chapterContent${chapter.id}`);
-            if (collapseEl) {
-                collapseEl.addEventListener('shown.bs.collapse', () => {
-                    const container = document.getElementById(`lesson-list-${chapter.id}`);
-                    if (!container) return;
-
-                    if (lessonCache[chapter.id]) {
-                        container.innerHTML = lessonCache[chapter.id].map(renderLessonItem).join("");
-                    } else {
-                        loadLessonList(chapter.id);
-                    }
-                });
-            }
         });
 
     } catch (err) {
