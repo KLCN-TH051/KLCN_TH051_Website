@@ -194,6 +194,15 @@ namespace KLCN_TH051_Web.API.Controllers
             if (user == null)
                 return NotFound(new { message = "Tài khoản không tồn tại" });
 
+            // Lấy roles của user
+            var roles = await _userManager.GetRolesAsync(user);
+
+            // Nếu có role Admin → không cho xóa
+            if (roles.Contains("Admin"))
+            {
+                return BadRequest(new { message = "Không thể xóa tài khoản Admin" });
+            }
+
             await _userManager.DeleteAsync(user);
             return Ok(new { message = "Tài khoản đã xóa" });
         }
