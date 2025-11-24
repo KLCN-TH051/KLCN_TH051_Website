@@ -21,9 +21,14 @@ namespace KLCN_TH051_Website.Common.Entities
         // Trường xác định loại bài học
         public LessonType Type { get; set; }
 
+        // 1. Dùng cho Type = CONTENT → lưu toàn bộ JSON từ Tiptap
+        public string? Content { get; set; } // NVARCHAR(MAX) – JSON
+
+        // 2. Dùng cho Type = VIDEO
+        public string? VideoUrl { get; set; }        // Ví dụ: https://youtube.com/watch?v=abc123
+        
         // Một lesson có nhiều nội dung
         public ICollection<LessonProgress>? LessonProgresses { get; set; }
-        public ICollection<Quiz>? Quizzes{ get; set; }
         public ICollection<LessonComment>? LessonComments { get; set; }
     }
 }
