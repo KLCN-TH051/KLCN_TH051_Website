@@ -15,9 +15,9 @@ namespace KLCN_TH051_Website.Common.Entities
 
         public string Title { get; set; }
         public string? Description { get; set; }
-        public QuizType Type { get; set; }         // SingleChoice hoặc MultipleChoice
-        public int PassingScore { get; set; }
-        public int TimeLimitMinutes { get; set; }
+        public QuizType Type { get; set; } = QuizType.SingleChoice;         // SingleChoice hoặc MultipleChoice
+        public int PassingScore { get; set; } = 70;
+        public int TimeLimitMinutes { get; set; } = 30;
         public int? MaxAttempts { get; set; }
 
         public ICollection<Question>? Questions { get; set; }
