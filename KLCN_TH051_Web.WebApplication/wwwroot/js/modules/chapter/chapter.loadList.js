@@ -4,6 +4,9 @@ import Toast from "../../components/Toast.js";
 const courseId = window.location.pathname.split("/").pop();
 const chapterListContainer = document.getElementById("chapterList");
 
+// Không còn cache lesson
+// Không import loadLessonList, renderLessonItem
+
 export async function loadChapterList() {
     if (!courseId) return;
 
@@ -16,7 +19,6 @@ export async function loadChapterList() {
             return;
         }
 
-        // Duyệt từng chapter và chỉ render chapter
         chapters.forEach(chapter => {
             const card = document.createElement("div");
             card.classList.add("chapter-card", "card", "mb-3");
@@ -35,6 +37,25 @@ export async function loadChapterList() {
                         <button class="btn btn-sm btn-outline-danger me-1" onclick="deleteChapter(${chapter.id})">
                             <i class="bi bi-trash"></i>
                         </button>
+                        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#chapterContent${chapter.id}">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="chapterContent${chapter.id}" class="collapse">
+                    <div class="card-body">
+                        <button class="btn btn-sm btn-success mb-3 lesson-insert-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#addLessonModal"
+                                data-chapter-id="${chapter.id}">
+                            <i class="bi bi-plus"></i> Thêm bài học
+                        </button>
+
+                        <!-- Giữ khung danh sách bài học nhưng không load -->
+                        <p id="lesson-list-${chapter.id}" class="text-muted">
+                            Chưa tải bài học.
+                        </p>
                     </div>
                 </div>
             `;
@@ -48,5 +69,4 @@ export async function loadChapterList() {
     }
 }
 
-// Load chapter khi DOM sẵn sàng
 document.addEventListener("DOMContentLoaded", loadChapterList);
