@@ -26,17 +26,16 @@ namespace KLCN_TH051_Web.Services.Services
         {
             return "CRS-" + Guid.NewGuid().ToString("N").Substring(0, 10).ToUpper();
         }
-        // -----------------------------------
-        // 1. Tạo khóa học Draft (Name + SubjectId)
-        // -----------------------------------
+
+        // 1. Tạo khóa học Draft
         public async Task<CourseResponse> CreateDraftCourseAsync(string name, int subjectId, int creatorUserId)
         {
             var course = new Course
             {
-                Code = GenerateCourseCode(),        // Sinh tự động mã khóa học
+                Code = GenerateCourseCode(),
                 Name = name,
                 SubjectId = subjectId,
-                CreatedByUserId = creatorUserId,    // Gán ID giáo viên
+                CreatedByUserId = creatorUserId,
                 CreatedDate = DateTime.Now,
                 Status = CoursesStatus.Draft
             };
@@ -44,22 +43,21 @@ namespace KLCN_TH051_Web.Services.Services
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
+            await _context.Entry(course).Reference(c => c.CreatedByUser).LoadAsync();
+
             return new CourseResponse(course);
         }
 
-
-        // -----------------------------------
         // 2. Cập nhật chi tiết khóa học
-        // -----------------------------------
         public async Task<CourseResponse> UpdateCourseAsync(int id, UpdateCourseRequest request)
         {
-            var course = await _context.Courses.FindAsync(id);
-            if (course == null)
-                throw new Exception("Course not found");
+            var course = await _context.Courses
+                .Include(c => c.CreatedByUser)
+                .Include(c => c.Subject)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
-            // ❌ Không cần kiểm tra trạng thái — cho phép sửa ở mọi trạng thái
+            if (course == null) throw new Exception("Course not found");
 
-            // Cập nhật các trường cơ bản
             if (!string.IsNullOrEmpty(request.Name))
                 course.Name = request.Name;
 
@@ -78,7 +76,6 @@ namespace KLCN_TH051_Web.Services.Services
             if (request.EndDate.HasValue)
                 course.EndDate = request.EndDate.Value;
 
-            // 🔥 Sau khi chỉnh sửa → chuyển về trạng thái Draft
             course.Status = CoursesStatus.Draft;
 
             await _context.SaveChangesAsync();
@@ -86,41 +83,33 @@ namespace KLCN_TH051_Web.Services.Services
             return new CourseResponse(course);
         }
 
-
-
-
-
-        // -----------------------------------
         // 3. Gửi khóa học Draft → Pending
-        // -----------------------------------
         public async Task<CourseResponse> SubmitCourseAsync(int id)
         {
-            // Tìm khóa học theo id
-            var course = await _context.Courses.FindAsync(id);
-            if (course == null)
-                throw new Exception("Course not found");
+            var course = await _context.Courses
+                .Include(c => c.CreatedByUser)
+                .Include(c => c.Subject)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
-            // Chỉ gửi duyệt nếu trạng thái là Draft hoặc Rejected
+            if (course == null) throw new Exception("Course not found");
+
             if (course.Status != CoursesStatus.Draft && course.Status != CoursesStatus.Rejected)
-            {
-                // Thay vì ném 500, trả lỗi rõ ràng
                 throw new Exception("Chỉ các khóa học ở trạng thái Draft hoặc Rejected mới được gửi duyệt.");
-            }
 
-            // Cập nhật trạng thái thành Pending
             course.Status = CoursesStatus.Pending;
-
             await _context.SaveChangesAsync();
 
             return new CourseResponse(course);
         }
 
-        // -----------------------------------
         // 4. Admin duyệt/từ chối khóa học
-        // -----------------------------------
         public async Task<CourseResponse> UpdateCourseStatusAsync(int id, CoursesStatus status)
         {
-            var course = await _context.Courses.FindAsync(id);
+            var course = await _context.Courses
+                .Include(c => c.CreatedByUser)
+                .Include(c => c.Subject)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (course == null) throw new Exception("Course not found");
 
             if (status != CoursesStatus.Approved && status != CoursesStatus.Rejected)
@@ -132,9 +121,7 @@ namespace KLCN_TH051_Web.Services.Services
             return new CourseResponse(course);
         }
 
-        // -----------------------------------
         // 5. Xóa khóa học
-        // -----------------------------------
         public async Task<bool> DeleteCourseAsync(int id)
         {
             var course = await _context.Courses.FindAsync(id);
@@ -145,61 +132,50 @@ namespace KLCN_TH051_Web.Services.Services
             return true;
         }
 
-        // -----------------------------------
         // 6. Lấy khóa học theo Id
-        // -----------------------------------
         public async Task<CourseResponse?> GetCourseByIdAsync(int id)
         {
             var course = await _context.Courses
                 .Include(c => c.Subject)
+                .Include(c => c.CreatedByUser)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             return course == null ? null : new CourseResponse(course);
         }
 
-        // -----------------------------------
         // 7. Lấy tất cả khóa học (Admin/Teacher)
-        // -----------------------------------
         public async Task<List<CourseResponse>> GetAllCoursesAsync()
         {
-            var courses = await _context.Courses.Include(c => c.Subject).ToListAsync();
+            var courses = await _context.Courses
+                .Include(c => c.Subject)
+                .Include(c => c.CreatedByUser)
+                .ToListAsync();
+
             return courses.Select(c => new CourseResponse(c)).ToList();
         }
 
-        // -----------------------------------
         // 8. Lấy khóa học đã duyệt (Student view)
-        // -----------------------------------
-        //public async Task<List<CourseResponse>> GetApprovedCoursesAsync()
-        //{
-        //    var courses = await _context.Courses
-        //        .Include(c => c.Subject)
-        //        .Where(c => c.Status == CoursesStatus.Approved)
-        //        .ToListAsync();
-
-        //    return courses.Select(c => new CourseResponse(c)).ToList();
-        //}
         public async Task<List<CourseResponse>> GetApprovedCoursesAsync()
         {
             var courses = await _context.Courses
                 .Include(c => c.Subject)
-                .Include(c => c.CreatedByUser) // Phải có để lấy tên giảng viên
+                .Include(c => c.CreatedByUser)
                 .Where(c => c.Status == CoursesStatus.Approved)
                 .ToListAsync();
 
             return courses.Select(c => new CourseResponse(c)).ToList();
         }
 
-        // 2. Lấy khóa học của giáo viên
+        // 9. Lấy khóa học của giáo viên
         public async Task<List<CourseResponse>> GetCoursesByTeacherAsync(int teacherId)
         {
             var courses = await _context.Courses
                 .Where(c => c.CreatedByUserId == teacherId)
                 .Include(c => c.Subject)
+                .Include(c => c.CreatedByUser)
                 .ToListAsync();
 
             return courses.Select(c => new CourseResponse(c)).ToList();
         }
-
-
     }
 }
