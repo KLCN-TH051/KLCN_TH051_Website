@@ -1,5 +1,6 @@
 ﻿using KLCN_TH051_Website.Common.DTO.Requests;
 using KLCN_TH051_Website.Common.DTO.Responses;
+using KLCN_TH051_Website.Common.Enums;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -89,6 +90,28 @@ namespace KLCN_TH051_Web.API.Controllers
         {
             var lessons = await _lessonService.GetLessonsByChapterAsync(chapterId);
             return Ok(lessons);
+        }
+
+        // GET 
+        [HttpGet("~/api/lesson-types")]
+        public IActionResult GetLessonTypes()
+        {
+            var types = Enum.GetValues(typeof(LessonType))
+                .Cast<LessonType>()
+                .Select(t => new
+                {
+                    value = (int)t,
+                    label = t switch
+                    {
+                        LessonType.Content => "Bài đọc",
+                        LessonType.Video => "Video",
+                        LessonType.Quiz => "Quiz (Bài kiểm tra)",
+                        _ => t.ToString()
+                    }
+                })
+                .OrderBy(t => t.value);
+
+            return Ok(types);
         }
     }
 }

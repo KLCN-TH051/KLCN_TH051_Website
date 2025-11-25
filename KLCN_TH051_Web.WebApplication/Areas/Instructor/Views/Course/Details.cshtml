@@ -230,45 +230,41 @@
     </div>
 </div>
 
-<!-- ========================== MODAL THÊM BÀI HỌC ========================== -->
-<div class="modal fade" id="addLessonModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+<!-- Modal Thêm bài học -->
+<div class="modal fade" id="addLessonModal" tabindex="-1">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Thêm bài học</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Thêm bài học mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-
             <div class="modal-body">
-                <!-- Tên bài học -->
                 <div class="mb-3">
                     <label class="form-label">Tên bài học</label>
-                    <input type="text" id="lessonName" class="form-control" placeholder="Nhập tên bài học">
+                    <input type="text" class="form-control" id="lessonName" placeholder="Nhập tên bài học">
                 </div>
 
-                <!-- Loại bài học -->
                 <div class="mb-3">
                     <label class="form-label">Loại bài học</label>
                     <select class="form-select" id="lessonType">
-                        <!-- JS sẽ load các option từ LessonType -->
+                        <option value="" disabled selected>Chọn loại bài học</option>
                     </select>
                 </div>
 
-                <!-- Cho phép xem trước -->
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="previewCheck">
-                    <label class="form-check-label" for="previewCheck">Cho phép xem trước miễn phí</label>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="previewCheck">
+                    <label class="form-check-label">Bài học miễn phí (Preview)</label>
                 </div>
             </div>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-primary" id="saveLessonBtn">Tạo bài học</button>
+                <button type="button" class="btn btn-primary" id="saveLessonBtn">
+                    Tạo bài học
+                </button>
             </div>
         </div>
     </div>
 </div>
-
 
 
 <!-- ========================== MODAL BÀI ĐỌC ========================== -->
@@ -366,14 +362,33 @@
     </div>
 </div>
 
+<!-- Modal Xóa -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có chắc chắn muốn <strong>xóa</strong> môn học này không?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="btnConfirmDelete" class="btn btn-danger">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
-    <script type="module" src="~/js/modules/course/course.update.js"></script>
-    <script type="module" src="~/js/modules/chapter/chapter.loadlist.js"></script>
-    <script type="module" src="~/js/modules/chapter/chapter.insert.js"></script>
-    <script type="module" src="~/js/modules/chapter/chapter.update.js"></script>
-    <script type="module" src="~/js/modules/chapter/chapter.delete.js"></script>
-    <script type="module" src="~/js/modules/lesson/lesson.list.js"></script>
-    <script type="module" src="~/js/modules/lesson/lesson.insert.js"></script>
+    <script type="module" src="~/js/modules/instructor/course/course.update.js"></script>
+    <script type="module" src="~/js/modules/instructor/chapter/chapter.loadlist.js"></script>
+    <script type="module" src="~/js/modules/instructor/chapter/chapter.insert.js"></script>
+    <script type="module" src="~/js/modules/instructor/chapter/chapter.update.js"></script>
+    <script type="module" src="~/js/modules/instructor/chapter/chapter.delete.js"></script>
+    <script type="module" src="~/js/modules/instructor/lesson/lesson.list.js"></script>
+    <script type="module" src="~/js/modules/instructor/lesson/lesson.insert.js"></script>
 }
 
 

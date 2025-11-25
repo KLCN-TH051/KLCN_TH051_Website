@@ -29,6 +29,11 @@ const LessonApi = {
     // 6. Lấy danh sách bài học theo chapter
     getLessonsByChapter: (chapterId) => {
         return BaseApi.get(`chapters/${chapterId}/lessons`);
+    },
+
+    //7. 
+    getLessonTypes: () => {
+        return BaseApi.get("lesson-types");  // gọi /api/lesson-types
     }
 };
 
