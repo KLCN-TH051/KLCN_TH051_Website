@@ -29,6 +29,20 @@ namespace KLCN_TH051_Web.WebApplication.Areas.Instructor.Controllers
             return View();
         }
 
+        // Controller: CourseController.cs hoặc LessonController.cs
+        public IActionResult LessonDetail(int lessonId, int chapterId, int? courseId = null)
+        {
+            // Dùng để hiển thị breadcrumb, menu, hoặc load danh sách bài học bên cạnh
+            ViewData["CourseId"] = courseId ?? 0;
+            ViewData["ChapterId"] = chapterId;
+            ViewData["LessonId"] = lessonId;
+
+            // Nếu bạn có cấu hình API riêng
+            // ViewData["ApiUrl"] = _configuration["ApiUrl"];
+
+            return View();
+        }
+
     }
 
 }
