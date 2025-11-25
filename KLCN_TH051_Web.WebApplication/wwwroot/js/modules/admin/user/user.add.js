@@ -14,6 +14,12 @@ document.addEventListener("DOMContentLoaded", () => {
         createModal.show();
     });
 
+    // Gọi khi modal Add mở
+    const createModalEl = document.getElementById("createAccountModal");
+    createModalEl.addEventListener("show.bs.modal", () => {
+        loadRoles();
+    });
+
     // Submit form tạo user
     createForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -34,18 +40,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const result = await UserApi.create(newUser);
-            console.log("Created user:", result);
-
             alert("Tạo tài khoản thành công!");
 
             createModal.hide();
 
-            if (window.loadUsers) window.loadUsers();
+            // Gửi tín hiệu yêu cầu refresh danh sách
+            document.dispatchEvent(new Event("refreshUserList"));
 
         } catch (error) {
             console.error("Lỗi tạo tài khoản:", error);
             alert("Không thể tạo tài khoản!");
         }
+
     });
 
 });

@@ -11,6 +11,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalEl = document.getElementById("editAccountModal");
     const editModal = new bootstrap.Modal(modalEl);
 
+    // Gọi khi modal Edit mở
+    const editModalEl = document.getElementById("editAccountModal");
+    editModalEl.addEventListener("show.bs.modal", () => {
+        loadRoles();
+    });
+
     // Submit form chỉnh sửa
     editForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -31,18 +37,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             const result = await UserApi.update(editingUserId, updatedUser);
-            console.log("Updated:", result);
 
             alert("Cập nhật thành công!");
             editModal.hide();
 
-            // Reload lại danh sách user
-            if (window.loadUsers) window.loadUsers();
+            // Gửi yêu cầu refresh danh sách
+            document.dispatchEvent(new Event("refreshUserList"));
 
         } catch (error) {
-            console.error("Lỗi khi cập nhật user:", error);
+            console.error("Lỗi cập nhật user:", error);
             alert("Không thể cập nhật tài khoản!");
         }
+
     });
 
 });

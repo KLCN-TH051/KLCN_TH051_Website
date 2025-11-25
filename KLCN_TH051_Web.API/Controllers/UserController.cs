@@ -145,30 +145,57 @@ namespace KLCN_TH051_Web.API.Controllers
             if (user == null)
                 return NotFound(new { message = "Tài khoản không tồn tại" });
 
+            // -----------------------
+            // CẬP NHẬT THÔNG TIN CƠ BẢN
+            // -----------------------
             user.FullName = model.FullName ?? user.FullName;
             user.Avatar = model.Avatar ?? user.Avatar;
             user.IsActive = model.IsActive ?? user.IsActive;
 
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                return BadRequest(updateResult.Errors);
 
-            // Cập nhật role nếu có
+            // -----------------------
+            // 👉 CẬP NHẬT MẬT KHẨU NẾU CÓ
+            // -----------------------
+            if (!string.IsNullOrEmpty(model.NewPassword))
+            {
+                // Xóa mật khẩu cũ
+                var removePass = await _userManager.RemovePasswordAsync(user);
+                if (!removePass.Succeeded)
+                    return BadRequest(new { message = "Không thể xóa mật khẩu cũ" });
+
+                // Thêm mật khẩu mới
+                var addPass = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                if (!addPass.Succeeded)
+                    return BadRequest(addPass.Errors);
+            }
+
+            // -----------------------
+            // CẬP NHẬT ROLE
+            // -----------------------
             if (!string.IsNullOrEmpty(model.Role))
             {
                 var currentRoles = await _userManager.GetRolesAsync(user);
+
+                // Nếu role mới khác role cũ → thay thế
                 if (!currentRoles.Contains(model.Role))
                 {
                     await _userManager.RemoveFromRolesAsync(user, currentRoles);
+
                     if (!await _roleManager.RoleExistsAsync(model.Role))
                     {
                         await _roleManager.CreateAsync(new ApplicationRole { Name = model.Role });
                     }
+
                     await _userManager.AddToRoleAsync(user, model.Role);
                 }
             }
 
+            // Lấy role mới
             var updatedRoles = await _userManager.GetRolesAsync(user);
+
             var response = new UserWithRoleResponse
             {
                 Id = user.Id,
@@ -182,6 +209,7 @@ namespace KLCN_TH051_Web.API.Controllers
 
             return Ok(response);
         }
+
 
         /// <summary>
         /// Xóa tài khoản
