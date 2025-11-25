@@ -267,27 +267,35 @@
 </div>
 
 
-<!-- ========================== MODAL BÀI ĐỌC ========================== -->
+<!-- MODAL BÀI ĐỌC (dùng chung cho thêm + sửa) -->
 <div class="modal fade" id="editReadingModal" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Chỉnh sửa bài đọc</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Tạo bài đọc mới</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label class="form-label">Tên bài đọc</label>
-                    <input type="text" id="readingTitle" class="form-control" value="Giới thiệu về ASP.NET Core">
+                    <label class="form-label fw-bold">Tên bài đọc</label>
+                    <input type="text" id="readingTitle" class="form-control form-control-lg" placeholder="Nhập tiêu đề bài học">
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Nội dung</label>
-                    <div id="readingEditor" style="height:400px;"></div>
+                    <label class="form-label fw-bold">Nội dung bài học</label>
+                    <div id="readingEditor" style="height:450px; border: 1px solid #ddd; border-radius: 0.375rem;"></div>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="readingFree">
+                    <label class="form-check-label">Bài học này miễn phí (Preview)</label>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" onclick="saveReading()">Lưu</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success btn-lg px-4" onclick="saveReading()">
+                    <i class="bi bi-check2"></i> Lưu bài học
+                </button>
             </div>
         </div>
     </div>
@@ -390,6 +398,7 @@
     <script type="module" src="~/js/modules/instructor/chapter/chapter.delete.js"></script>
     <script type="module" src="~/js/modules/instructor/lesson/lesson.list.js"></script>
     <script type="module" src="~/js/modules/instructor/lesson/lesson.insert.js"></script>
+    <script type="module" src="~/js/modules/instructor/lesson/lesson.updateContent.js"></script>
 }
 
 
@@ -429,7 +438,7 @@
                         <i class="bi bi-plus"></i> Thêm bài học
                     </button>
 
-                    <div class="lesson-list">
+                    @* <div class="lesson-list">
                         <!-- BÀI ĐỌC -->
                         <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
@@ -448,7 +457,7 @@
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </div>
-                        </div>
+                        </div> *@
 
                         <!-- VIDEO -->
                         <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
@@ -504,6 +513,9 @@
 @* <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> *@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
 
 <script>
     // Quill Editor

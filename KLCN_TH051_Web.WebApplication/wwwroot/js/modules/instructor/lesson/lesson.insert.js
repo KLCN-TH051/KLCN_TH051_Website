@@ -1,84 +1,114 @@
-﻿//// wwwroot/js/modules/instructor/lesson/lesson.insert.js
-//import LessonApi from "/js/api/lessonApi.js";
-//import Toast from "/js/components/Toast.js";
+﻿// wwwroot/js/modules/instructor/lesson/lesson.insert.js
+import LessonApi from "/js/api/lessonApi.js";
+import Toast from "/js/components/Toast.js";
 
-//let currentChapterId = null;
-//let lessonTypesLoaded = false;
+let currentChapterId = null;
+let lessonTypesLoaded = false;
 
-//async function loadLessonTypes() {
-//    if (lessonTypesLoaded) return;
+async function loadLessonTypes() {
+    if (lessonTypesLoaded) return;
 
-//    const select = document.getElementById("lessonType");
-//    if (!select) return;
+    const select = document.getElementById("lessonType");
+    if (!select) return;
 
-//    try {
-//        const types = await LessonApi.getLessonTypes();  // DÙNG CHUẨN LessonApi
+    try {
+        const types = await LessonApi.getLessonTypes();
+        select.innerHTML = '<option value="" disabled selected>Chọn loại bài học</option>';
+        types.forEach(type => {
+            const option = document.createElement("option");
+            option.value = type.value;
+            option.textContent = type.label;
+            select.appendChild(option);
+        });
+        lessonTypesLoaded = true;
+    } catch (err) {
+        console.error("Lỗi load loại bài học:", err);
+        select.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+        Toast.show("Không tải được loại bài học!", "danger");
+    }
+}
 
-//        select.innerHTML = '<option value="" disabled selected>Chọn loại bài học</option>';
+document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(initLessonInsert, 100);
+});
 
-//        types.forEach(type => {
-//            const option = document.createElement("option");
-//            option.value = type.value;
-//            option.textContent = type.label;
-//            select.appendChild(option);
-//        });
+function initLessonInsert() {
+    // Mở modal thêm bài học
+    document.body.addEventListener("click", async (e) => {
+        const btn = e.target.closest(".lesson-insert-btn");
+        if (!btn) return;
 
-//        lessonTypesLoaded = true;
-//    } catch (err) {
-//        console.error("Lỗi load loại bài học:", err);
-//        select.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
-//        Toast.show("Không tải được loại bài học!", "danger");
-//    }
-//}
+        currentChapterId = btn.dataset.chapterId;
+        await loadLessonTypes();
 
-//document.addEventListener("DOMContentLoaded", () => {
-//    setTimeout(initLessonInsert, 100);
-//});
+        // Reset form
+        document.getElementById("lessonName").value = "";
+        document.getElementById("lessonType").selectedIndex = 0;
+        document.getElementById("previewCheck").checked = false;
 
-//function initLessonInsert() {
-//    document.body.addEventListener("click", async (e) => {
-//        const btn = e.target.closest(".lesson-insert-btn");
-//        if (!btn) return;
+        // Mở modal
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("addLessonModal")).show();
+    });
 
-//        currentChapterId = btn.dataset.chapterId;
+    // Nút "Tạo bài học" trong modal thêm
+    document.getElementById("saveLessonBtn")?.addEventListener("click", createLesson);
+}
 
-//        // Tự động load loại bài học từ backend qua LessonApi
-//        await loadLessonTypes();
+async function createLesson() {
+    const title = document.getElementById("lessonName")?.value.trim();
+    const typeValue = document.getElementById("lessonType")?.value;
+    const isFree = document.getElementById("previewCheck")?.checked ?? false;
 
-//        // Reset form
-//        document.getElementById("lessonName").value = "";
-//        document.getElementById("lessonType").selectedIndex = 0;
-//        document.getElementById("previewCheck").checked = false;
-//    });
+    if (!title || !typeValue) {
+        Toast.show("Vui lòng nhập tên và chọn loại bài học!", "danger", 4000);
+        return;
+    }
 
-//    document.getElementById("saveLessonBtn").onclick = createLesson;
-//}
+    const type = parseInt(typeValue);
 
-//async function createLesson() {
-//    const title = document.getElementById("lessonName")?.value.trim();
-//    const typeValue = document.getElementById("lessonType")?.value;
-//    const isFree = document.getElementById("previewCheck")?.checked ?? false;
+    try {
+        // BƯỚC 1: TẠO BÀI HỌC TRÊN SERVER
+        const result = await LessonApi.createLesson(currentChapterId, {
+            title,
+            type,
+            isFree
+        });
 
-//    if (!title || !typeValue) {
-//        Toast.show("Vui lòng nhập tên và chọn loại bài học!", "danger", 4000);
-//        return;
-//    }
+        // Lấy lessonId từ response (giả sử API trả về { id: 123, ... })
+        const newLessonId = result.id || result.Id || result.ID;
 
-//    try {
-//        await LessonApi.createLesson(currentChapterId, {
-//            title,
-//            type: parseInt(typeValue),
-//            isFree
-//        });
+        // Đóng modal thêm
+        bootstrap.Modal.getInstance(document.getElementById("addLessonModal")).hide();
 
-//        bootstrap.Modal.getInstance(document.getElementById("addLessonModal")).hide();
+        // BƯỚC 2: TỰ ĐỘNG MỞ MODAL CHI TIẾT THEO LOẠI
+        if (type === 1) {
+            // TYPE = 1 → BÀI ĐỌC → MỞ MODAL NHẬP NỘI DUNG NGAY
+            window.openReadingModal(
+                currentChapterId,
+                newLessonId,
+                title,
+                "",           // content rỗng
+                isFree,
+                true          // isNew = true → hiển thị "Tạo bài đọc mới"
+            );
+        }
+        else if (type === 2) {
+            // TYPE = 2 → VIDEO → bạn làm sau
+            Toast.show("Chức năng thêm Video sẽ làm sau!", "info");
+        }
+        else if (type === 3) {
+            Toast.show("Chức năng Quiz sẽ làm sau!", "info");
+        }
 
-//        const lessons = await LessonApi.getLessonsByChapter(currentChapterId);
-//        window.lessonListModule.renderLessonsIntoChapter(currentChapterId, lessons);
+        // Cập nhật danh sách bài học (hiển thị bài mới ở cuối)
+        const lessons = await LessonApi.getLessonsByChapter(currentChapterId);
+        window.lessonListModule.renderLessonsIntoChapter(currentChapterId, lessons);
 
-//        Toast.show("Tạo bài học thành công!", "success", 3000);
-//    } catch (err) {
-//        console.error(err);
-//        Toast.show("Tạo bài học thất bại!", "danger", 5000);
-//    }
-//}
+        // Thông báo tạo thành công (trước khi vào nhập nội dung)
+        Toast.show("Tạo bài học thành công! Đang mở trình soạn thảo...", "success", 3000);
+
+    } catch (err) {
+        console.error("Tạo bài học thất bại:", err);
+        Toast.show("Tạo bài học thất bại!", "danger", 5000);
+    }
+}
