@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Quản lý tài khoản";
-    var apiUrl = ViewData["ApiUrl"]?.ToString();
+    // var apiUrl = ViewData["ApiUrl"]?.ToString();
 }
 
 <!-- Load FontAwesome -->
@@ -29,7 +29,7 @@
 
     <!-- ===================== TAB VAI TRÒ ===================== -->
     <div class="tab-pane fade" id="tabRoles">
-        @await Html.PartialAsync("Role")
+        @await Html.PartialAsync("~/Areas/Admin/Views/Account/Role.cshtml")
     </div>
 
 </div>
@@ -41,4 +41,7 @@
     <script type="module" src="@Url.Content("~/js/modules/admin/user/user.del.js")"></script>
     <script type="module" src="@Url.Content("~/js/modules/admin/user/roleApi.js")"></script>
     <script type="module" src="@Url.Content("~/js/modules/admin/user/user.roles.js")"></script>
+
+    <script type="module" src="@Url.Content("~/js/modules/admin/role/role.list.js")"></script>
+    <script type="module" src="@Url.Content("~/js/modules/admin/role/role.edit.js")"></script>
 }
