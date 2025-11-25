@@ -58,7 +58,7 @@ namespace KLCN_TH051_Web.Services.Services
             lesson.Title = request.Title ?? lesson.Title;
             lesson.Content = request.Content ?? lesson.Content;
             lesson.IsFree = request.IsFree ?? lesson.IsFree;
-            lesson.OrderNumber = request.OrderNumber ?? lesson.OrderNumber;
+            //lesson.OrderNumber = request.OrderNumber ?? lesson.OrderNumber;
 
             lesson.LastUpdatedDate = DateTime.Now;
             lesson.LastUpdatedBy = updatedBy;
@@ -77,7 +77,7 @@ namespace KLCN_TH051_Web.Services.Services
             lesson.VideoUrl = request.VideoUrl ?? lesson.VideoUrl;
             lesson.IsFree = request.IsFree ?? lesson.IsFree;
             lesson.DurationMinutes = request.DurationMinutes ?? lesson.DurationMinutes;
-            lesson.OrderNumber = request.OrderNumber ?? lesson.OrderNumber;
+            //lesson.OrderNumber = request.OrderNumber ?? lesson.OrderNumber;
 
             lesson.LastUpdatedDate = DateTime.Now;
             lesson.LastUpdatedBy = updatedBy;

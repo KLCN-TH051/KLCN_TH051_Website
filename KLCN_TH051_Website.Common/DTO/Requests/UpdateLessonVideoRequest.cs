@@ -12,6 +12,6 @@ namespace KLCN_TH051_Website.Common.DTO.Requests
         public bool? IsFree { get; set; }
         public string VideoUrl { get; set; }      // bắt buộc nếu type = Video
         public int? DurationMinutes { get; set; } // optional
-        public int? OrderNumber { get; set; }     // optional
+        //public int? OrderNumber { get; set; }     // optional
     }
 }

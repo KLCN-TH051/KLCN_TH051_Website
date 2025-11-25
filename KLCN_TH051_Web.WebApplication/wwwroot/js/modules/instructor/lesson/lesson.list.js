@@ -76,14 +76,35 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// ==================== SỬA BÀI HỌC ====================
-window.editLesson = (chapterId, lessonId, type) => {
-    window.currentEditing = { chapterId, lessonId, type };
-    // Mở modal tương ứng
-    if (type === 1) new bootstrap.Modal(document.getElementById('editReadingModal')).show();
-    if (type === 2) new bootstrap.Modal(document.getElementById('editVideoModal')).show();
-    if (type === 3) new bootstrap.Modal(document.getElementById('editQuizModal')).show();
-};
+//// ==================== SỬA BÀI HỌC ====================
+//window.editLesson = async (chapterId, lessonId, type) => {
+//    try {
+//        // BƯỚC 1: Lấy chi tiết bài học từ server
+//        const lesson = await LessonApi.getLessonById(chapterId, lessonId);
+
+//        // BƯỚC 2: Điền dữ liệu vào các modal tương ứng
+//        if (type === 1) { // Bài đọc
+//            document.getElementById("editReadingTitle").value = lesson.title || "";
+//            document.getElementById("editReadingContent").value = lesson.content || "";
+//            document.getElementById("editReadingFree").checked = lesson.isFree;
+//            new bootstrap.Modal(document.getElementById('editReadingModal')).show();
+//        }
+//        else if (type === 2) { // Video
+//            document.getElementById("editVideoTitle").value = lesson.title || "";
+//            document.getElementById("editVideoUrl").value = lesson.videoUrl || "";
+//            document.getElementById("editVideoDuration").value = lesson.durationMinutes || 0;
+//            document.getElementById("editVideoFree").checked = lesson.isFree;
+//            new bootstrap.Modal(document.getElementById('editVideoModal')).show();
+//        }
+//        else if (type === 3) {
+//            // Quiz xử lý sau
+//            new bootstrap.Modal(document.getElementById('editQuizModal')).show();
+//        }
+//    } catch (err) {
+//        console.error(err);
+//        Toast.show("Không tải được thông tin bài học!", "danger");
+//    }
+//};
 
 // ==================== XÓA BÀI HỌC VỚI MODAL XÁC NHẬN ====================
 // Biến tạm để lưu thông tin bài học cần xóa

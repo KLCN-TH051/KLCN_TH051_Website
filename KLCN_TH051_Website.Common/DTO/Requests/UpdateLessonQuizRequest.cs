@@ -11,6 +11,6 @@ namespace KLCN_TH051_Website.Common.DTO.Requests
         public string? Title { get; set; }
         public bool? IsFree { get; set; }
         public int? DurationMinutes { get; set; } // optional
-        public int? OrderNumber { get; set; }     // optional
+        //public int? OrderNumber { get; set; }     // optional
     }
 }
