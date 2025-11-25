@@ -24,13 +24,18 @@ namespace KLCN_TH051_Web.Services.Services
 
         public async Task<LessonResponse> CreateLessonAsync(CreateLessonRequest request, int chapterId, string createdBy)
         {
-            // chapterId được service nhận trực tiếp, không cần từ request
+            // Lấy số thứ tự lớn nhất hiện có trong chapter
+            var maxOrder = await _context.Lessons
+                .Where(l => l.ChapterId == chapterId && !l.IsDeleted)
+                .MaxAsync(l => (int?)l.OrderNumber) ?? 0;
+
             var lesson = new Lesson
             {
                 Title = request.Title,
                 Type = request.Type,
                 IsFree = request.IsFree,
                 ChapterId = chapterId,
+                OrderNumber = maxOrder + 1, // ✅ tự động tăng
                 CreatedDate = DateTime.Now,
                 CreatedBy = createdBy,
                 IsDeleted = false
@@ -41,6 +46,7 @@ namespace KLCN_TH051_Web.Services.Services
 
             return new LessonResponse(lesson);
         }
+
 
 
         public async Task<LessonResponse> UpdateLessonContentAsync(int lessonId, UpdateLessonContentRequest request, string updatedBy)
@@ -85,13 +91,31 @@ namespace KLCN_TH051_Web.Services.Services
             var lesson = await _context.Lessons.FindAsync(lessonId);
             if (lesson == null) return false;
 
+            int deletedOrder = lesson.OrderNumber;
+            int chapterId = lesson.ChapterId;
+
+            // Xóa lesson
             lesson.IsDeleted = true;
             lesson.DeletedTime = DateTime.Now;
             lesson.DeletedBy = deletedBy;
 
             await _context.SaveChangesAsync();
+
+            // Reorder các lesson còn lại
+            var remainingLessons = await _context.Lessons
+                .Where(l => l.ChapterId == chapterId && !l.IsDeleted && l.OrderNumber > deletedOrder)
+                .ToListAsync();
+
+            foreach (var l in remainingLessons)
+            {
+                l.OrderNumber--; // Giảm order number đi 1
+            }
+
+            await _context.SaveChangesAsync();
+
             return true;
         }
+
 
         public async Task<LessonResponse> GetLessonByIdAsync(int lessonId)
         {
