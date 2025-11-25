@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
             email: document.getElementById("editEmail").value.trim(),
             role: document.getElementById("editRole").value,
             isActive: document.getElementById("editStatus").value === "true",
-            password: document.getElementById("editPassword").value || null,
+            newPassword: document.getElementById("editPassword").value,
             avatar: null // Tạm thời chưa xử lý đổi ảnh
         };
 
@@ -79,7 +79,7 @@ window.editUser = async (id) => {
         document.getElementById("editEmail").value = user.email;
         document.getElementById("editRole").value = user.role;
         document.getElementById("editStatus").value = user.isActive ? "true" : "false";
-        document.getElementById("editPassword").value = "";
+        document.getElementById("editPassword").value;
 
         // Avatar
         document.getElementById("editAvatar").src =
