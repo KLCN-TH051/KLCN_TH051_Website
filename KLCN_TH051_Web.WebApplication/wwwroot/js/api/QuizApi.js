@@ -1,30 +1,32 @@
 ﻿import BaseApi from "../core/BaseApi.js";
 
 const QuizApi = {
-    async getQuiz(lessonId, data) {
-        try {
-            return await BaseApi.get(`Quiz/lesson/${lessonId}`, data);
-        } catch (err) {
-            console.error("Lỗi getQuiz:", err);
-            throw err;
-        }
+    // 1. Tạo quiz mới
+    createQuiz: (quizData) => {
+        // quizData là object theo CreateQuizRequest
+        return BaseApi.post("quiz", quizData);
     },
-    async update(id, data) {
-        try {
-            return await BaseApi.put(`Quiz/${id}`, data);
-        } catch (err) {
-            console.error("Lỗi update:", err);
-            throw err;
-        }
+
+    // 2. Lấy danh sách quiz theo lesson
+    getQuizzesByLesson: (lessonId) => {
+        return BaseApi.get(`quiz/lesson/${lessonId}`);
     },
-    async delete(id) {
-        try {
-            return await BaseApi.delete(`Quiz/${id}`);
-        } catch (err) {
-            console.error("Lỗi delete:", err);
-            throw err;
-        }
+
+    // 3. Lấy chi tiết quiz
+    getQuizById: (quizId) => {
+        return BaseApi.get(`quiz/${quizId}`);
     },
-}
+
+    // 4. Cập nhật quiz
+    updateQuiz: (quizId, quizData) => {
+        // quizData là object theo UpdateQuizRequest
+        return BaseApi.put(`quiz/${quizId}`, quizData);
+    },
+
+    // 5. Xóa quiz (soft delete)
+    deleteQuiz: (quizId) => {
+        return BaseApi.delete(`quiz/${quizId}`);
+    }
+};
 
 export default QuizApi;
