@@ -23,6 +23,11 @@ const RoleApi = {
     // 5. Lấy tất cả role (chỉ Id + Name)
      getAllRoles: () => {
         return BaseApi.get("roles/all");
+    },
+        // 6. Tạo role mới
+    createRole: (roleData) => {
+        // roleData = { name: "Admin", description: "Mô tả role", permissions: ["Permission1","Permission2"] }
+        return BaseApi.post("roles", roleData);
     }
 };
 

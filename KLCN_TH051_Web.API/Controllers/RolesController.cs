@@ -1,4 +1,5 @@
-﻿using KLCN_TH051_Website.Common.Entities;
+﻿using KLCN_TH051_Website.Common.DTO.Requests;
+using KLCN_TH051_Website.Common.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -129,6 +130,43 @@ namespace KLCN_TH051_Web.API.Controllers
             }
 
             return Ok(allClaims);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Name))
+                return BadRequest("Tên role không được để trống");
+
+            var existingRole = await _roleManager.FindByNameAsync(request.Name);
+            if (existingRole != null)
+                return BadRequest("Role đã tồn tại");
+
+            var role = new ApplicationRole
+            {
+                Name = request.Name
+            };
+
+            var result = await _roleManager.CreateAsync(role);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+            // Nếu có danh sách quyền ngay khi tạo, thêm luôn
+            if (request.Permissions != null && request.Permissions.Count > 0)
+            {
+                foreach (var perm in request.Permissions)
+                {
+                    await _roleManager.AddClaimAsync(role, new Claim("Permission", perm));
+                }
+            }
+
+            return Ok(new
+            {
+                role.Id,
+                role.Name,
+                Permissions = request.Permissions ?? new List<string>()
+            });
         }
 
 
