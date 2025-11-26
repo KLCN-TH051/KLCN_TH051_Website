@@ -138,35 +138,17 @@ namespace KLCN_TH051_Web.API.Controllers
             if (string.IsNullOrWhiteSpace(request.Name))
                 return BadRequest("Tên role không được để trống");
 
-            var existingRole = await _roleManager.FindByNameAsync(request.Name);
-            if (existingRole != null)
+            var exists = await _roleManager.RoleExistsAsync(request.Name);
+            if (exists)
                 return BadRequest("Role đã tồn tại");
 
-            var role = new ApplicationRole
-            {
-                Name = request.Name
-            };
-
+            var role = new ApplicationRole { Name = request.Name };
             var result = await _roleManager.CreateAsync(role);
 
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
+            if (result.Succeeded)
+                return Ok(new { role.Id, role.Name });
 
-            // Nếu có danh sách quyền ngay khi tạo, thêm luôn
-            if (request.Permissions != null && request.Permissions.Count > 0)
-            {
-                foreach (var perm in request.Permissions)
-                {
-                    await _roleManager.AddClaimAsync(role, new Claim("Permission", perm));
-                }
-            }
-
-            return Ok(new
-            {
-                role.Id,
-                role.Name,
-                Permissions = request.Permissions ?? new List<string>()
-            });
+            return BadRequest(result.Errors);
         }
 
 
