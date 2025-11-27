@@ -3,101 +3,208 @@ import Toast from "/js/components/Toast.js";
 
 window.currentQuizEdit = null;
 
-// === MỞ MODAL QUIZ (tạo mới hoặc sửa) ===
+/* ============================================================
+   MỞ MODAL QUIZ (TẠO MỚI HOẶC SỬA)
+============================================================ */
 window.openQuizModal = (chapterId, lessonId, title, quiz = null, isNew = false) => {
     window.currentQuizEdit = {
         chapterId: parseInt(chapterId),
         lessonId: parseInt(lessonId),
         quizId: quiz?.id ?? null,
-        quizTitle: title || "",
         isNew
     };
 
     const modalEl = document.getElementById("editQuizModal");
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
 
-    // Điền dữ liệu
-    document.getElementById("quizTitle").value = quiz?.title || title || "";
+    // --- Title quiz: ẩn và không dùng → luôn để rỗng ---
+    document.getElementById("quizTitle").value = "";
+
+    // --- Description ---
     document.getElementById("quizDescription").value = quiz?.description || "";
-    document.getElementById("quizPassingScore").value = quiz?.passingScore ?? 0;
-    document.getElementById("quizTimeLimit").value = quiz?.timeLimitMinutes ?? 0;
-    document.getElementById("quizMaxAttempts").value = quiz?.maxAttempts ?? 0;
+
+    // --- Reset khu vực câu hỏi ---
+    const qList = document.getElementById("quizQuestionList");
+    qList.innerHTML = "";
+
+    // --- Nếu đang sửa quiz cũ → load câu hỏi ---
+    if (quiz?.questions?.length > 0) {
+        renderQuestions(quiz.questions);
+    }
 
     // Tiêu đề modal
     modalEl.querySelector(".modal-title").textContent = isNew ? "Tạo Quiz mới" : "Chỉnh sửa Quiz";
 
     modal.show();
 
-    // Reset khi đóng
+    // Reset khi đóng modal
     modalEl.addEventListener("hidden.bs.modal", () => {
         window.currentQuizEdit = null;
-        document.getElementById("quizTitle").value = "";
         document.getElementById("quizDescription").value = "";
-        document.getElementById("quizPassingScore").value = 0;
-        document.getElementById("quizTimeLimit").value = 0;
-        document.getElementById("quizMaxAttempts").value = 0;
+        document.getElementById("quizQuestionList").innerHTML = "";
     }, { once: true });
 };
 
-// === LƯU QUIZ ===
-document.getElementById("btnSaveQuiz")?.addEventListener("click", async () => {
+/* ============================================================
+   RENDER DANH SÁCH CÂU HỎI
+============================================================ */
+function renderQuestions(questions) {
+    const container = document.getElementById("quizQuestionList");
+    container.innerHTML = "";
+
+    questions.forEach((q, index) => {
+        container.insertAdjacentHTML("beforeend", questionTemplate(q, index));
+    });
+}
+
+function questionTemplate(question, index) {
+    const optsHtml = (question.options || [])
+        .map((opt, i) => {
+            return `
+                <div class="input-group mb-2">
+                    <span class="input-group-text">${String.fromCharCode(65 + i)}</span>
+                    <input class="form-control option-text" value="${opt.text || ""}" data-opt-id="${opt.id}">
+                    <span class="input-group-text">
+                        <input type="checkbox" class="form-check-input option-correct" ${opt.isCorrect ? "checked" : ""}>
+                    </span>
+                </div>
+            `;
+        })
+        .join("");
+
+    return `
+        <div class="card mb-3 quiz-question-item" data-q-id="${question.id}">
+            <div class="card-body">
+                <label class="form-label">Câu hỏi ${index + 1}</label>
+                <textarea class="form-control mb-2 question-content">${question.content || ""}</textarea>
+
+                <div class="question-options">
+                    ${optsHtml}
+                </div>
+
+                <button class="btn btn-sm btn-outline-primary" onclick="addOption(this)">
+                    + Thêm đáp án
+                </button>
+
+                <button class="btn btn-sm btn-outline-danger float-end" onclick="removeQuestion(this)">
+                    Xóa câu hỏi
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+/* ============================================================
+   THÊM / XÓA CÂU HỎI
+============================================================ */
+window.addQuestion = () => {
+    const container = document.getElementById("quizQuestionList");
+
+    const blankQ = {
+        id: null,
+        content: "",
+        options: []
+    };
+
+    container.insertAdjacentHTML("beforeend", questionTemplate(blankQ, container.children.length));
+};
+
+window.removeQuestion = (btn) => {
+    btn.closest(".quiz-question-item")?.remove();
+};
+
+/* ============================================================
+   THÊM ĐÁP ÁN
+============================================================ */
+window.addOption = (btn) => {
+    const optionsWrap = btn.closest(".quiz-question-item").querySelector(".question-options");
+    const index = optionsWrap.children.length;
+
+    optionsWrap.insertAdjacentHTML("beforeend", `
+        <div class="input-group mb-2">
+            <span class="input-group-text">${String.fromCharCode(65 + index)}</span>
+            <input class="form-control option-text">
+            <span class="input-group-text">
+                <input type="checkbox" class="form-check-input option-correct">
+            </span>
+        </div>
+    `);
+};
+
+/* ============================================================
+   LƯU QUIZ (TẠO HOẶC UPDATE)
+============================================================ */
+window.saveQuiz = async () => {
     if (!window.currentQuizEdit) return;
 
-    const title = document.getElementById("quizTitle").value.trim();
     const description = document.getElementById("quizDescription").value.trim();
-    const passingScore = parseInt(document.getElementById("quizPassingScore").value) || 0;
-    const timeLimitMinutes = parseInt(document.getElementById("quizTimeLimit").value) || 0;
-    const maxAttempts = parseInt(document.getElementById("quizMaxAttempts").value) || 0;
 
-    if (!title) {
-        Toast.show("Vui lòng nhập tiêu đề!", "danger");
-        return;
-    }
+    // ---- Lưu câu hỏi ----
+    const questions = [...document.querySelectorAll(".quiz-question-item")].map(q => {
+        const id = q.dataset.qId || null;
+        const content = q.querySelector(".question-content").value.trim();
+
+        const options = [...q.querySelectorAll(".input-group")].map(opt => ({
+            id: opt.querySelector(".option-text").dataset.optId || null,
+            text: opt.querySelector(".option-text").value.trim(),
+            isCorrect: opt.querySelector(".option-correct").checked
+        }));
+
+        return { id, content, options };
+    });
+
+    // ---- Payload ----
+    const payload = {
+        title: "",      // BE sẽ tự tạo "Quiz {id}"
+        description,
+        type: 3,
+        questions
+    };
 
     try {
-        const payload = {
-            title,
-            description,
-            type: 3, // Quiz
-            passingScore,
-            timeLimitMinutes,
-            maxAttempts
-        };
-
         if (window.currentQuizEdit.isNew) {
-            await QuizApi.createQuiz({ ...payload, lessonId: window.currentQuizEdit.lessonId });
+            // Tạo quiz mới
+            await QuizApi.createQuiz({
+                ...payload,
+                lessonId: window.currentQuizEdit.lessonId
+            });
+
             Toast.show("Tạo Quiz thành công!", "success");
         } else {
+            // Update quiz
             await QuizApi.updateQuiz(window.currentQuizEdit.quizId, payload);
             Toast.show("Cập nhật Quiz thành công!", "success");
         }
 
+        // Đóng modal
         bootstrap.Modal.getInstance(document.getElementById("editQuizModal")).hide();
 
-        // Reload danh sách quiz (tùy chọn: render lại lesson list nếu cần)
-        const quizzes = await QuizApi.getQuizzesByLesson(window.currentQuizEdit.lessonId);
-        if (typeof window.quizListModule?.renderQuizzesIntoLesson === "function") {
-            window.quizListModule.renderQuizzesIntoLesson(window.currentQuizEdit.lessonId, quizzes);
-        }
-
-        window.currentQuizEdit = null;
     } catch (err) {
         console.error(err);
         Toast.show("Lưu Quiz thất bại!", "danger");
     }
-});
+};
 
-// === HỖ TRỢ SỬA QUIZ TỪ NÚT BÚT CHÌ (lesson.list.js gọi) ===
+/* ============================================================
+   MỞ MODAL SỬA TỪ DANH SÁCH BÀI HỌC
+============================================================ */
 window.editQuiz = async (lessonId) => {
     try {
         const quizzes = await QuizApi.getQuizzesByLesson(lessonId);
-        const quiz = quizzes[0]; // nếu 1 lesson chỉ có 1 quiz
+        const quiz = quizzes[0];
+
         if (!quiz) {
             Toast.show("Quiz chưa được tạo!", "info");
             return;
         }
 
-        window.openQuizModal(quiz.chapterId, lessonId, quiz, false);
+        window.openQuizModal(
+            quiz.chapterId,
+            lessonId,
+            "",     // không dùng title
+            quiz,
+            false
+        );
     } catch (err) {
         console.error(err);
         Toast.show("Không tải được Quiz!", "danger");

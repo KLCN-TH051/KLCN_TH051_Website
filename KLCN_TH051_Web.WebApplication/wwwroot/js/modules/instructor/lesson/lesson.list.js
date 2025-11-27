@@ -317,12 +317,9 @@ document.addEventListener("click", async (e) => {
             Toast.show("Chưa load trình soạn thảo!", "danger");
         }
     } else if (type === 3) {
-        // Quiz
-        if (typeof window.openQuizModal === "function") {
-            window.openQuizModal(
-                chapterId,
-                lessonId
-            );
+        // Quiz → gọi editQuiz để load từ server
+        if (typeof window.editQuiz === "function") {
+            window.editQuiz(lessonId);
         } else {
             Toast.show("Chưa load Quiz editor!", "danger");
         }

@@ -112,6 +112,7 @@ async function createLesson() {
         }
 
 
+
         // Cập nhật danh sách bài học (hiển thị bài mới ở cuối)
         const lessons = await LessonApi.getLessonsByChapter(currentChapterId);
         window.lessonListModule.renderLessonsIntoChapter(currentChapterId, lessons);

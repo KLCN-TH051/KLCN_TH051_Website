@@ -369,43 +369,54 @@
         </div>
     </div>
 </div> *@
-<div class="modal fade" id="editQuizModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="editQuizModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
+
+            <!-- HEADER -->
             <div class="modal-header">
                 <h5 class="modal-title">Chỉnh sửa Quiz</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
+            <!-- BODY -->
             <div class="modal-body">
-                <div class="mb-3">
-                    <label for="quizTitle" class="form-label">Tiêu đề</label>
-                    <input type="text" class="form-control" id="quizTitle">
+
+                <!-- TITLE (ẨN) -->
+                <div class="mb-3 d-none">
+                    <label class="form-label">Tên bài kiểm tra</label>
+                    <input type="text" id="quizTitle" class="form-control">
                 </div>
+
+                <!-- DESCRIPTION -->
                 <div class="mb-3">
-                    <label for="quizDescription" class="form-label">Mô tả</label>
-                    <textarea class="form-control" id="quizDescription" rows="3"></textarea>
+                    <label class="form-label">Mô tả</label>
+                    <textarea id="quizDescription" class="form-control" rows="2" placeholder="Mô tả ngắn về bài kiểm tra"></textarea>
                 </div>
-                <div class="mb-3">
-                    <label for="quizPassingScore" class="form-label">Điểm đạt</label>
-                    <input type="number" class="form-control" id="quizPassingScore" min="0">
+
+                <!-- TOOLBAR -->
+                <div class="d-flex justify-content-between mb-3">
+                    <button class="btn btn-primary" onclick="addQuestion()">
+                        <i class="bi bi-plus-lg"></i> Thêm câu hỏi
+                    </button>
+                    <button class="btn btn-outline-primary">
+                        <i class="bi bi-cloud-upload"></i> Import từ Excel
+                    </button>
                 </div>
-                <div class="mb-3">
-                    <label for="quizTimeLimit" class="form-label">Thời gian (phút)</label>
-                    <input type="number" class="form-control" id="quizTimeLimit" min="0">
-                </div>
-                <div class="mb-3">
-                    <label for="quizMaxAttempts" class="form-label">Số lần làm tối đa</label>
-                    <input type="number" class="form-control" id="quizMaxAttempts" min="0">
-                </div>
+
+                <!-- QUESTION LIST -->
+                <div id="quizQuestionList"></div>
             </div>
+
+            <!-- FOOTER -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-primary" id="btnSaveQuiz">Lưu Quiz</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveQuiz()">Lưu</button>
             </div>
+
         </div>
     </div>
 </div>
-
 
 <!-- Modal Xóa -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
