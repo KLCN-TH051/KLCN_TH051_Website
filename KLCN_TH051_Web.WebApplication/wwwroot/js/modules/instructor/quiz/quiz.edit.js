@@ -2,6 +2,7 @@
 
 import QuizApi from "/js/api/quizApi.js";
 import QuestionApi from "/js/api/questionApi.js";
+import AnswerApi from "/js/api/answerApi.js";
 import Toast from "/js/components/Toast.js";
 
 window.currentQuizEdit = null;
@@ -32,12 +33,25 @@ window.openQuizModal = async (chapterId, lessonId, title, quiz = null, isNew = f
         try {
             const list = await QuestionApi.getQuestionsByQuiz(quiz.id);
 
-            window.currentQuizEdit.questions = list.map((q) => ({
-                id: q.id,
-                content: q.questionText,
-                points: q.points,
-                orderNumber: q.orderNumber
-            }));
+            window.currentQuizEdit.questions = await Promise.all(
+                list.map(async (q) => {
+
+                    const answers = await AnswerApi.getAnswersByQuestion(q.id);
+
+                    return {
+                        id: q.id,
+                        content: q.questionText,
+                        points: q.points,
+                        orderNumber: q.orderNumber,
+                        answers: answers.map(a => ({
+                            id: a.id,
+                            content: a.answerText,
+                            isCorrect: a.isCorrect
+                        }))
+                    };
+                })
+            );
+
 
         } catch (err) {
             console.error(err);
@@ -69,23 +83,56 @@ function renderQuestions() {
 
     container.innerHTML = questions
         .map((q, index) => `
+
             <div class="card mb-3 quiz-question-item" data-index="${index}">
                 <div class="card-body">
 
                     <div class="d-flex justify-content-between mb-2">
                         <strong>Câu hỏi ${index + 1}</strong>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteQuestion(${index})">Xóa</button>
+                        <button class="btn btn-sm btn-outline-danger"
+                                onclick="deleteQuestion(${index})">Xóa</button>
                     </div>
 
-                    <textarea class="form-control question-content"
+                    <textarea class="form-control mb-3"
                         oninput="updateQuestionContent(${index}, this.value)"
                         placeholder="Nhập nội dung câu hỏi...">${q.content}</textarea>
 
+                    <!-- DANH SÁCH ĐÁP ÁN -->
+                    <div class="answer-list">
+                        ${q.answers
+                .map((a, aIndex) => `
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">
+                                        <input type="checkbox"
+                                               ${a.isCorrect ? "checked" : ""}
+                                               onchange="toggleAnswerCorrect(${index}, ${aIndex}, this.checked)">
+                                    </span>
+
+                                    <input class="form-control"
+                                           value="${a.content}"
+                                           oninput="updateAnswerContent(${index}, ${aIndex}, this.value)">
+
+                                    <button class="btn btn-outline-danger"
+                                            onclick="deleteAnswer(${index}, ${aIndex})">
+                                        X
+                                    </button>
+                                </div>
+                            `)
+                .join("")
+            }
+                    </div>
+
+                    <button class="btn btn-sm btn-outline-primary mt-2"
+                            onclick="addAnswer(${index})">
+                        + Thêm đáp án
+                    </button>
+
                 </div>
             </div>
-        `)
-        .join("");
+
+        `).join("");
 }
+
 
 /* ============================================================
    3) THÊM CÂU HỎI
@@ -174,6 +221,24 @@ window.saveQuiz = async () => {
         } else {
             await QuizApi.updateQuiz(window.currentQuizEdit.quizId, payload);
 
+            // Lưu toàn bộ câu hỏi
+            for (const q of window.currentQuizEdit.questions) {
+                await QuestionApi.updateQuestion(q.id, {
+                    questionText: q.content,
+                    points: q.points
+                });
+            }
+
+            // Cập nhật đáp án
+            for (const q of window.currentQuizEdit.questions) {
+                for (const a of q.answers) {
+                    await AnswerApi.updateAnswer(a.id, {
+                        answerText: a.content,
+                        isCorrect: a.isCorrect
+                    });
+                }
+            }
+
             Toast.show("Cập nhật quiz thành công!", "success");
         }
 
@@ -209,5 +274,54 @@ window.editQuiz = async (lessonId) => {
     } catch (err) {
         console.error(err);
         Toast.show("Không tải được quiz!", "danger");
+    }
+};
+
+window.addAnswer = async (qIndex) => {
+    const question = window.currentQuizEdit.questions[qIndex];
+
+    try {
+        const newA = await AnswerApi.createAnswer({
+            questionId: question.id,
+            answerText: "Đáp án mới",
+            isCorrect: false
+        });
+
+        // newA trả về: { id, questionId, answerText, isCorrect, orderNumber }
+        question.answers.push({
+            id: newA.id,
+            content: newA.answerText,
+            isCorrect: newA.isCorrect,
+            orderNumber: newA.orderNumber
+        });
+
+        renderQuestions();
+        Toast.show("Thêm đáp án thành công!", "success");
+
+    } catch (err) {
+        console.error(err);
+        Toast.show("Không thể thêm đáp án!", "danger");
+    }
+};
+window.updateAnswerContent = (qIndex, aIndex, value) => {
+    window.currentQuizEdit.questions[qIndex].answers[aIndex].content = value;
+};
+window.toggleAnswerCorrect = (qIndex, aIndex, checked) => {
+    window.currentQuizEdit.questions[qIndex].answers[aIndex].isCorrect = checked;
+};
+window.deleteAnswer = async (qIndex, aIndex) => {
+    const a = window.currentQuizEdit.questions[qIndex].answers[aIndex];
+
+    try {
+        await AnswerApi.deleteAnswer(a.id);
+
+        window.currentQuizEdit.questions[qIndex].answers.splice(aIndex, 1);
+
+        renderQuestions();
+        Toast.show("Xóa đáp án thành công!", "success");
+
+    } catch (err) {
+        console.error(err);
+        Toast.show("Xóa đáp án thất bại!", "danger");
     }
 };
