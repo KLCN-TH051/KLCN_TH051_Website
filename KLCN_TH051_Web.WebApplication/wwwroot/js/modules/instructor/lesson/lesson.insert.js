@@ -97,8 +97,21 @@ async function createLesson() {
             Toast.show("Chức năng thêm Video sẽ làm sau!", "info");
         }
         else if (type === 3) {
-            Toast.show("Chức năng Quiz sẽ làm sau!", "info");
+            // Mở modal Quiz mới
+            if (typeof window.openQuizModal === "function") {
+                window.openQuizModal(
+                    currentChapterId,
+                    newLessonId,
+                    title,
+                    null,   // quiz rỗng
+                    true    // isNew = true
+                );
+            } else {
+                Toast.show("Chưa load modal Quiz!", "danger");
+            }
         }
+
+
 
         // Cập nhật danh sách bài học (hiển thị bài mới ở cuối)
         const lessons = await LessonApi.getLessonsByChapter(currentChapterId);

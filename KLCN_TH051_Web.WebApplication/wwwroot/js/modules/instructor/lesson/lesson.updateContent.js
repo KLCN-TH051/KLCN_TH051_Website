@@ -14,7 +14,6 @@ function initQuill() {
     const container = document.getElementById("readingEditor");
     if (!container) return null;
 
-    // XÓA NỘI DUNG CŨ ĐỂ TRÁNH NHÂN ĐÔI TOOLBAR
     container.innerHTML = "";
 
     quillInstance = new Quill(container, {

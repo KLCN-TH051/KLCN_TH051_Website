@@ -76,7 +76,7 @@
                     <!-- JS sẽ render các chương ở đây -->
 
 
-                        
+
 
 
                 </div>
@@ -334,7 +334,7 @@
 </div>
 
 <!-- ========================== MODAL QUIZ ========================== -->
-<div class="modal fade" id="editQuizModal" tabindex="-1">
+@* <div class="modal fade" id="editQuizModal" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -368,6 +368,54 @@
             </div>
         </div>
     </div>
+</div> *@
+<div class="modal fade" id="editQuizModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- HEADER -->
+            <div class="modal-header">
+                <h5 class="modal-title">Chỉnh sửa Quiz</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal-body">
+
+                <!-- TITLE (ẨN) -->
+                <div class="mb-3 d-none">
+                    <label class="form-label">Tên bài kiểm tra</label>
+                    <input type="text" id="quizTitle" class="form-control">
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div class="mb-3">
+                    <label class="form-label">Mô tả</label>
+                    <textarea id="quizDescription" class="form-control" rows="2" placeholder="Mô tả ngắn về bài kiểm tra"></textarea>
+                </div>
+
+                <!-- TOOLBAR -->
+                <div class="d-flex justify-content-between mb-3">
+                    <button class="btn btn-primary" onclick="addQuestion()">
+                        <i class="bi bi-plus-lg"></i> Thêm câu hỏi
+                    </button>
+                    <button class="btn btn-outline-primary">
+                        <i class="bi bi-cloud-upload"></i> Import từ Excel
+                    </button>
+                </div>
+
+                <!-- QUESTION LIST -->
+                <div id="quizQuestionList"></div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="saveQuiz()">Lưu</button>
+            </div>
+
+        </div>
+    </div>
 </div>
 
 <!-- Modal Xóa -->
@@ -399,6 +447,10 @@
     <script type="module" src="~/js/modules/instructor/lesson/lesson.list.js"></script>
     <script type="module" src="~/js/modules/instructor/lesson/lesson.insert.js"></script>
     <script type="module" src="~/js/modules/instructor/lesson/lesson.updateContent.js"></script>
+    @* <script type="module" src="~/js/modules/instructor/quiz/quiz.updateContent.js"></script>
+    <script type="module" src="~/js/modules/instructor/quiz/quiz.questions.js"></script> *@
+    <script type="module" src="~/js/modules/instructor/quiz/quiz.edit.js"></script>
+
 }
 
 
@@ -459,44 +511,43 @@
                             </div>
                         </div> *@
 
-                        <!-- VIDEO -->
-                        <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-grip-vertical me-3 handle"></i>
-                                <i class="bi bi-play-circle me-2 text-success"></i>
-                                <div>
-                                    <strong>Cài đặt môi trường</strong>
-                                    <small class="d-block text-muted">Video - 15:30</small>
-                                </div>
-                            </div>
+                    <!-- VIDEO -->
+                    <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-grip-vertical me-3 handle"></i>
+                            <i class="bi bi-play-circle me-2 text-success"></i>
                             <div>
-                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('video', 2)">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(2)">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                                <strong>Cài đặt môi trường</strong>
+                                <small class="d-block text-muted">Video - 15:30</small>
                             </div>
                         </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('video', 2)">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(2)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
 
-                        <!-- QUIZ -->
-                        <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-grip-vertical me-3 handle"></i>
-                                <i class="bi bi-question-circle me-2 text-warning"></i>
-                                <div>
-                                    <strong>Bài kiểm tra chương 1</strong>
-                                    <small class="d-block text-muted">Quiz - 5 câu hỏi</small>
-                                </div>
-                            </div>
+                    <!-- QUIZ -->
+                    <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-grip-vertical me-3 handle"></i>
+                            <i class="bi bi-question-circle me-2 text-warning"></i>
                             <div>
-                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('quiz', 3)">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(3)">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                                <strong>Bài kiểm tra chương 1</strong>
+                                <small class="d-block text-muted">Quiz - 5 câu hỏi</small>
                             </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('quiz', 3)">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(3)">
+                                <i class="bi bi-trash"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
