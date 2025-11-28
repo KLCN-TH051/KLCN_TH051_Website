@@ -46,6 +46,41 @@ namespace KLCN_TH051_Web.Services.Services
         }
 
         // ============================
+        // CREATE MULTIPLE ANSWERS
+        // ============================
+        public async Task<List<AnswerResponse>> CreateManyAnswersAsync(List<CreateAnswerRequest> requests)
+        {
+            var responses = new List<AnswerResponse>();
+
+            // Nhóm theo QuestionId để đánh thứ tự đúng
+            var grouped = requests.GroupBy(r => r.QuestionId);
+
+            foreach (var group in grouped)
+            {
+                int count = await _context.Answers
+                    .Where(a => a.QuestionId == group.Key)
+                    .CountAsync();
+
+                foreach (var req in group)
+                {
+                    count++;
+                    var answer = new Answer
+                    {
+                        QuestionId = req.QuestionId,
+                        AnswerText = req.AnswerText,
+                        IsCorrect = req.IsCorrect,
+                        OrderNumber = count
+                    };
+                    _context.Answers.Add(answer);
+                    responses.Add(new AnswerResponse(answer));
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return responses;
+        }
+
+        // ============================
         // UPDATE
         // ============================
         public async Task<AnswerResponse> UpdateAnswerAsync(int id, UpdateAnswerRequest request)

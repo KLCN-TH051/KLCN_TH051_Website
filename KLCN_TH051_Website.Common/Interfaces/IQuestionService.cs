@@ -21,5 +21,8 @@ namespace KLCN_TH051_Website.Common.Interfaces
         Task DeleteQuestionAsync(int id, string deleterId);
 
         Task ReorderQuestionsAsync(int quizId, List<int> questionIdsInNewOrder);
+
+        Task<List<QuestionResponse>> CreateManyAsync(List<CreateQuestionRequest> requests, string creatorId);
+
     }
 }

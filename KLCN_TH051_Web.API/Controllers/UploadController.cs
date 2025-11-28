@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using KLCN_TH051_Website.Common.DTO.Requests;
+using KLCN_TH051_Website.Common.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 
 namespace KLCN_TH051_Web.API.Controllers
 {
@@ -8,10 +11,14 @@ namespace KLCN_TH051_Web.API.Controllers
     public class UploadController : ControllerBase
     {
         private readonly IWebHostEnvironment _env;
+        private readonly IQuestionService _questionService;
+        private readonly IAnswerService _answerService;
 
-        public UploadController(IWebHostEnvironment env)
+        public UploadController(IWebHostEnvironment env, IQuestionService questionService, IAnswerService answerService)
         {
             _env = env;
+            _questionService = questionService;
+            _answerService = answerService;
         }
 
         // -----------------------
@@ -46,7 +53,7 @@ namespace KLCN_TH051_Web.API.Controllers
         }
 
         // -----------------------
-        // Upload Course Image
+        // Upload Image endpoints
         // -----------------------
         [HttpPost("CourseImage")]
         public async Task<IActionResult> UploadCourseImage([FromForm] IFormFile file)
@@ -62,9 +69,6 @@ namespace KLCN_TH051_Web.API.Controllers
             }
         }
 
-        // -----------------------
-        // Upload Lesson/Content Image
-        // -----------------------
         [HttpPost("ContentImage")]
         public async Task<IActionResult> UploadContentImage([FromForm] IFormFile file)
         {
@@ -79,9 +83,6 @@ namespace KLCN_TH051_Web.API.Controllers
             }
         }
 
-        // -----------------------
-        // Upload Avatar
-        // -----------------------
         [HttpPost("Avatar")]
         public async Task<IActionResult> UploadAvatar([FromForm] IFormFile file)
         {
@@ -96,9 +97,6 @@ namespace KLCN_TH051_Web.API.Controllers
             }
         }
 
-        // -----------------------
-        // Upload Banner Image
-        // -----------------------
         [HttpPost("BannerImage")]
         public async Task<IActionResult> UploadBannerImage([FromForm] IFormFile file)
         {
@@ -111,6 +109,70 @@ namespace KLCN_TH051_Web.API.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        // -----------------------
+        // Upload Excel câu hỏi + đáp án
+        // -----------------------
+        [HttpPost("QuestionsExcel")]
+        public async Task<IActionResult> UploadQuestionsExcel([FromForm] IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Chưa chọn file");
+
+            var (fileName, fileUrl) = await SaveFileAsync(file, "uploads/excel", new[] { ".xlsx", ".xls" }, 10 * 1024 * 1024);
+
+            var questions = new List<CreateQuestionRequest>();
+            var answers = new List<CreateAnswerRequest>();
+
+            using (var stream = file.OpenReadStream())
+            {
+                using var package = new ExcelPackage(stream);
+                var worksheet = package.Workbook.Worksheets[0];
+                int rowCount = worksheet.Dimension.Rows;
+                int colCount = worksheet.Dimension.Columns;
+
+                for (int row = 2; row <= rowCount; row++)
+                {
+                    // -------- Câu hỏi ----------
+                    var questionText = worksheet.Cells[row, 1].Text;
+                    var points = decimal.TryParse(worksheet.Cells[row, 2].Text, out var p) ? p : 0;
+                    var quizId = int.TryParse(worksheet.Cells[row, 3].Text, out var qId) ? qId : 0;
+
+                    var questionReq = new CreateQuestionRequest
+                    {
+                        QuestionText = questionText,
+                        Points = points,
+                        QuizId = quizId
+                    };
+
+                    // Tạo câu hỏi trước để lấy QuestionId
+                    var createdQuestion = await _questionService.CreateQuestionAsync(questionReq, User.Identity?.Name ?? "System");
+
+                    // -------- Đáp án ---------
+                    for (int col = 4; col <= colCount; col += 2)
+                    {
+                        var answerText = worksheet.Cells[row, col].Text;
+                        if (string.IsNullOrWhiteSpace(answerText)) continue;
+
+                        var isCorrect = bool.TryParse(worksheet.Cells[row, col + 1].Text, out var c) && c;
+
+                        var answerReq = new CreateAnswerRequest
+                        {
+                            QuestionId = createdQuestion.Id,
+                            AnswerText = answerText,
+                            IsCorrect = isCorrect
+                        };
+                        answers.Add(answerReq);
+                    }
+                }
+            }
+
+            // Tạo tất cả đáp án
+            if (answers.Any())
+                await _answerService.CreateManyAnswersAsync(answers);
+
+            return Ok(new { fileName, fileUrl, questionCount = questions.Count, answerCount = answers.Count });
         }
 
         // -----------------------
@@ -134,13 +196,13 @@ namespace KLCN_TH051_Web.API.Controllers
             if (!System.IO.File.Exists(filePath))
                 return NotFound();
 
-            // MIME type cơ bản
             string ext = Path.GetExtension(fileName).ToLower();
             string contentType = ext switch
             {
                 ".jpg" or ".jpeg" => "image/jpeg",
                 ".png" => "image/png",
                 ".gif" => "image/gif",
+                ".xlsx" or ".xls" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 _ => "application/octet-stream"
             };
 
