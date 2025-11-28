@@ -46,9 +46,7 @@
         <h2 class="text-center mb-5 fw-bold">Khóa học ngẫu nhiên</h2>
 
         <div class="carousel-container position-relative">
-            <button id="cr-prev" class="btn btn-light position-absolute top-50 start-0 translate-middle-y">‹</button>
             <div class="carousel-track d-flex overflow-hidden" id="course-random-carousel"></div>
-            <button id="cr-next" class="btn btn-light position-absolute top-50 end-0 translate-middle-y">›</button>
         </div>
     </div>
 </section>
@@ -63,8 +61,6 @@
     </div>
 </section>
 
-
-
 @section Scripts {
     <script type="module" src="/js/modules/student/course.rand.js"></script>
 }
@@ -76,25 +72,16 @@
         }
 
         .carousel-track {
-            transition: transform 0.5s ease;
-            gap: 1.25rem; /* khoảng cách giữa các card */
+            display: flex !important;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            gap: 1.25rem;
         }
 
-        /* Responsive: 3 card trên desktop, 2 tablet, 1 mobile */
         .carousel-item-course {
             flex: 0 0 calc(33.333% - 1.25rem);
+            box-sizing: border-box;
         }
 
-        @@media (max-width: 992px) {
-            .carousel-item-course {
-                flex: 0 0 calc(50% - 1.25rem);
-            }
-        }
-
-        @@media (max-width: 576px) {
-            .carousel-item-course {
-                flex: 0 0 100%;
-            }
-        }
     </style>
 }

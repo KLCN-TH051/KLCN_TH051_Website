@@ -1,21 +1,15 @@
-﻿// wwwroot/js/modules/student/course.rand.js
-
-import CourseApi from "../../api/courseApi.js";
+﻿import CourseApi from "../../api/courseApi.js";
 
 // ------------------------------------
 // INIT
 // ------------------------------------
-initRandomCoursesCarousel();
+initRandomCourses();
 
-async function initRandomCoursesCarousel() {
-    // Chờ DOM
+async function initRandomCourses() {
     await waitForDom();
-    // Chờ element carousel tồn tại
     await waitForElement("#course-random-carousel");
 
     const track = document.querySelector("#course-random-carousel");
-    const prev = document.querySelector("#cr-prev");
-    const next = document.querySelector("#cr-next");
 
     if (!track) {
         console.error("Không tìm thấy #course-random-carousel");
@@ -32,16 +26,11 @@ async function initRandomCoursesCarousel() {
             return;
         }
 
-        courses = shuffle(courses).slice(0, 12);
+        // ⭐ Chỉ lấy 3 khóa học ngẫu nhiên
+        courses = shuffle(courses).slice(0, 3);
 
-        // Render card thật
         track.innerHTML = "";
         courses.forEach(c => track.innerHTML += courseCard(c));
-
-        // Carousel setup sau khi DOM render xong
-        setTimeout(() => {
-            setupCarousel(track, prev, next);
-        }, 50);
 
     } catch (err) {
         console.error("API Error:", err);
@@ -92,15 +81,12 @@ function showLoading(track) {
         track.innerHTML += `
             <div class="carousel-item-course">
                 <div class="card h-100 shadow-sm placeholder-glow">
-
                     <div class="card-img-top placeholder" style="height:180px;"></div>
-
                     <div class="card-body">
                         <h5 class="card-title placeholder col-6"></h5>
                         <p class="card-text placeholder col-10"></p>
                         <p class="placeholder col-5"></p>
                     </div>
-
                 </div>
             </div>
         `;
@@ -146,56 +132,19 @@ function courseCard(c) {
     return `
         <div class="carousel-item-course">
             <div class="card h-100 shadow-sm">
-
                 <img src="${c.thumbnail ?? 'https://placehold.co/600x400'}"
-                     class="card-img-top" alt="${c.name}">
-
+                     class="card-img-top" alt="${c.name}" onerror="this.src='https://placehold.co/600x400'">
                 <div class="card-body">
                     <h5 class="card-title">${c.name}</h5>
                     <p class="card-text text-muted">${c.description ?? 'Không có mô tả'}</p>
                     <div class="text-warning mb-2">${rating}</div>
                     <small class="text-muted">GV: ${c.teacherName ?? 'Chưa cập nhật'}</small>
                 </div>
-
                 <div class="card-footer bg-white d-flex justify-content-between">
                     <strong>${price}đ</strong>
                     <a href="/Course/Detail/${c.id}" class="btn btn-outline-primary btn-sm">Xem</a>
                 </div>
-
             </div>
         </div>
     `;
-}
-
-// ------------------------------------
-// CAROUSEL SETUP
-// ------------------------------------
-function setupCarousel(track, prev, next) {
-    let index = 0;
-
-    function visibleCount() {
-        const w = window.innerWidth;
-        if (w < 576) return 1;
-        if (w < 992) return 2;
-        return 3;
-    }
-
-    function update() {
-        const first = track.querySelector(".carousel-item-course");
-        if (!first) return;
-
-        const cardWidth = first.offsetWidth + 20;
-        const maxIndex = Math.max(0, track.children.length - visibleCount());
-
-        index = Math.max(0, Math.min(index, maxIndex));
-
-        track.style.transform = `translateX(${-index * cardWidth}px)`;
-        track.style.transition = "transform 0.3s";
-    }
-
-    prev?.addEventListener("click", () => { index--; update(); });
-    next?.addEventListener("click", () => { index++; update(); });
-    window.addEventListener("resize", () => update());
-
-    update();
 }
