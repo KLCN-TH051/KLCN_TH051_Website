@@ -104,7 +104,8 @@ namespace KLCN_TH051_Web.API.Controllers
         {
             try
             {
-                var result = await SaveFileAsync(file, "videos/lessons", new[] { ".mp4", ".mov", ".avi", ".mkv" }, 500 * 1024 * 1024); // 500MB max
+                // Đổi 500 * 1024 * 1024 → 300 * 1024 * 1024
+                var result = await SaveFileAsync(file, "videos/lessons", new[] { ".mp4", ".mov", ".avi", ".mkv" }, 300 * 1024 * 1024); // 300MB max
                 return Ok(new { result.fileName, result.fileUrl });
             }
             catch (Exception ex)

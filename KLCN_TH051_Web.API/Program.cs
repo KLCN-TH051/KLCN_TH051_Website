@@ -6,6 +6,7 @@ using KLCN_TH051_Website.Common.Entities;
 using KLCN_TH051_Website.Common.Helpers;
 using KLCN_TH051_Website.Common.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -128,6 +129,16 @@ builder.Services.AddAuthorization(options =>
 });
 // Đăng ký TeacherAssignmentService
 builder.Services.AddScoped<ITeacherAssignmentService, TeacherAssignmentService>();
+// Cấu hình Kestrel để chấp nhận request lớn
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 300 * 1024 * 1024; // 300 MB
+});
+// Cấu hình FormOptions để upload file lớn
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 300 * 1024 * 1024; // 300 MB
+});
 
 
 
