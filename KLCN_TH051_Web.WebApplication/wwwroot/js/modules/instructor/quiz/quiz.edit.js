@@ -24,39 +24,45 @@ window.openQuizModal = async (chapterId, lessonId, title, quiz = null, isNew = f
     document.getElementById("quizDescription").value = quiz?.description || "";
 
     /* ------------------------------------------------------------
-        LẤY DANH SÁCH CÂU HỎI (API riêng)
+        Tạo Quiz mới nếu isNew là true
     ------------------------------------------------------------ */
-    if (!isNew && quiz?.id) {
+    if (isNew) {
         try {
-            const list = await QuestionApi.getQuestionsByQuiz(quiz.id);
+            // Tạo quiz mới
+            const newQuiz = await QuizApi.createQuiz({
+                lessonId: window.currentQuizEdit.lessonId,
+                title: title,  // Sử dụng title từ tham số đầu vào
+                description: document.getElementById("quizDescription").value.trim(),
+                type: 3  // Nếu có loại quiz cụ thể
+            });
 
-            window.currentQuizEdit.questions = await Promise.all(
-                list.map(async (q) => {
-                    const answers = await AnswerApi.getAnswersByQuestion(q.id);
+            // Cập nhật quizId cho việc chỉnh sửa sau này
+            window.currentQuizEdit.quizId = newQuiz.id;
+            window.currentQuizEdit.isNew = false;  // Đánh dấu quiz đã được tạo
 
-                    return {
-                        id: q.id,
-                        content: q.questionText,
-                        points: q.points,
-                        orderNumber: q.orderNumber,
-                        answers: answers.map(a => ({
-                            id: a.id,
-                            content: a.answerText,
-                            isCorrect: a.isCorrect
-                        }))
-                    };
-                })
-            );
+            // Cập nhật lại modal title và thông tin quiz
+            modalEl.querySelector(".modal-title").textContent = "Chỉnh sửa Quiz";
+            Toast.show("Tạo quiz thành công! Bạn có thể chỉnh sửa ngay.", "success");
+
+            // Tiếp tục lấy danh sách câu hỏi (nếu có)
+            await loadQuestionsForQuiz(newQuiz.id);
+
+            // Mở modal chỉnh sửa
+            modal.show();
         } catch (err) {
             console.error(err);
-            Toast.show("Không tải được danh sách câu hỏi!", "danger");
+            Toast.show("Không thể tạo quiz mới!", "danger");
+        }
+    } else {
+        /* ------------------------------------------------------------
+            LẤY DANH SÁCH CÂU HỎI CỦA QUIZ (nếu isNew là false)
+        ------------------------------------------------------------ */
+        if (quiz?.id) {
+            await loadQuestionsForQuiz(quiz.id);
+            modalEl.querySelector(".modal-title").textContent = "Chỉnh sửa Quiz";
+            modal.show();
         }
     }
-
-    renderQuestions();
-
-    modalEl.querySelector(".modal-title").textContent = isNew ? "Tạo Quiz mới" : "Chỉnh sửa Quiz";
-    modal.show();
 
     modalEl.addEventListener("hidden.bs.modal", () => {
         window.currentQuizEdit = null;
@@ -64,6 +70,38 @@ window.openQuizModal = async (chapterId, lessonId, title, quiz = null, isNew = f
         document.getElementById("quizQuestionList").innerHTML = "";
     }, { once: true });
 };
+
+/* ============================================================
+   HÀM TẢI CÂU HỎI CỦA QUIZ
+============================================================ */
+async function loadQuestionsForQuiz(quizId) {
+    try {
+        const list = await QuestionApi.getQuestionsByQuiz(quizId);
+
+        window.currentQuizEdit.questions = await Promise.all(
+            list.map(async (q) => {
+                const answers = await AnswerApi.getAnswersByQuestion(q.id);
+
+                return {
+                    id: q.id,
+                    content: q.questionText,
+                    points: q.points,
+                    orderNumber: q.orderNumber,
+                    answers: answers.map(a => ({
+                        id: a.id,
+                        content: a.answerText,
+                        isCorrect: a.isCorrect
+                    }))
+                };
+            })
+        );
+
+        renderQuestions();
+    } catch (err) {
+        console.error(err);
+        Toast.show("Không tải được danh sách câu hỏi!", "danger");
+    }
+}
 
 /* ============================================================
    2) RENDER DANH SÁCH CÂU HỎI
