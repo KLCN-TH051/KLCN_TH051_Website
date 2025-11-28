@@ -2,9 +2,10 @@
 
 import LessonApi from "/js/api/lessonApi.js";
 import Toast from "/js/components/Toast.js";
+import UploadApi from "/js/api/uploadApi.js"; // nếu muốn hỗ trợ upload ảnh vào Quill
 
 window.currentLessonEdit = null;
-let quillInstance = null; // Chỉ khởi tạo 1 lần duy nhất
+let quillInstance = null; // Khởi tạo 1 lần duy nhất
 
 // === KHỞI TẠO QUILL CHỈ 1 LẦN DUY NHẤT ===
 function initQuill() {
@@ -18,15 +19,39 @@ function initQuill() {
     quillInstance = new Quill(container, {
         theme: "snow",
         modules: {
-            toolbar: [
-                [{ header: [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                ['blockquote', 'code-block'],
-                [{ list: 'ordered' }, { list: 'bullet' }],
-                [{ align: [] }],
-                ['link', 'image', 'video'],
-                ['clean']
-            ]
+            toolbar: {
+                container: [
+                    [{ header: [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['blockquote', 'code-block'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    [{ align: [] }],
+                    ['link', 'image', 'video'],
+                    ['clean']
+                ],
+                handlers: {
+                    // Tùy chọn nếu muốn xử lý upload ảnh trực tiếp
+                    image: function () {
+                        const input = document.createElement('input');
+                        input.setAttribute('type', 'file');
+                        input.setAttribute('accept', 'image/*');
+                        input.click();
+
+                        input.onchange = async () => {
+                            const file = input.files[0];
+                            if (file) {
+                                try {
+                                    const res = await UploadApi.uploadFile(file, 'content');
+                                    const range = this.quill.getSelection();
+                                    this.quill.insertEmbed(range.index, 'image', res.fileUrl);
+                                } catch (err) {
+                                    Toast.show("Upload ảnh thất bại!", "danger");
+                                }
+                            }
+                        };
+                    }
+                }
+            }
         },
         placeholder: "Nhập nội dung bài học tại đây..."
     });
@@ -34,7 +59,7 @@ function initQuill() {
     return quillInstance;
 }
 
-// === MỞ MODAL BÀI ĐỌC (dùng cho cả TẠO MỚI và SỬA) ===
+// === MỞ MODAL BÀI ĐỌC (TẠO MỚI hoặc SỬA) ===
 window.openReadingModal = (chapterId, lessonId, title = "", content = "", isFree = false, isNew = false) => {
     window.currentLessonEdit = {
         chapterId: parseInt(chapterId),
@@ -42,34 +67,31 @@ window.openReadingModal = (chapterId, lessonId, title = "", content = "", isFree
         isNew
     };
 
-    // Tiêu đề modal
-    document.querySelector("#editReadingModal .modal-title").textContent =
-        isNew ? "Tạo bài đọc mới" : "Chỉnh sửa bài đọc";
+    const modalTitleEl = document.querySelector("#editReadingModal .modal-title");
+    if (modalTitleEl) modalTitleEl.textContent = isNew ? "Tạo bài đọc mới" : "Chỉnh sửa bài đọc";
 
-    // Điền dữ liệu
-    document.getElementById("readingTitle").value = title || "";
-    document.getElementById("readingFree").checked = isFree;
+    const titleEl = document.getElementById("readingTitle");
+    const freeEl = document.getElementById("readingFree");
+    if (titleEl) titleEl.value = title || "";
+    if (freeEl) freeEl.checked = isFree;
 
-    // Khởi tạo Quill (chỉ 1 lần)
     const editor = initQuill();
 
-    // Set nội dung (chờ 1 chút để Quill render xong)
     setTimeout(() => {
-        if (editor) {
-            editor.root.innerHTML = content || "";
-        }
+        if (editor) editor.root.innerHTML = content || "";
     }, 50);
 
-    // Mở modal
     const modalEl = document.getElementById("editReadingModal");
+    if (!modalEl) return;
+
     const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.show();
 
-    // Khi modal đóng → làm sạch để lần sau mở lại không bị lỗi
+    // Reset khi modal đóng
     modalEl.addEventListener("hidden.bs.modal", () => {
         if (editor) editor.setContents([]);
-        document.getElementById("readingTitle").value = "";
-        document.getElementById("readingFree").checked = false;
+        if (titleEl) titleEl.value = "";
+        if (freeEl) freeEl.checked = false;
     }, { once: true });
 };
 
@@ -93,24 +115,25 @@ window.saveReading = async () => {
             { title, content, isFree }
         );
 
-        bootstrap.Modal.getInstance(document.getElementById("editReadingModal")).hide();
+        bootstrap.Modal.getInstance(document.getElementById("editReadingModal"))?.hide();
         Toast.show("Lưu bài đọc thành công!", "success");
 
-        // Reload danh sách
+        // Reload danh sách bài học
         const lessons = await LessonApi.getLessonsByChapter(window.currentLessonEdit.chapterId);
-        window.lessonListModule.renderLessonsIntoChapter(window.currentLessonEdit.chapterId, lessons);
+        window.lessonListModule?.renderLessonsIntoChapter(window.currentLessonEdit.chapterId, lessons);
 
         window.currentLessonEdit = null;
     } catch (err) {
         Toast.show("Lưu thất bại!", "danger");
+        console.error(err);
     }
 };
 
-// === HỖ TRỢ SỬA BÀI HỌC TỪ NÚT BÚT CHÌ (lesson.list.js gọi hàm này) ===
+// === SỬA BÀI HỌC TỪ NÚT BÚT CHÌ ===
 window.editLessonContent = async (chapterId, lessonId) => {
     try {
         const lesson = await LessonApi.getLessonById(chapterId, lessonId);
-        if (lesson.type !== 1) return;
+        if (!lesson || lesson.type !== 1) return;
 
         window.openReadingModal(
             chapterId,
@@ -118,9 +141,10 @@ window.editLessonContent = async (chapterId, lessonId) => {
             lesson.title,
             lesson.content || "",
             lesson.isFree,
-            false // isNew = false → đang sửa
+            false // isNew = false
         );
     } catch (err) {
         Toast.show("Không tải được bài học!", "danger");
+        console.error(err);
     }
 };
