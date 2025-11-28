@@ -2,129 +2,86 @@
     ViewData["Title"] = "Trang chủ";
 }
 
-<!-- Hero Section -->
+<!-- ===================== HERO ===================== -->
 <section class="bg-light py-5 text-center">
     <div class="container">
         <h1 class="display-5 fw-bold mb-3">Nền tảng học tập cho mọi người</h1>
-        <p class="lead mb-4">Cùng nhau học, chia sẻ và phát triển kỹ năng lập trình và công nghệ.</p>
-        <a href="/Course/Index" class="btn btn-primary btn-lg">Khám phá khóa học</a>
+        <p class="lead mb-4">
+            Cùng nhau học, chia sẻ và phát triển kỹ năng lập trình và công nghệ.
+        </p>
+        <a href="/Course/Index" class="btn btn-primary btn-lg px-4">
+            Khám phá khóa học
+        </a>
     </div>
 </section>
 
-<!-- Features Section -->
+<!-- ===================== FEATURES ===================== -->
 <section class="py-5">
     <div class="container">
         <h2 class="text-center mb-5 fw-bold">Tại sao chọn chúng tôi?</h2>
-        <div class="row text-center">
-            <div class="col-md-3 mb-4">
-                <i class="bi bi-laptop fs-1 text-primary mb-3"></i>
-                <h5>Học trực tuyến linh hoạt</h5>
-                <p>Truy cập mọi lúc, mọi nơi với hệ thống học trực tuyến hiện đại.</p>
-            </div>
-            <div class="col-md-3 mb-4">
-                <i class="bi bi-journal-code fs-1 text-primary mb-3"></i>
-                <h5>Khóa học chất lượng</h5>
-                <p>Nội dung được biên soạn kỹ lưỡng bởi giảng viên nhiều kinh nghiệm.</p>
-            </div>
-            <div class="col-md-3 mb-4">
-                <i class="bi bi-chat-dots fs-1 text-primary mb-3"></i>
-                <h5>Cộng đồng hỗ trợ</h5>
-                <p>Tham gia thảo luận và nhận sự giúp đỡ từ các học viên khác.</p>
-            </div>
-            <div class="col-md-3 mb-4">
-                <i class="bi bi-bar-chart-line fs-1 text-primary mb-3"></i>
-                <h5>Theo dõi tiến độ</h5>
-                <p>Theo dõi kết quả học tập và đánh giá hiệu quả từng khóa học.</p>
-            </div>
+
+        <div class="row g-4 text-center">
+            @foreach (var feature in new[] {
+                        new { Icon = "bi-laptop", Title = "Học trực tuyến linh hoạt", Desc = "Truy cập mọi lúc, mọi nơi với hệ thống học trực tuyến hiện đại." },
+                        new { Icon = "bi-journal-code", Title = "Khóa học chất lượng", Desc = "Nội dung được biên soạn kỹ lưỡng bởi giảng viên nhiều kinh nghiệm." },
+                        new { Icon = "bi-chat-dots", Title = "Cộng đồng hỗ trợ", Desc = "Tham gia thảo luận và nhận sự giúp đỡ từ các học viên khác." },
+                        new { Icon = "bi-bar-chart-line", Title = "Theo dõi tiến độ", Desc = "Đánh giá hiệu quả từng khóa học dễ dàng." }
+                        })
+            {
+                <div class="col-md-3">
+                    <div class="px-3">
+                        <i class="bi @feature.Icon fs-1 text-primary mb-3"></i>
+                        <h5>@feature.Title</h5>
+                        <p class="text-muted">@feature.Desc</p>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </section>
 
-<!-- Courses Section -->
+<!-- ===================== COURSES ===================== -->
 <section class="bg-light py-5">
     <div class="container">
-        <h2 class="text-center mb-5 fw-bold">Giới thiệu khóa học</h2>
-        <div class="row">
-            <!-- Course Card 1 -->
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <img src="https://placehold.co/600x400?text=C%23+Course" class="card-img-top" alt="C# Course">
-                    <div class="card-body">
-                        <h5 class="card-title">Lập trình C# cơ bản</h5>
-                        <p class="card-text">Tìm hiểu cú pháp và cấu trúc của ngôn ngữ C# qua ví dụ thực tế.</p>
-                        <a href="#" class="btn btn-outline-primary">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Course Card 2 -->
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <img src="https://placehold.co/600x400?text=HTML+CSS" class="card-img-top" alt="Web Development">
-                    <div class="card-body">
-                        <h5 class="card-title">Thiết kế web với HTML/CSS</h5>
-                        <p class="card-text">Từng bước xây dựng giao diện web chuyên nghiệp và thân thiện.</p>
-                        <a href="#" class="btn btn-outline-primary">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Course Card 3 -->
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <img src="https://placehold.co/600x400?text=Python" class="card-img-top" alt="Python Course">
-                    <div class="card-body">
-                        <h5 class="card-title">Lập trình Python</h5>
-                        <p class="card-text">Khám phá thế giới Python qua bài học dễ hiểu và bài tập thực hành.</p>
-                        <a href="#" class="btn btn-outline-primary">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
+        <h2 class="text-center mb-5 fw-bold">Khóa học ngẫu nhiên</h2>
+
+        <div class="carousel-container position-relative">
+            <div class="carousel-track d-flex overflow-hidden" id="course-random-carousel"></div>
         </div>
     </div>
 </section>
 
-<!-- News Section -->
-@* <section class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-5 fw-bold">Tin tức & Chia sẻ</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <img src="https://placehold.co/600x400?text=.NET+News" class="card-img-top" alt="News 1">
-                    <div class="card-body">
-                        <h5 class="card-title">Cập nhật kiến thức .NET mới nhất</h5>
-                        <p class="card-text">Khám phá các xu hướng và công cụ mới trong hệ sinh thái .NET.</p>
-                        <a href="#" class="text-primary">Đọc thêm →</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <img src="https://placehold.co/600x400?text=Pomodoro" class="card-img-top" alt="News 2">
-                    <div class="card-body">
-                        <h5 class="card-title">Học hiệu quả hơn với phương pháp Pomodoro</h5>
-                        <p class="card-text">Cải thiện năng suất học tập bằng cách chia nhỏ thời gian học.</p>
-                        <a href="#" class="text-primary">Đọc thêm →</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <img src="https://placehold.co/600x400?text=Tools" class="card-img-top" alt="News 3">
-                    <div class="card-body">
-                        <h5 class="card-title">Top công cụ hỗ trợ lập trình viên</h5>
-                        <p class="card-text">Tổng hợp những phần mềm giúp bạn code nhanh và hiệu quả hơn.</p>
-                        <a href="#" class="text-primary">Đọc thêm →</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section> *@
-
-<!-- CTA Section -->
+<!-- ===================== CTA ===================== -->
 <section class="bg-primary text-white text-center py-5">
     <div class="container">
         <h2 class="mb-4 fw-bold">Bắt đầu hành trình học tập của bạn hôm nay!</h2>
-        <a href="/Account/Register" class="btn btn-light btn-lg">Đăng ký ngay</a>
+        <a href="/Account/Register" class="btn btn-light btn-lg px-4">
+            Đăng ký ngay
+        </a>
     </div>
 </section>
+
+@section Scripts {
+    <script type="module" src="/js/modules/student/course.rand.js"></script>
+}
+
+@section Styles {
+    <style>
+        .carousel-container {
+            position: relative;
+        }
+
+        .carousel-track {
+            display: flex !important;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            gap: 1.25rem;
+        }
+
+        .carousel-item-course {
+            flex: 0 0 calc(33.333% - 1.25rem);
+            box-sizing: border-box;
+        }
+
+    </style>
+}

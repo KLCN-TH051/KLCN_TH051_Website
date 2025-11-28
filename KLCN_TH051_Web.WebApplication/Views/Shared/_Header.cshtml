@@ -53,33 +53,29 @@
                 </form>
 
                 <!-- Giỏ hàng -->
-                <div class="nav-item">
+                <div class="nav-item me-3">
                     <div class="cart-wrapper">
-                        <div class="cart-icon">
-                            <a class="nav-link" href="/Home/Cart">
-                                <i class="bi bi-cart4"></i>
-                                <span class="badge bg-danger">2</span>
-                            </a>
-                        </div>
+
+                        <!-- Icon -->
+                        <a class="nav-link position-relative" href="/Home/Cart">
+                            <i class="bi bi-cart4 fs-5"></i>
+                            <span class="badge bg-danger" id="cart-count">0</span>
+                        </a>
+
+                        <!-- Dropdown -->
                         <div class="cart-dropdown">
-                            <div class="item">
-                                <img src="https://placehold.co/100x60?text=React+Native" class="thumb">
-                                <div class="info">
-                                    <p class="title">Khoá học React Native</p>
-                                    <span class="price">200000</span>
-                                </div>
+                            <div id="cart-dropdown-list">
+                                <!-- JS sẽ render item ở đây -->
                             </div>
 
-                            <div class="item">
-                                <img src="https://placehold.co/100x60?text=ReactJS" class="thumb">
-                                <div class="info">
-                                    <p class="title">Lập trình frontend với ReactJs</p>
-                                    <span class="price">150000</span>
-                                </div>
-                            </div>
+                            <a href="/Home/Cart" class="btn btn-primary btn-sm w-100 mt-2">
+                                Xem giỏ hàng
+                            </a>
                         </div>
+
                     </div>
                 </div>
+
                 <!-- Dropdown tài khoản -->
                 <div class="nav-item dropdown" id="userMenu" style="display:none;">
                     <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
