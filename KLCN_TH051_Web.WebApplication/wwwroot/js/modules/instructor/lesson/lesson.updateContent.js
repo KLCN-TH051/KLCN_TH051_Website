@@ -27,7 +27,7 @@ function initQuill() {
                 ['link', 'image', 'video'],
                 ['clean']
             ]
-        }
+        },
         placeholder: "Nhập nội dung bài học tại đây..."
     });
 
