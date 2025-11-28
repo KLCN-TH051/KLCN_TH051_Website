@@ -2,7 +2,7 @@
 
 const UploadApi = {
     /**
-     * Upload file (image)
+     * Upload file hình ảnh
      * @param {File} file - file từ input
      * @param {string} type - "course", "content", "avatar", "banner"
      * @returns {Promise<{fileName: string, fileUrl: string}>}
@@ -13,7 +13,6 @@ const UploadApi = {
         const formData = new FormData();
         formData.append("file", file);
 
-        // map type thành endpoint đúng API
         let endpoint = "";
         switch (type.toLowerCase()) {
             case "course":
@@ -26,14 +25,27 @@ const UploadApi = {
                 endpoint = "Avatar";
                 break;
             case "banner":
-                endpoint = "BannerImage";  // thêm banner
+                endpoint = "BannerImage";
                 break;
             default:
                 return Promise.reject("Type không hợp lệ: course | content | avatar | banner");
         }
 
-        // BaseApi.post sẽ tự thêm /api/Upload/
         return BaseApi.post(`Upload/${endpoint}`, formData, { isFormData: true });
+    },
+
+    /**
+     * Upload file Excel câu hỏi + đáp án
+     * @param {File} file - file Excel từ input
+     * @returns {Promise<{fileName: string, fileUrl: string, questionCount: number, answerCount: number}>}
+     */
+    uploadQuestionsExcel(file) {
+        if (!file) return Promise.reject("Chưa chọn file");
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        return BaseApi.post("Upload/QuestionsExcel", formData, { isFormData: true });
     },
 
     /**
@@ -45,7 +57,6 @@ const UploadApi = {
     getFileUrl(type, fileName) {
         if (!fileName) return "";
 
-        // Map type thành folder tương ứng trên server
         let folder = "";
         switch (type.toLowerCase()) {
             case "course":
@@ -58,7 +69,7 @@ const UploadApi = {
                 folder = "images/avatars";
                 break;
             case "banner":
-                folder = "images/banners";  // thêm banner
+                folder = "images/banners";
                 break;
             default:
                 return "";

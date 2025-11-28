@@ -11,6 +11,7 @@ namespace KLCN_TH051_Website.Common.Interfaces
     public interface IAnswerService
     {
         Task<AnswerResponse> CreateAnswerAsync(CreateAnswerRequest request);
+        Task<List<AnswerResponse>> CreateManyAnswersAsync(List<CreateAnswerRequest> requests);
         Task<AnswerResponse> UpdateAnswerAsync(int id, UpdateAnswerRequest request);
         Task<bool> DeleteAnswerAsync(int id);
         Task<AnswerResponse?> GetAnswerByIdAsync(int id);
