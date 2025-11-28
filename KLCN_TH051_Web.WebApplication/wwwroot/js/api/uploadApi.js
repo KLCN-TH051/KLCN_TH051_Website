@@ -2,9 +2,9 @@
 
 const UploadApi = {
     /**
-     * Upload file (image/video)
+     * Upload file (image)
      * @param {File} file - file từ input
-     * @param {string} type - "course", "content", "avatar", "video"
+     * @param {string} type - "course", "content", "avatar", "banner"
      * @returns {Promise<{fileName: string, fileUrl: string}>}
      */
     uploadFile(file, type) {
@@ -25,14 +25,14 @@ const UploadApi = {
             case "avatar":
                 endpoint = "Avatar";
                 break;
-            case "video":
-                endpoint = "LessonVideo";
+            case "banner":
+                endpoint = "BannerImage";  // thêm banner
                 break;
             default:
-                return Promise.reject("Type không hợp lệ: course | content | avatar | video");
+                return Promise.reject("Type không hợp lệ: course | content | avatar | banner");
         }
 
-        // Chú ý: BaseApi.post sẽ tự thêm /api/Upload/ nếu BaseApi config sẵn baseURL
+        // BaseApi.post sẽ tự thêm /api/Upload/
         return BaseApi.post(`Upload/${endpoint}`, formData, { isFormData: true });
     },
 
@@ -57,8 +57,8 @@ const UploadApi = {
             case "avatar":
                 folder = "images/avatars";
                 break;
-            case "video":
-                folder = "videos/lessons";
+            case "banner":
+                folder = "images/banners";  // thêm banner
                 break;
             default:
                 return "";

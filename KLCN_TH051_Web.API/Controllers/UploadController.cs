@@ -97,15 +97,14 @@ namespace KLCN_TH051_Web.API.Controllers
         }
 
         // -----------------------
-        // Upload Lesson Video
+        // Upload Banner Image
         // -----------------------
-        [HttpPost("LessonVideo")]
-        public async Task<IActionResult> UploadLessonVideo([FromForm] IFormFile file)
+        [HttpPost("BannerImage")]
+        public async Task<IActionResult> UploadBannerImage([FromForm] IFormFile file)
         {
             try
             {
-                // Đổi 500 * 1024 * 1024 → 300 * 1024 * 1024
-                var result = await SaveFileAsync(file, "videos/lessons", new[] { ".mp4", ".mov", ".avi", ".mkv" }, 300 * 1024 * 1024); // 300MB max
+                var result = await SaveFileAsync(file, "images/banners", new[] { ".jpg", ".jpeg", ".png", ".gif" }, 5 * 1024 * 1024);
                 return Ok(new { result.fileName, result.fileUrl });
             }
             catch (Exception ex)
@@ -125,10 +124,9 @@ namespace KLCN_TH051_Web.API.Controllers
                 "course" => "images/courses",
                 "content" => "images/contents",
                 "avatar" => "images/avatars",
-                "video" => "videos/lessons",
+                "banner" => "images/banners",
                 _ => null
             };
-
 
             if (folder == null) return BadRequest("Type không hợp lệ");
 
@@ -143,10 +141,6 @@ namespace KLCN_TH051_Web.API.Controllers
                 ".jpg" or ".jpeg" => "image/jpeg",
                 ".png" => "image/png",
                 ".gif" => "image/gif",
-                ".mp4" => "video/mp4",
-                ".mov" => "video/quicktime",
-                ".avi" => "video/x-msvideo",
-                ".mkv" => "video/x-matroska",
                 _ => "application/octet-stream"
             };
 
