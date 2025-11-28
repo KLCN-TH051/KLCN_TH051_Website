@@ -1,5 +1,4 @@
 ﻿// wwwroot/js/modules/instructor/lesson/lesson.updateContent.js
-// BẢN HOÀN HẢO CUỐI CÙNG – KHÔNG NHÂN ĐÔI TOOLBAR, SỬA LUÔN HIỆN POPUP
 
 import LessonApi from "/js/api/lessonApi.js";
 import Toast from "/js/components/Toast.js";
@@ -21,12 +20,14 @@ function initQuill() {
         modules: {
             toolbar: [
                 [{ header: [1, 2, 3, false] }],
-                ["bold", "italic", "underline"],
-                ["link", "image", "video"],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["clean"]
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                [{ align: [] }],
+                ['link', 'image', 'video'],
+                ['clean']
             ]
-        },
+        }
         placeholder: "Nhập nội dung bài học tại đây..."
     });
 

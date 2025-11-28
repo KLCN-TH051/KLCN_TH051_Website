@@ -253,45 +253,34 @@ document.getElementById("btnConfirmDelete")?.addEventListener("click", async () 
     }
 });
 
-// ==================== SỬA BÀI HỌC – CHỈ DÀNH CHO BÀI ĐỌC (TYPE = 1) ====================
-//document.addEventListener("click", async (e) => {
-//    const btn = e.target.closest(".edit-lesson-btn");
-//    if (!btn) return;
+window.editLesson = async (chapterId, lessonId, type) => {
+    try {
+        // BƯỚC 1: Lấy chi tiết bài học từ server
+        const lesson = await LessonApi.getLessonById(chapterId, lessonId);
 
-//    const chapterId = parseInt(btn.dataset.chapterId);
-//    const lessonId = parseInt(btn.dataset.lessonId);
-//    const type = parseInt(btn.dataset.type);
-
-//    if (type !== 1 && type !== 3) {
-//        Toast.show("Chỉ hỗ trợ sửa bài đọc hiện tại!", "info");
-//        return;
-//    }
-
-
-//    try {
-//        const lesson = await LessonApi.getLessonById(chapterId, lessonId);
-
-//        // GỌI HÀM TỪ lesson.updateContent.js ĐÃ CÓ SẴN
-//        if (typeof window.openReadingModal === "function") {
-//            window.openReadingModal(
-//                chapterId,
-//                lessonId,
-//                lesson.title || "",
-//                lesson.content || "",
-//                lesson.isFree || false,
-//                false // đang sửa, không phải tạo mới
-//            );
-//        } else {
-//            Toast.show("Chưa load trình soạn thảo!", "danger");
-//        }
-//    } catch (err) {
-//        console.error(err);
-//        Toast.show("Không tải được bài học!", "danger");
-//    }
-//});
-
-//// Export module
-//window.lessonListModule = { renderLessonsIntoChapter };
+        // BƯỚC 2: Điền dữ liệu vào các modal tương ứng
+        if (type === 1) { // Bài đọc
+            document.getElementById("editReadingTitle").value = lesson.title || "";
+            document.getElementById("editReadingContent").value = lesson.content || "";
+            document.getElementById("editReadingFree").checked = lesson.isFree;
+            new bootstrap.Modal(document.getElementById('editReadingModal')).show();
+        }
+        else if (type === 2) { // Video
+            document.getElementById("editVideoTitle").value = lesson.title || "";
+            document.getElementById("editVideoUrl").value = lesson.videoUrl || "";
+            document.getElementById("editVideoDuration").value = lesson.durationMinutes || 0;
+            document.getElementById("editVideoFree").checked = lesson.isFree;
+            new bootstrap.Modal(document.getElementById('editVideoModal')).show();
+        }
+        else if (type === 3) {
+            // Quiz xử lý sau
+            new bootstrap.Modal(document.getElementById('editQuizModal')).show();
+        }
+    } catch (err) {
+        console.error(err);
+        Toast.show("Không tải được thông tin bài học!", "danger");
+    }
+};
 
 document.addEventListener("click", async (e) => {
     const btn = e.target.closest(".edit-lesson-btn");
