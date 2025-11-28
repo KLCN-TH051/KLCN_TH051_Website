@@ -1,30 +1,70 @@
 ﻿import BaseApi from "../core/BaseApi.js";
 
 const UploadApi = {
-    // Upload ảnh khóa học
-    uploadCourseImage(file) {
+    /**
+     * Upload file (image/video)
+     * @param {File} file - file từ input
+     * @param {string} type - "course", "content", "avatar", "video"
+     * @returns {Promise<{fileName: string, fileUrl: string}>}
+     */
+    uploadFile(file, type) {
+        if (!file) return Promise.reject("Chưa chọn file");
+
         const formData = new FormData();
         formData.append("file", file);
-        return BaseApi.post("Upload/CourseImage", formData, { isFormData: true });
+
+        // map type thành endpoint đúng API
+        let endpoint = "";
+        switch (type.toLowerCase()) {
+            case "course":
+                endpoint = "CourseImage";
+                break;
+            case "content":
+                endpoint = "ContentImage";
+                break;
+            case "avatar":
+                endpoint = "Avatar";
+                break;
+            case "video":
+                endpoint = "LessonVideo";
+                break;
+            default:
+                return Promise.reject("Type không hợp lệ: course | content | avatar | video");
+        }
+
+        // Chú ý: BaseApi.post sẽ tự thêm /api/Upload/ nếu BaseApi config sẵn baseURL
+        return BaseApi.post(`Upload/${endpoint}`, formData, { isFormData: true });
     },
 
-    // Upload ảnh nội dung bài học / content block
-    uploadContentImage(file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        return BaseApi.post("Upload/ContentImage", formData, { isFormData: true });
-    },
+    /**
+     * Lấy URL file đã upload
+     * @param {string} type - loại file
+     * @param {string} fileName - tên file trả về từ API
+     * @returns {string} url trực tiếp
+     */
+    getFileUrl(type, fileName) {
+        if (!fileName) return "";
 
-    // Upload avatar người dùng
-    uploadAvatar(file) {
-        const formData = new FormData();
-        formData.append("file", file);
-        return BaseApi.post("Upload/Avatar", formData, { isFormData: true });
-    },
+        // Map type thành folder tương ứng trên server
+        let folder = "";
+        switch (type.toLowerCase()) {
+            case "course":
+                folder = "images/courses";
+                break;
+            case "content":
+                folder = "images/contents";
+                break;
+            case "avatar":
+                folder = "images/avatars";
+                break;
+            case "video":
+                folder = "videos/lessons";
+                break;
+            default:
+                return "";
+        }
 
-    // Lấy URL đầy đủ file static
-    getFileUrl(path) {
-        return BaseApi.getFileUrl(path);
+        return BaseApi.getFileUrl(`${folder}/${fileName}`);
     }
 };
 

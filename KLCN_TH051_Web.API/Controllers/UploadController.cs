@@ -14,168 +14,143 @@ namespace KLCN_TH051_Web.API.Controllers
             _env = env;
         }
 
+        // -----------------------
+        // Private helper
+        // -----------------------
+        private async Task<(string fileName, string fileUrl)> SaveFileAsync(IFormFile file, string folder, string[] allowedExtensions, long maxSize)
+        {
+            if (file == null || file.Length == 0)
+                throw new Exception("File rỗng");
+
+            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(ext))
+                throw new Exception($"Chỉ cho phép các định dạng: {string.Join(", ", allowedExtensions)}");
+
+            if (file.Length > maxSize)
+                throw new Exception($"File quá lớn, tối đa {maxSize / (1024 * 1024)}MB");
+
+            var folderPath = Path.Combine(_env.WebRootPath, folder);
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            var fileName = Guid.NewGuid().ToString() + ext;
+            var filePath = Path.Combine(folderPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var fileUrl = $"{Request.Scheme}://{Request.Host}/{folder}/{fileName}";
+            return (fileName, fileUrl);
+        }
+
+        // -----------------------
+        // Upload Course Image
+        // -----------------------
         [HttpPost("CourseImage")]
         public async Task<IActionResult> UploadCourseImage([FromForm] IFormFile file)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("File rỗng");
-
-            // Giới hạn định dạng
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (!allowedExtensions.Contains(ext))
-                return BadRequest("Chỉ cho phép file hình (.jpg, .png, .gif)");
-
-            // Giới hạn kích thước (5MB)
-            long maxSize = 5 * 1024 * 1024;
-            if (file.Length > maxSize)
-                return BadRequest("File quá lớn, tối đa 5MB");
-
-            // Đường dẫn tới wwwroot/images/courses
-            var folderPath = Path.Combine(_env.WebRootPath, "images/courses");
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-
-            // Tạo tên file duy nhất
-            var fileName = Guid.NewGuid().ToString() + ext;
-            var filePath = Path.Combine(folderPath, fileName);
-
-            // Lưu file
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            try
             {
-                await file.CopyToAsync(stream);
+                var result = await SaveFileAsync(file, "images/courses", new[] { ".jpg", ".jpeg", ".png", ".gif" }, 5 * 1024 * 1024);
+                return Ok(new { result.fileName, result.fileUrl });
             }
-
-            // Trả về URL để FE dùng luôn
-            var fileUrl = $"/images/courses/{fileName}";
-
-            return Ok(new
+            catch (Exception ex)
             {
-                fileName,
-                fileUrl
-            });
+                return BadRequest(ex.Message);
+            }
         }
 
+        // -----------------------
+        // Upload Lesson/Content Image
+        // -----------------------
         [HttpPost("ContentImage")]
         public async Task<IActionResult> UploadContentImage([FromForm] IFormFile file)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("File rỗng");
-
-            // Giới hạn định dạng
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (!allowedExtensions.Contains(ext))
-                return BadRequest("Chỉ cho phép file hình (.jpg, .png, .gif)");
-
-            // Giới hạn kích thước (5MB)
-            long maxSize = 5 * 1024 * 1024;
-            if (file.Length > maxSize)
-                return BadRequest("File quá lớn, tối đa 5MB");
-
-            // Đường dẫn tới wwwroot/images/contents
-            var folderPath = Path.Combine(_env.WebRootPath, "images/contents");
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-
-            // Tạo tên file duy nhất
-            var fileName = Guid.NewGuid().ToString() + ext;
-            var filePath = Path.Combine(folderPath, fileName);
-
-            // Lưu file
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            try
             {
-                await file.CopyToAsync(stream);
+                var result = await SaveFileAsync(file, "images/contents", new[] { ".jpg", ".jpeg", ".png", ".gif" }, 5 * 1024 * 1024);
+                return Ok(new { result.fileName, result.fileUrl });
             }
-
-            var fileUrl = $"/images/contents/{fileName}";
-
-            return Ok(new
+            catch (Exception ex)
             {
-                fileName,
-                fileUrl
-            });
+                return BadRequest(ex.Message);
+            }
         }
 
-
+        // -----------------------
+        // Upload Avatar
+        // -----------------------
         [HttpPost("Avatar")]
         public async Task<IActionResult> UploadAvatar([FromForm] IFormFile file)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("File rỗng");
-
-            // Giới hạn định dạng
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (!allowedExtensions.Contains(ext))
-                return BadRequest("Chỉ cho phép file hình (.jpg, .png, .gif)");
-
-            // Giới hạn kích thước (5MB)
-            long maxSize = 5 * 1024 * 1024;
-            if (file.Length > maxSize)
-                return BadRequest("File quá lớn, tối đa 5MB");
-
-            // Đường dẫn tới wwwroot/images/avatars
-            var folderPath = Path.Combine(_env.WebRootPath, "images/avatars");
-            if (!Directory.Exists(folderPath))
-                Directory.CreateDirectory(folderPath);
-
-            // Tạo tên file duy nhất
-            var fileName = Guid.NewGuid().ToString() + ext;
-            var filePath = Path.Combine(folderPath, fileName);
-
-            // Lưu file
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            try
             {
-                await file.CopyToAsync(stream);
+                var result = await SaveFileAsync(file, "images/avatars", new[] { ".jpg", ".jpeg", ".png", ".gif" }, 5 * 1024 * 1024);
+                return Ok(new { result.fileName, result.fileUrl });
             }
-
-            // Trả về URL để FE dùng luôn
-            var fileUrl = $"/images/avatars/{fileName}";
-
-            return Ok(new
+            catch (Exception ex)
             {
-                fileName,
-                fileUrl
-            });
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpGet("courseimage/{fileName}")]
-        public IActionResult GetCourseImage(string fileName)
+        // -----------------------
+        // Upload Lesson Video
+        // -----------------------
+        [HttpPost("LessonVideo")]
+        public async Task<IActionResult> UploadLessonVideo([FromForm] IFormFile file)
         {
-            var filePath = Path.Combine(_env.WebRootPath, "images/courses", fileName);
+            try
+            {
+                var result = await SaveFileAsync(file, "videos/lessons", new[] { ".mp4", ".mov", ".avi", ".mkv" }, 500 * 1024 * 1024); // 500MB max
+                return Ok(new { result.fileName, result.fileUrl });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // -----------------------
+        // Get file by type
+        // -----------------------
+        [HttpGet("{type}/{fileName}")]
+        public IActionResult GetFile(string type, string fileName)
+        {
+            string? folder = type.ToLower() switch
+            {
+                "course" => "images/courses",
+                "content" => "images/contents",
+                "avatar" => "images/avatars",
+                "video" => "videos/lessons",
+                _ => null
+            };
+
+
+            if (folder == null) return BadRequest("Type không hợp lệ");
+
+            var filePath = Path.Combine(_env.WebRootPath, folder, fileName);
             if (!System.IO.File.Exists(filePath))
                 return NotFound();
 
-            var contentType = "image/" + Path.GetExtension(fileName).TrimStart('.');
+            // MIME type cơ bản
+            string ext = Path.GetExtension(fileName).ToLower();
+            string contentType = ext switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".mp4" => "video/mp4",
+                ".mov" => "video/quicktime",
+                ".avi" => "video/x-msvideo",
+                ".mkv" => "video/x-matroska",
+                _ => "application/octet-stream"
+            };
+
             var bytes = System.IO.File.ReadAllBytes(filePath);
             return File(bytes, contentType);
         }
-
-        [HttpGet("ContentImage/{fileName}")]
-        public IActionResult GetContentImage(string fileName)
-        {
-            var filePath = Path.Combine(_env.WebRootPath, "images/contents", fileName);
-            if (!System.IO.File.Exists(filePath))
-                return NotFound();
-
-            var contentType = "image/" + Path.GetExtension(fileName).TrimStart('.');
-            var bytes = System.IO.File.ReadAllBytes(filePath);
-            return File(bytes, contentType);
-        }
-
-
-        [HttpGet("Avatar/{fileName}")]
-        public IActionResult GetAvatar(string fileName)
-        {
-            var filePath = Path.Combine(_env.WebRootPath, "images/avatars", fileName);
-            if (!System.IO.File.Exists(filePath))
-                return NotFound();
-
-            var contentType = "image/" + Path.GetExtension(fileName).TrimStart('.');
-            var bytes = System.IO.File.ReadAllBytes(filePath);
-            return File(bytes, contentType);
-        }
-
     }
 }

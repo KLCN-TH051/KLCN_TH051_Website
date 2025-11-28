@@ -1,8 +1,7 @@
-﻿import BaseApi from "../../../core/BaseApi.js";
+﻿import UploadApi from "../../../api/uploadApi.js"; // dùng UploadApi mới
 import CourseApi from "../../../api/courseApi.js";
 import TeacherAssignmentsApi from "../../../api/TeacherAssignments.js";
 import Toast from "../../../components/Toast.js";
-//import { getStatusBadge } from "../../modules/course/course.utils.js";
 import { getStatusBadge } from "./course.utils.js";
 
 const courseId = window.location.pathname.split("/").pop();
@@ -11,23 +10,26 @@ const courseId = window.location.pathname.split("/").pop();
 // Element input và preview
 // ==============================
 const courseImageInput = document.getElementById("courseImage");
+
+// Tạo thẻ <img> hiển thị preview
 const previewImg = document.createElement("img");
 previewImg.style.maxWidth = "200px";
 previewImg.style.display = "block";
 previewImg.style.marginTop = "10px";
+
+// Chèn <img> vào sau input
 courseImageInput.parentNode.appendChild(previewImg);
 
 let currentImage = null; // lưu tên ảnh hiện tại
 
-// ==============================
 // Hiển thị preview khi chọn file mới
-// ==============================
 courseImageInput.addEventListener("change", () => {
     const file = courseImageInput.files[0];
     if (file) {
         previewImg.src = URL.createObjectURL(file);
     } else {
-        previewImg.src = currentImage ? BaseApi.getFileUrl(`images/courses/${currentImage}`) : "";
+        // Nếu không chọn file mới, hiển thị ảnh hiện tại
+        previewImg.src = currentImage ? UploadApi.getFileUrl("course", currentImage) : "";
     }
 });
 
@@ -49,10 +51,11 @@ async function loadCourseDetail() {
         document.getElementById("coursePrice").value = course.price ?? "";
         document.getElementById("courseDescription").value = course.description ?? "";
 
+        // Lưu và hiển thị ảnh hiện tại
         currentImage = course.thumbnail ?? null;
-        previewImg.src = currentImage ? BaseApi.getFileUrl(`images/courses/${currentImage}`) : "";
+        previewImg.src = currentImage ? UploadApi.getFileUrl("course", currentImage) : "";
 
-        // Set giá trị startDate & endDate
+        // Set startDate & endDate
         document.getElementById("startDate").value = course.startDate
             ? new Date(course.startDate).toISOString().slice(0, 16)
             : "";
@@ -80,11 +83,7 @@ async function loadCourseDetail() {
         // Hiển thị / ẩn nút gửi khóa học
         const submitBtn = document.getElementById("submitCourseButton");
         if (submitBtn) {
-            if (course.status === 3) { // Bản nháp
-                submitBtn.style.display = "inline-block";
-            } else {
-                submitBtn.style.display = "none";
-            }
+            submitBtn.style.display = course.status === 3 ? "inline-block" : "none";
         }
 
     } catch (err) {
@@ -106,11 +105,8 @@ async function uploadCourseImage() {
         return null;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
-        const result = await BaseApi.post("upload/courseimage", formData, { isFormData: true });
+        const result = await UploadApi.uploadFile(file, "course");
         return result.fileName;
     } catch (err) {
         console.error(err);
@@ -153,7 +149,7 @@ document.getElementById("courseForm").addEventListener("submit", async e => {
     try {
         await CourseApi.update(courseId, data);
         Toast.show("Cập nhật khóa học thành công!", "success");
-        await loadCourseDetail(); // tự động load lại
+        await loadCourseDetail(); // tự động load lại, hiển thị ảnh mới nếu có
     } catch (err) {
         console.error(err);
         Toast.show("Đã có lỗi xảy ra khi cập nhật khóa học!", "danger");
