@@ -21,4 +21,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
   </ItemGroup>
 
+	<Target Name="ApplyFirebaseCORS" BeforeTargets="Build">
+		<Exec Command="firebase storage:cors:set cors.json" ContinueOnError="true" WorkingDirectory="$(ProjectDir)" />
+	</Target>
 </Project>
