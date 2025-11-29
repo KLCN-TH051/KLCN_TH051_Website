@@ -47,7 +47,9 @@ function initEvents(allCourses, pagination) {
     const applyFilters = () => {
         let filtered = [...allCourses];
 
-        // Search
+        // -------------------------
+        // Search by course name / description
+        // -------------------------
         const keyword = document.querySelector("#txtSearch").value.trim().toLowerCase();
         if (keyword) {
             filtered = filtered.filter(c =>
@@ -56,7 +58,19 @@ function initEvents(allCourses, pagination) {
             );
         }
 
+        // -------------------------
+        // Search by TEACHER NAME
+        // -------------------------
+        const teacherKeyword = document.querySelector("#txtTeacher").value.trim().toLowerCase();
+        if (teacherKeyword) {
+            filtered = filtered.filter(c =>
+                c.teacherName?.toLowerCase().includes(teacherKeyword)
+            );
+        }
+
+        // -------------------------
         // Subject filter
+        // -------------------------
         const subjectIds = [...document.querySelectorAll(".subject-checkbox:checked")]
             .map(cb => Number(cb.value));
 
@@ -64,7 +78,9 @@ function initEvents(allCourses, pagination) {
             filtered = filtered.filter(c => subjectIds.includes(c.subjectId));
         }
 
-        // Sort (CHỈ GIỮ LẠI GIÁ)
+        // -------------------------
+        // Sort by price
+        // -------------------------
         const sort = document.querySelector("#sortSelect").value;
 
         if (sort === "priceAsc") {
@@ -74,15 +90,22 @@ function initEvents(allCourses, pagination) {
             filtered.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
         }
 
+        // -------------------------
         // Update pagination
+        // -------------------------
         pagination.updateData(filtered);
     };
 
-    // Event: click SEARCH
+    // Button SEARCH
     document.querySelector("#btnSearch").addEventListener("click", applyFilters);
 
-    // Enter => apply
+    // Enter => search (course name/description)
     document.querySelector("#txtSearch").addEventListener("keyup", e => {
+        if (e.key === "Enter") applyFilters();
+    });
+
+    // Enter => search (teacher name)
+    document.querySelector("#txtTeacher").addEventListener("keyup", e => {
         if (e.key === "Enter") applyFilters();
     });
 }

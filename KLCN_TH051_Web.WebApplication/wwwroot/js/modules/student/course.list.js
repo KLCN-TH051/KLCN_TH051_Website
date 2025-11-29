@@ -1,37 +1,40 @@
-﻿import CourseApi from "../../api/courseApi.js";
+﻿// =============================
+// IMPORT
+// =============================
+import CourseApi from "../../api/courseApi.js";
 import CoursePagination from "./course.pagination.js";
 import { initFilter } from "./course.filter.js";
 import { addToCart } from "./cart.icon.js";
 
-let ALL_COURSES = [];
-let pagination;
 
-/* =======================================
-   INIT
-======================================= */
+// =============================
+// STATE
+// =============================
+let ALL_COURSES = [];
+let pagination = null;
+
+const container = document.querySelector("#course-list");
+if (!container) console.warn("Không tìm thấy #course-list");
+
+
+// =============================
+// INIT
+// =============================
 export async function initCourseList() {
     await loadCourses();
-
-    initFilter({
-        allCourses: ALL_COURSES,
-        pagination
-    });
+    initFilter({ allCourses: ALL_COURSES, pagination });
 }
 
-/* =======================================
-   LOAD COURSES
-======================================= */
+
+// =============================
+// LOAD COURSES
+// =============================
 async function loadCourses() {
-    const container = document.querySelector("#course-list");
-    container.innerHTML = `<div class="col text-center text-muted py-5">Đang tải khóa học...</div>`;
+    container.innerHTML = loadingHTML();
 
     try {
-        ALL_COURSES = await CourseApi.getApproved();
-
-        if (!Array.isArray(ALL_COURSES)) {
-            console.error("CourseApi.getApproved trả về không phải mảng:", ALL_COURSES);
-            ALL_COURSES = [];
-        }
+        const data = await CourseApi.getApproved();
+        ALL_COURSES = Array.isArray(data) ? data : [];
 
         pagination = new CoursePagination({
             data: ALL_COURSES,
@@ -41,32 +44,45 @@ async function loadCourses() {
 
     } catch (err) {
         console.error("Lỗi loadCourses:", err);
-        container.innerHTML = `<div class="col text-center text-danger py-5">Không thể tải danh sách khóa học</div>`;
+        container.innerHTML = errorHTML("Không thể tải danh sách khóa học");
     }
 }
 
-/* =======================================
-   RENDER UI
-======================================= */
-function renderCourseList(list) {
-    const container = document.querySelector("#course-list");
 
-    if (!list || list.length === 0) {
-        container.innerHTML = `<div class="col text-center text-muted py-5">Không có khóa học</div>`;
+// =============================
+// RENDER LIST
+// =============================
+function renderCourseList(list = []) {
+    if (!list.length) {
+        container.innerHTML = emptyHTML("Không có khóa học");
         return;
     }
 
-    // Tối ưu: dùng map + join (nhanh hơn innerHTML +=)
     container.innerHTML = list.map(renderCourseCard).join("");
 }
 
-/* =======================================
-   EVENT DELEGATION — Add to cart
-======================================= */
-document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".btn-add-cart");
-    if (!btn) return;
 
+// =============================
+// EVENT: Delegation
+// =============================
+document.addEventListener("click", (e) => {
+
+    // --- ADD TO CART ---
+    const btn = e.target.closest(".btn-add-cart");
+    if (btn) return handleAddToCart(btn);
+
+    // --- CARD CLICK ---
+    const card = e.target.closest(".course-card");
+    if (card && !e.target.closest(".btn-add-cart")) {
+        return handleCardRedirect(card);
+    }
+});
+
+
+// =============================
+// ADD TO CART
+// =============================
+function handleAddToCart(btn) {
     const id = btn.dataset.id;
     const course = ALL_COURSES.find(x => x.id == id);
     if (!course) return;
@@ -78,34 +94,45 @@ document.addEventListener("click", (e) => {
         thumbnail: course.thumbnail ?? "https://placehold.co/100x60"
     });
 
-    // Thông báo chỉ khi thêm thành công
-    if (ok) {
-        alert("Đã thêm vào giỏ hàng!");
-    } else {
-        alert("Khóa học đã có trong giỏ hàng!");
-    }
-});
+    alert(ok ? "Đã thêm vào giỏ hàng!" : "Khóa học đã có trong giỏ hàng!");
+}
 
-/* =======================================
-   CARD TEMPLATE
-======================================= */
+
+// =============================
+// CARD REDIRECT
+// =============================
+function handleCardRedirect(card) {
+    const id = card.dataset.id;
+    if (!id) return;
+
+    // CHỈNH LẠI ĐƯỜNG DẪN NẾU CẦN
+    window.location.href = `/Course/Detail/${id}`;
+}
+
+
+// =============================
+// RENDER CARD
+// =============================
 function renderCourseCard(c) {
     const price = Number(c.price ?? 0).toLocaleString("vi-VN");
-    const rating = "★★★★☆";
 
     return `
         <div class="col">
-            <div class="card h-100 shadow-sm">
-
-                <img src="${c.thumbnail ?? 'https://placehold.co/500x250'}"
-                     class="card-img-top"
-                     alt="${c.name}">
+            <div class="card h-100 shadow-sm course-card" data-id="${c.id}" style="cursor:pointer;">
+                
+                <img src="${c.thumbnail ?? 'https://placehold.co/500x250'}" 
+                     class="card-img-top" 
+                     alt="${escapeHTML(c.name)}">
 
                 <div class="card-body">
-                    <h5 class="card-title">${c.name}</h5>
-                    <p class="card-text">${c.description ?? 'Không có mô tả'}</p>
-                    <div class="mb-2 text-warning">${rating}</div>
-                    <small class="text-muted">GV: ${c.teacherName ?? 'Chưa cập nhật'}</small>
+                    <h5 class="card-title">${escapeHTML(c.name)}</h5>
+
+                    <p class="card-text small text-muted" style="min-height:40px;">
+                        ${limitText(c.description ?? "Không có mô tả", 80)}
+                    </p>
+
+                    <div class="mb-2 text-warning">★★★★☆</div>
+                    <small class="text-muted">GV: ${escapeHTML(c.teacherName ?? "Chưa cập nhật")}</small>
                 </div>
 
                 <div class="card-footer bg-white d-flex justify-content-between align-items-center">
@@ -120,7 +147,39 @@ function renderCourseCard(c) {
     `;
 }
 
-/* =======================================
-   AUTO RUN
-======================================= */
+
+// =============================
+// SMALL UTIL HTML
+// =============================
+const loadingHTML = () =>
+    `<div class="col text-center text-muted py-5">Đang tải khóa học...</div>`;
+
+const emptyHTML = (msg) =>
+    `<div class="col text-center text-muted py-5">${msg}</div>`;
+
+const errorHTML = (msg) =>
+    `<div class="col text-center text-danger py-5">${msg}</div>`;
+
+
+// =============================
+// HELPER — Safe & Format
+// =============================
+function escapeHTML(str = "") {
+    return str.replace(/[&<>'"]/g, t => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        '"': "&quot;"
+    }[t]));
+}
+
+function limitText(str, max) {
+    return str.length > max ? str.slice(0, max) + "..." : str;
+}
+
+
+// =============================
+// AUTO RUN
+// =============================
 initCourseList();
