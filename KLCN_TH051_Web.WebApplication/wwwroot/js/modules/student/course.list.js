@@ -6,9 +6,9 @@ import { addToCart } from "./cart.icon.js";
 let ALL_COURSES = [];
 let pagination;
 
-// =======================================
-// INIT
-// =======================================
+/* =======================================
+   INIT
+======================================= */
 export async function initCourseList() {
     await loadCourses();
 
@@ -18,10 +18,9 @@ export async function initCourseList() {
     });
 }
 
-
-// =======================================
-// LOAD COURSE
-// =======================================
+/* =======================================
+   LOAD COURSES
+======================================= */
 async function loadCourses() {
     const container = document.querySelector("#course-list");
     container.innerHTML = `<div class="col text-center text-muted py-5">Đang tải khóa học...</div>`;
@@ -37,7 +36,7 @@ async function loadCourses() {
         pagination = new CoursePagination({
             data: ALL_COURSES,
             pageSize: 6,
-            onPageChange: (pageItems) => renderCourseList(pageItems)
+            onPageChange: renderCourseList
         });
 
     } catch (err) {
@@ -46,48 +45,50 @@ async function loadCourses() {
     }
 }
 
-
-// =======================================
-// RENDER UI
-// =======================================
+/* =======================================
+   RENDER UI
+======================================= */
 function renderCourseList(list) {
     const container = document.querySelector("#course-list");
-    container.innerHTML = "";
 
     if (!list || list.length === 0) {
         container.innerHTML = `<div class="col text-center text-muted py-5">Không có khóa học</div>`;
         return;
     }
 
-    list.forEach(c => {
-        container.innerHTML += renderCourseCard(c);
-    });
-
-    // ---------------------------------------
-    // GẮN EVENT ADD TO CART
-    // ---------------------------------------
-    container.querySelectorAll(".btn-add-cart").forEach(btn => {
-        btn.onclick = () => {
-            const id = btn.dataset.id;
-            const course = ALL_COURSES.find(x => x.id == id);
-            if (!course) return;
-
-            addToCart({
-                id: course.id,
-                name: course.name,
-                price: course.price,
-                thumbnail: course.thumbnail ?? "https://placehold.co/100x60"
-            });
-
-            alert("Đã thêm vào giỏ hàng!");
-        };
-    });
+    // Tối ưu: dùng map + join (nhanh hơn innerHTML +=)
+    container.innerHTML = list.map(renderCourseCard).join("");
 }
 
+/* =======================================
+   EVENT DELEGATION — Add to cart
+======================================= */
+document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".btn-add-cart");
+    if (!btn) return;
 
-// =======================================
-// CARD TEMPLATE
-// =======================================
+    const id = btn.dataset.id;
+    const course = ALL_COURSES.find(x => x.id == id);
+    if (!course) return;
+
+    const ok = addToCart({
+        id: course.id,
+        name: course.name,
+        price: course.price,
+        thumbnail: course.thumbnail ?? "https://placehold.co/100x60"
+    });
+
+    // Thông báo chỉ khi thêm thành công
+    if (ok) {
+        alert("Đã thêm vào giỏ hàng!");
+    } else {
+        alert("Khóa học đã có trong giỏ hàng!");
+    }
+});
+
+/* =======================================
+   CARD TEMPLATE
+======================================= */
 function renderCourseCard(c) {
     const price = Number(c.price ?? 0).toLocaleString("vi-VN");
     const rating = "★★★★☆";
@@ -107,7 +108,7 @@ function renderCourseCard(c) {
                     <small class="text-muted">GV: ${c.teacherName ?? 'Chưa cập nhật'}</small>
                 </div>
 
-                <div class="card-footer bg-white d-flex justify-content-between">
+                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
                     <strong>${price}đ</strong>
                     <button class="btn btn-outline-primary btn-sm btn-add-cart" data-id="${c.id}">
                         🛒
@@ -119,8 +120,7 @@ function renderCourseCard(c) {
     `;
 }
 
-
-// =======================================
-// AUTO RUN
-// =======================================
+/* =======================================
+   AUTO RUN
+======================================= */
 initCourseList();
