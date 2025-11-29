@@ -12,8 +12,6 @@ namespace KLCN_TH051_Website.Common.Entities
         public int Id { get; set; }
         public int LessonId { get; set; }     // FK → Lesson
         public Lesson Lesson { get; set; }
-
-        public string Title { get; set; }
         public string? Description { get; set; }
         public QuizType Type { get; set; } = QuizType.SingleChoice;         // SingleChoice hoặc MultipleChoice
         public int PassingScore { get; set; } = 70;
