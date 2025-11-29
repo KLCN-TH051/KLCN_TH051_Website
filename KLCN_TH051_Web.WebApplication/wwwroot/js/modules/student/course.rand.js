@@ -132,8 +132,8 @@ function courseCard(c) {
     return `
         <div class="carousel-item-course">
             <div class="card h-100 shadow-sm">
-                <img src="${c.thumbnail ?? 'https://placehold.co/600x400'}"
-                     class="card-img-top" alt="${c.name}" onerror="this.src='https://placehold.co/600x400'">
+                <img src="${c.thumbnail ?? 'https://placehold.co/600x400?text=No+Image'}"
+                     class="card-img-top" alt="${c.name}" onerror="this.src='https://placehold.co/600x400?text=Error'">
                 <div class="card-body">
                     <h5 class="card-title">${c.name}</h5>
                     <p class="card-text text-muted">${c.description ?? 'Không có mô tả'}</p>

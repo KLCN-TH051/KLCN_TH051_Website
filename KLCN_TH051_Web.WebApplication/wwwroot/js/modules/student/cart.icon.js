@@ -57,7 +57,7 @@ export function updateCartUI() {
     // Render buffer → nhanh hơn innerHTML +=
     box.innerHTML = cart.map(c => `
         <div class="cart-item" data-id="${c.id}">
-            <img src="${c.thumbnail}" class="thumb">
+            <img src="${c.thumbnail ?? 'https://placehold.co/60x60?text=No+Image'}" onerror="this.src='https://placehold.co/60x60?text=Error'" class="thumb">
 
             <div class="info">
                 <p class="title">${c.name}</p>

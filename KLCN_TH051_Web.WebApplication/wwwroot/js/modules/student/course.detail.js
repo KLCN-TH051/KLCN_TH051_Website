@@ -85,7 +85,8 @@ function renderCourseDetail(c) {
             <!-- RIGHT -->
             <div class="col-3">
                 <div class="card p-3 text-center">
-                    <img src="${c.thumbnail ?? 'https://placehold.co/300'}"
+                    <img src="${c.thumbnail ?? 'https://placehold.co/300?text=No+Image'}"
+                            onerror="this.src='https://placehold.co/300?text=Error'"
                          class="img-fluid p-3" style="max-height:180px" />
 
                     <h4 class="fw-bold">${Number(c.price).toLocaleString("vi-VN")}đ</h4>
@@ -184,7 +185,8 @@ function renderLessons(lessons = []) {
 function renderTabTeacher(c) {
     return `
         <div class="tab-pane fade text-center p-4" id="teacher">
-            <img src="${c.teacherAvatar ?? "https://placehold.co/150"}"
+            <img src="${c.teacherAvatar ?? "https://placehold.co/150?text=No+Image"}"
+                    onerror="this.src='https://placehold.co/150?text=Error'"
                  class="rounded-circle mb-3"
                  style="width:150px;height:150px;object-fit:cover;">
             <h5 class="fw-bold">${escapeHTML(c.teacherName ?? "Đang cập nhật")}</h5>

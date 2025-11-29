@@ -35,7 +35,8 @@ function renderCartPage() {
                 <div class="row align-items-center">
 
                     <div class="col-7 d-flex align-items-center">
-                        <img src="${c.thumbnail || '/img/no-image.png'}" 
+                        <img src="${c.thumbnail || 'https://placehold.co/60x60?text=No+Image'}" 
+                             onerror="this.src='https://placehold.co/60x60?text=Error'"
                              class="me-3 rounded"
                              style="width:110px;height:60px;object-fit:cover;">
                         <span class="fw-semibold">${c.name}</span>

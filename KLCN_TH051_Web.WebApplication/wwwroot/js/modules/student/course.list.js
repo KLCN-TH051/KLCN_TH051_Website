@@ -91,7 +91,7 @@ function handleAddToCart(btn) {
         id: course.id,
         name: course.name,
         price: course.price,
-        thumbnail: course.thumbnail ?? "https://placehold.co/100x60"
+        thumbnail: course.thumbnail ?? "https://placehold.co/100x60?text=No+Image"
     });
 
     alert(ok ? "Đã thêm vào giỏ hàng!" : "Khóa học đã có trong giỏ hàng!");
@@ -120,7 +120,8 @@ function renderCourseCard(c) {
         <div class="col">
             <div class="card h-100 shadow-sm course-card" data-id="${c.id}" style="cursor:pointer;">
                 
-                <img src="${c.thumbnail ?? 'https://placehold.co/500x250'}" 
+                <img src="${c.thumbnail ?? 'https://placehold.co/500x250?text=No+Image'}" 
+                        onerror="this.src='https://placehold.co/500x250?text=Error'"
                      class="card-img-top" 
                      alt="${escapeHTML(c.name)}">
 
