@@ -21,8 +21,9 @@ namespace KLCN_TH051_Web.WebApplication.Controllers
             return View();
         }
 
-        public IActionResult Detail()
+        public IActionResult Detail(int id)
         {
+            ViewBag.CourseId = id;
             return View();
         }
 

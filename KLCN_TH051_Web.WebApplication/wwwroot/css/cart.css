@@ -29,11 +29,12 @@
     overflow-y: auto;
 }
 
-.cart-wrapper:hover .cart-dropdown {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-}
+    .cart-dropdown.show {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
 
 /* ========== ITEM ========== */
 /* ❗ FIX: đổi '.item' → '.cart-item' để tránh phá UI khác */

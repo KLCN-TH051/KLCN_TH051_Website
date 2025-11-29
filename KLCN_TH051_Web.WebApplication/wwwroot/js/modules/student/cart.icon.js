@@ -1,7 +1,14 @@
 ﻿const CART_KEY = "LSS_CART";
 
+/* ================================
+   UTIL
+================================ */
 export function getCart() {
-    return JSON.parse(localStorage.getItem(CART_KEY)) ?? [];
+    try {
+        return JSON.parse(localStorage.getItem(CART_KEY)) ?? [];
+    } catch {
+        return [];
+    }
 }
 
 export function saveCart(cart) {
@@ -9,49 +16,91 @@ export function saveCart(cart) {
     updateCartUI();
 }
 
+/* ================================
+   CART ACTIONS
+================================ */
 export function addToCart(course) {
-    let cart = getCart();
+    const cart = getCart();
 
-    // Kiểm tra trùng (không thêm 2 lần 1 khóa học)
-    if (!cart.some(c => c.id === course.id)) {
-        cart.push(course);
-        saveCart(cart);
-    }
+    // Chỉ thêm 1 lần
+    if (cart.some(c => c.id === course.id)) return false;
+
+    cart.push(course);
+    saveCart(cart);
+    return true;
 }
 
 export function removeFromCart(id) {
-    let cart = getCart().filter(c => c.id !== id);
+    const cart = getCart().filter(c => c.id != id);
     saveCart(cart);
 }
 
-// ------------------------------
-// Update UI Cart tại Header
-// ------------------------------
+/* ================================
+   RENDER HEADER CART UI
+================================ */
 export function updateCartUI() {
     const cart = getCart();
 
-    // Badge số lượng
-    document.querySelector("#cart-count").innerText = cart.length;
+    /** ---- Update số lượng ---- **/
+    const countEl = document.querySelector("#cart-count");
+    if (countEl) countEl.innerText = cart.length;
 
-    // Dropdown content
+    /** ---- Update dropdown cart ---- **/
     const box = document.querySelector("#cart-dropdown-list");
     if (!box) return;
 
-    box.innerHTML = "";
-
-    cart.forEach(c => {
-        box.innerHTML += `
-            <div class="item">
-                <img src="${c.thumbnail}" class="thumb">
-                <div class="info">
-                    <p class="title">${c.name}</p>
-                    <span class="price">${Number(c.price).toLocaleString("vi-VN")}đ</span>
-                </div>
-            </div>
-        `;
-    });
-
     if (cart.length === 0) {
         box.innerHTML = `<p class="text-center text-muted py-2">Giỏ hàng trống</p>`;
+        return;
     }
+
+    // Render buffer → nhanh hơn innerHTML +=
+    box.innerHTML = cart.map(c => `
+        <div class="cart-item" data-id="${c.id}">
+            <img src="${c.thumbnail ?? 'https://placehold.co/60x60?text=No+Image'}" onerror="this.src='https://placehold.co/60x60?text=Error'" class="thumb">
+
+            <div class="info">
+                <p class="title">${c.name}</p>
+                <span class="price">
+                    ${Number(c.price).toLocaleString("vi-VN")}đ
+                </span>
+            </div>
+
+            <button class="dropdown-remove" data-id="${c.id}">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+    `).join("");
 }
+
+/* ================================
+   EVENT DELEGATION FOR REMOVE
+================================ */
+document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".dropdown-remove");
+
+    if (btn) {
+        removeFromCart(btn.dataset.id);
+    }
+});
+
+/* ================================
+   TOGGLE CART DROPDOWN
+================================ */
+document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.querySelector("#cart-toggle");
+    const dropdown = document.querySelector(".cart-dropdown");
+
+    if (!toggle || !dropdown) return;
+
+    toggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        dropdown.classList.toggle("show");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!dropdown.contains(e.target) && !toggle.contains(e.target)) {
+            dropdown.classList.remove("show");
+        }
+    });
+});

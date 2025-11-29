@@ -22,18 +22,23 @@ function renderCartPage() {
         return;
     }
 
+    // Sử dụng biến buffer để tăng performance
+    let leftHTML = "";
+    let summaryHTML = "";
+
     cart.forEach(c => {
         const price = Number(c.price);
         total += price;
 
-        /* --- LEFT LIST (Main) --- */
-        list.innerHTML += `
+        leftHTML += `
             <li class="list-group-item">
                 <div class="row align-items-center">
 
                     <div class="col-7 d-flex align-items-center">
-                        <img src="${c.thumbnail}" class="me-3 rounded"
-                             style="width:110px;height:60px;">
+                        <img src="${c.thumbnail || 'https://placehold.co/60x60?text=No+Image'}" 
+                             onerror="this.src='https://placehold.co/60x60?text=Error'"
+                             class="me-3 rounded"
+                             style="width:110px;height:60px;object-fit:cover;">
                         <span class="fw-semibold">${c.name}</span>
                     </div>
 
@@ -52,8 +57,7 @@ function renderCartPage() {
             </li>
         `;
 
-        /* --- RIGHT SUMMARY --- */
-        summaryList.innerHTML += `
+        summaryHTML += `
             <div class="d-flex justify-content-between">
                 <span>${c.name}</span>
                 <span>${price.toLocaleString("vi-VN")}đ</span>
@@ -61,6 +65,11 @@ function renderCartPage() {
         `;
     });
 
+    // Render 1 lần – nhanh hơn
+    list.innerHTML = leftHTML;
+    summaryList.innerHTML = summaryHTML;
+
+    // Tổng giá
     totalBox.innerText = total.toLocaleString("vi-VN") + "đ";
 
     attachRemoveEvents();
@@ -70,12 +79,12 @@ function renderCartPage() {
 
 function attachRemoveEvents() {
     document.querySelectorAll(".cart-remove").forEach(btn => {
-        btn.addEventListener("click", () => {
+        btn.onclick = () => {  // Không dùng addEventListener → tránh chồng event
             const id = btn.dataset.id;
-            removeFromCart(id);   // xoá localStorage
-            updateCartUI();       // cập nhật header
-            renderCartPage();     // reload trang cart
-        });
+            removeFromCart(id);
+            updateCartUI();
+            renderCartPage();
+        };
     });
 }
 
