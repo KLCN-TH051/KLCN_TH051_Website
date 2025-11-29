@@ -5,6 +5,7 @@ import Toast from "/js/components/Toast.js";
 let currentChapterId = null;
 let lessonTypesLoaded = false;
 
+// ==================== LOAD LESSON TYPES ====================
 async function loadLessonTypes() {
     if (lessonTypesLoaded) return;
 
@@ -28,6 +29,7 @@ async function loadLessonTypes() {
     }
 }
 
+// ==================== INIT ====================
 document.addEventListener("DOMContentLoaded", () => {
     setTimeout(initLessonInsert, 100);
 });
@@ -54,6 +56,7 @@ function initLessonInsert() {
     document.getElementById("saveLessonBtn")?.addEventListener("click", createLesson);
 }
 
+// ==================== CREATE LESSON ====================
 async function createLesson() {
     const title = document.getElementById("lessonName")?.value.trim();
     const typeValue = document.getElementById("lessonType")?.value;
@@ -74,30 +77,29 @@ async function createLesson() {
             isFree
         });
 
-        // Lấy lessonId từ response (giả sử API trả về { id: 123, ... })
         const newLessonId = result.id || result.Id || result.ID;
 
         // Đóng modal thêm
         bootstrap.Modal.getInstance(document.getElementById("addLessonModal")).hide();
 
-        // BƯỚC 2: TỰ ĐỘNG MỞ MODAL CHI TIẾT THEO LOẠI
+        // ==================== XỬ LÝ THEO LOẠI ====================
         if (type === 1) {
-            // TYPE = 1 → BÀI ĐỌC → MỞ MODAL NHẬP NỘI DUNG NGAY
-            window.openReadingModal(
-                currentChapterId,
-                newLessonId,
-                title,
-                "",           // content rỗng
-                isFree,
-                true          // isNew = true → hiển thị "Tạo bài đọc mới"
-            );
-        }
-        else if (type === 2) {
-            // TYPE = 2 → VIDEO → bạn làm sau
-            Toast.show("Chức năng thêm Video sẽ làm sau!", "info");
-        }
-        else if (type === 3) {
-            // Mở modal Quiz mới
+            // Reading → mở modal nhập nội dung
+            if (typeof window.openReadingModal === "function") {
+                window.openReadingModal(
+                    currentChapterId,
+                    newLessonId,
+                    title,
+                    "",           // content rỗng
+                    isFree,
+                    true          // isNew = true
+                );
+            }
+        } else if (type === 2) {
+            // Video → thông báo chức năng đang làm sau
+            Toast.show("Chức năng thêm Video sẽ làm sau!", "info", 3000);
+        } else if (type === 3) {
+            // Quiz → mở modal Quiz mới
             if (typeof window.openQuizModal === "function") {
                 window.openQuizModal(
                     currentChapterId,
@@ -107,21 +109,21 @@ async function createLesson() {
                     true    // isNew = true
                 );
             } else {
-                Toast.show("Chưa load modal Quiz!", "danger");
+                Toast.show("Chưa load modal Quiz!", "danger", 3000);
             }
         }
 
-
-
-        // Cập nhật danh sách bài học (hiển thị bài mới ở cuối)
+        // ==================== CẬP NHẬT DANH SÁCH BÀI HỌC ====================
         const lessons = await LessonApi.getLessonsByChapter(currentChapterId);
         window.lessonListModule.renderLessonsIntoChapter(currentChapterId, lessons);
 
-        // Thông báo tạo thành công (trước khi vào nhập nội dung)
-        Toast.show("Tạo bài học thành công! Đang mở trình soạn thảo...", "success", 3000);
+        // ==================== THÔNG BÁO TẠO THÀNH CÔNG ====================
+        Toast.show("Tạo bài học thành công!", "success", 3000);
 
     } catch (err) {
         console.error("Tạo bài học thất bại:", err);
         Toast.show("Tạo bài học thất bại!", "danger", 5000);
     }
 }
+
+export { };

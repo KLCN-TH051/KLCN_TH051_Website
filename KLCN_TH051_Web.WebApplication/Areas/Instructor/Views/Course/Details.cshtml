@@ -75,96 +75,11 @@
                 <div id="chapterList">
                     <!-- JS sẽ render các chương ở đây -->
 
-
-
-
-
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
-
-
-
-@* <!-- list lesson -->
-<div class="card-body">
-    <button class="btn btn-sm btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addLessonModal">
-        <i class="bi bi-plus"></i> Thêm bài học
-    </button>
-
-    <div id="lesson-list-123">
-        <!-- BÀI ĐỌC -->
-        <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-grip-vertical me-3 handle"></i>
-                <i class="bi bi-journal-text me-2 text-primary"></i>
-                <div>
-                    <strong>Giới thiệu về ASP.NET Core</strong>
-                    <small class="d-block text-muted">Bài đọc</small>
-                </div>
-            </div>
-            <div>
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('reading', 1)">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(1)">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- VIDEO -->
-        <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-grip-vertical me-3 handle"></i>
-                <i class="bi bi-play-circle me-2 text-success"></i>
-                <div>
-                    <strong>Cài đặt môi trường</strong>
-                    <small class="d-block text-muted">Video - 15:30</small>
-                </div>
-            </div>
-            <div>
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('video', 2)">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(2)">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- QUIZ -->
-        <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-grip-vertical me-3 handle"></i>
-                <i class="bi bi-question-circle me-2 text-warning"></i>
-                <div>
-                    <strong>Bài kiểm tra chương 1</strong>
-                    <small class="d-block text-muted">Quiz - 5 câu hỏi</small>
-                </div>
-            </div>
-            <div>
-                <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('quiz', 3)">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(3)">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
- *@
-
-
-
-
-
-
-
 
 <!-- ========================== MODAL THÊM CHƯƠNG ========================== -->
 <div class="modal fade" id="addChapterModal" tabindex="-1">
@@ -438,6 +353,12 @@
 </div>
 
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
 @section Scripts {
     <script type="module" src="~/js/modules/instructor/course/course.update.js"></script>
     <script type="module" src="~/js/modules/instructor/chapter/chapter.loadlist.js"></script>
@@ -445,8 +366,9 @@
     <script type="module" src="~/js/modules/instructor/chapter/chapter.update.js"></script>
     <script type="module" src="~/js/modules/instructor/chapter/chapter.delete.js"></script>
     <script type="module" src="~/js/modules/instructor/lesson/lesson.list.js"></script>
-    <script type="module" src="~/js/modules/instructor/lesson/lesson.insert.js"></script>
+    @* <script type="module" src="~/js/modules/instructor/lesson/lesson.insert.js"></script> *@
     <script type="module" src="~/js/modules/instructor/lesson/lesson.updateContent.js"></script>
+    <script type="module" src="~/js/modules/instructor/lesson/lesson.updatevideo.js"></script>
     @* <script type="module" src="~/js/modules/instructor/quiz/quiz.updateContent.js"></script>
     <script type="module" src="~/js/modules/instructor/quiz/quiz.questions.js"></script> *@
     <script type="module" src="~/js/modules/instructor/quiz/quiz.edit.js"></script>
@@ -455,156 +377,9 @@
 
 
 
-<!-- ================== NỘI DUNG KHOÁ HỌC (CHƯƠNG) ================== -->
-<div>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0">Nội dung khóa học</h5>
-        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addChapterModal">
-            <i class="bi bi-plus-lg"></i> Thêm chương
-        </button>
-    </div>
-
-    <div id="chapterList">
-        <!-- CHƯƠNG 1 -->
-        <div class="chapter-card card mb-3">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-grip-vertical me-2 handle"></i>
-                    <h6 class="mb-0 fw-bold">Chương 1: Giới thiệu</h6>
-                </div>
-                <div>
-                    <button class="btn btn-sm btn-outline-primary me-1" onclick="editChapter(1)">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteChapter(1)">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#chapter1">
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
-                </div>
-            </div>
-            <div id="chapter1" class="collapse show">
-                <div class="card-body">
-                    <button class="btn btn-sm btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addLessonModal">
-                        <i class="bi bi-plus"></i> Thêm bài học
-                    </button>
-
-                    @* <div class="lesson-list">
-                        <!-- BÀI ĐỌC -->
-                        <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-grip-vertical me-3 handle"></i>
-                                <i class="bi bi-journal-text me-2 text-primary"></i>
-                                <div>
-                                    <strong>Giới thiệu về ASP.NET Core</strong>
-                                    <small class="d-block text-muted">Bài đọc</small>
-                                </div>
-                            </div>
-                            <div>
-                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('reading', 1)">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(1)">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div> *@
-
-                    @* <!-- VIDEO -->
-                    <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-grip-vertical me-3 handle"></i>
-                            <i class="bi bi-play-circle me-2 text-success"></i>
-                            <div>
-                                <strong>Cài đặt môi trường</strong>
-                                <small class="d-block text-muted">Video - 15:30</small>
-                            </div>
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('video', 2)">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(2)">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div> *@
-
-                    <!-- VIDEO MODAL -->
-                    <div class="modal fade" id="editVideoModal" tabindex="-1">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="videoModalTitle">Bài học video</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-
-                                <div class="modal-body">
-
-                                    <!-- Tiêu đề -->
-                                    <label>Tiêu đề</label>
-                                    <input type="text" id="videoLessonTitle" class="form-control mb-3" />
-
-                                    <!-- Miễn phí -->
-                                    <label>Miễn phí xem</label>
-                                    <input type="checkbox" id="videoLessonFree" class="form-check-input mb-3 ms-2" />
-
-                                    <!-- Chọn video -->
-                                    <label>Chọn video</label>
-                                    <input type="file" accept="video/*" id="videoFile" class="form-control mb-3" />
-
-                                    <!-- Xem trước video -->
-                                    <div id="videoPreview"></div>
-
-                                </div>
-
-                                <div class="modal-footer">
-                                    <!-- Lưu bài học -->
-                                    <button class="btn btn-primary" onclick="saveVideoLesson()">Lưu</button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <!-- QUIZ -->
-                    <div class="lesson-item p-3 mb-2 d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-grip-vertical me-3 handle"></i>
-                            <i class="bi bi-question-circle me-2 text-warning"></i>
-                            <div>
-                                <strong>Bài kiểm tra chương 1</strong>
-                                <small class="d-block text-muted">Quiz - 5 câu hỏi</small>
-                            </div>
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-outline-primary me-1" onclick="editLesson('quiz', 3)">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteLesson(3)">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
 
 <!-- ========================== JAVASCRIPT ========================== -->
-@* <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> *@
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
 
 
 @* <script>
