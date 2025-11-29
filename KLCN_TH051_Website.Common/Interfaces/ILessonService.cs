@@ -15,6 +15,7 @@ namespace KLCN_TH051_Website.Common.Interfaces
 
         Task<LessonResponse> UpdateLessonContentAsync(int lessonId, UpdateLessonContentRequest request, string updatedBy);
         Task<LessonResponse> UpdateLessonVideoAsync(int lessonId, UpdateLessonVideoRequest request, string updatedBy);
+        Task<LessonResponse> UpdateLessonQuizAsync(int lessonId, UpdateLessonQuizRequest request, string updatedBy);
         Task<bool> DeleteLessonAsync(int lessonId, string deletedBy);
         Task<LessonResponse> GetLessonByIdAsync(int lessonId);
         Task<IEnumerable<LessonResponse>> GetLessonsByChapterAsync(int chapterId);

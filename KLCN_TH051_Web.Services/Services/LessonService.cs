@@ -86,6 +86,24 @@ namespace KLCN_TH051_Web.Services.Services
             return new LessonResponse(lesson);
         }
 
+        public async Task<LessonResponse> UpdateLessonQuizAsync(int lessonId, UpdateLessonQuizRequest request, string updatedBy)
+        {
+            var lesson = await _context.Lessons.FindAsync(lessonId);
+            if (lesson == null) throw new Exception("Lesson not found");
+            if (lesson.Type != LessonType.Quiz) throw new Exception("Lesson type is not Quiz");
+
+            lesson.Title = request.Title ?? lesson.Title;
+            lesson.IsFree = request.IsFree ?? lesson.IsFree;
+            lesson.DurationMinutes = request.DurationMinutes ?? lesson.DurationMinutes;
+
+            lesson.LastUpdatedDate = DateTime.Now;
+            lesson.LastUpdatedBy = updatedBy;
+
+            await _context.SaveChangesAsync();
+            return new LessonResponse(lesson);
+        }
+
+
         public async Task<bool> DeleteLessonAsync(int lessonId, string deletedBy)
         {
             var lesson = await _context.Lessons.FindAsync(lessonId);

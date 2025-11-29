@@ -65,6 +65,23 @@ namespace KLCN_TH051_Web.API.Controllers
             }
         }
 
+        // PUT: api/chapters/{chapterId}/lessons/{lessonId}/quiz
+        [HttpPut("{lessonId}/quiz")]
+        public async Task<ActionResult<LessonResponse>> UpdateLessonQuiz(int chapterId, int lessonId, [FromBody] UpdateLessonQuizRequest request)
+        {
+            try
+            {
+                string updatedBy = User.Identity?.Name ?? "system";
+                var lesson = await _lessonService.UpdateLessonQuizAsync(lessonId, request, updatedBy);
+                return Ok(lesson);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
         // DELETE: api/chapters/{chapterId}/lessons/{lessonId}
         [HttpDelete("{lessonId}")]
         public async Task<ActionResult> DeleteLesson(int chapterId, int lessonId)
