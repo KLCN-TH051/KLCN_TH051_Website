@@ -2,6 +2,7 @@
 // IMPORT
 // =============================
 import CourseApi from "../../api/courseApi.js";
+import UploadApi from "../../api/uploadApi.js";   // ⭐ THÊM DÒNG NÀY
 import { addToCart } from "./cart.icon.js";
 
 
@@ -31,8 +32,8 @@ export async function initCourseDetail() {
     try {
         const course = await CourseApi.getById(id);
         renderCourseDetail(course);
-        bindPreviewEvents();   // bind modal preview
-        bindAddToCart(course); // add to cart
+        bindPreviewEvents();
+        bindAddToCart(course);
     } catch (err) {
         console.error(err);
         container.innerHTML = `<div class="text-center text-danger py-5">Lỗi khi tải khóa học</div>`;
@@ -45,6 +46,14 @@ export async function initCourseDetail() {
 // RENDER COURSE DETAIL
 // =============================
 function renderCourseDetail(c) {
+
+    // ⭐ Lấy thumbnail đúng từ UploadApi
+    const thumbnail = UploadApi.getFileUrl("course", c.thumbnail)
+        || "https://placehold.co/300?text=No+Image";
+
+    const teacherAvatar = UploadApi.getFileUrl("avatar", c.teacherAvatar)
+        || "https://placehold.co/150?text=Avatar";
+
     const html = `
         <div class="row mx-auto">
 
@@ -77,7 +86,7 @@ function renderCourseDetail(c) {
                 <!-- TAB CONTENT -->
                 <div class="tab-content p-3">
                     ${renderTabContent(c)}
-                    ${renderTabTeacher(c)}
+                    ${renderTabTeacher(c, teacherAvatar)}
                     ${renderTabRating()}
                 </div>
             </div>
@@ -85,8 +94,8 @@ function renderCourseDetail(c) {
             <!-- RIGHT -->
             <div class="col-3">
                 <div class="card p-3 text-center">
-                    <img src="${c.thumbnail ?? 'https://placehold.co/300?text=No+Image'}"
-                            onerror="this.src='https://placehold.co/300?text=Error'"
+                    <img src="${thumbnail}"
+                         onerror="this.src='https://placehold.co/300?text=Error'"
                          class="img-fluid p-3" style="max-height:180px" />
 
                     <h4 class="fw-bold">${Number(c.price).toLocaleString("vi-VN")}đ</h4>
@@ -159,8 +168,7 @@ function renderTabContent(c) {
                                 </div>
                             </div>
                         </div>
-                    `).join("")
-        }
+                    `).join("")}
             </div>
         </div>
     `;
@@ -182,13 +190,14 @@ function renderLessons(lessons = []) {
     `).join("");
 }
 
-function renderTabTeacher(c) {
+function renderTabTeacher(c, avatarUrl) {
     return `
         <div class="tab-pane fade text-center p-4" id="teacher">
-            <img src="${c.teacherAvatar ?? "https://placehold.co/150?text=No+Image"}"
-                    onerror="this.src='https://placehold.co/150?text=Error'"
+            <img src="${avatarUrl}"
+                 onerror="this.src='https://placehold.co/150?text=Error'"
                  class="rounded-circle mb-3"
                  style="width:150px;height:150px;object-fit:cover;">
+
             <h5 class="fw-bold">${escapeHTML(c.teacherName ?? "Đang cập nhật")}</h5>
         </div>
     `;
@@ -239,12 +248,10 @@ function bindPreviewEvents() {
 
         const type = btn.dataset.type;
 
-        // Reading
         if (type === "reading") {
             previewBody.innerHTML = dummy.reading;
         }
 
-        // Video
         if (type === "video") {
             previewBody.innerHTML = `
                 <video controls preload="metadata" style="width:100%">
@@ -252,7 +259,6 @@ function bindPreviewEvents() {
                 </video>`;
         }
 
-        // Quiz
         if (type === "quiz") {
             let html = `<h5>${dummy.quiz.description}</h5><hr/>`;
 
@@ -282,6 +288,10 @@ function bindPreviewEvents() {
 // ADD TO CART
 // =============================
 function bindAddToCart(course) {
+
+    const thumbnail = UploadApi.getFileUrl("course", course.thumbnail)
+        || "https://placehold.co/100x60?text=No+Image";
+
     const btn = document.querySelector(".btn-buy");
     if (!btn) return;
 
@@ -290,7 +300,7 @@ function bindAddToCart(course) {
             id: course.id,
             name: course.name,
             price: course.price,
-            thumbnail: course.thumbnail
+            thumbnail: thumbnail
         });
 
         alert(ok ? "Đã thêm vào giỏ hàng!" : "Khóa học đã có trong giỏ hàng!");
