@@ -2,6 +2,7 @@
 // IMPORT
 // =============================
 import CourseApi from "../../api/courseApi.js";
+import UploadApi from "../../api/uploadApi.js";   // ⭐ THÊM DÒNG NÀY
 import CoursePagination from "./course.pagination.js";
 import { initFilter } from "./course.filter.js";
 import { addToCart } from "./cart.icon.js";
@@ -87,11 +88,15 @@ function handleAddToCart(btn) {
     const course = ALL_COURSES.find(x => x.id == id);
     if (!course) return;
 
+    // ⭐ Lấy URL thumbnail đúng
+    const thumbnail = UploadApi.getFileUrl("course", course.thumbnail)
+        || "https://placehold.co/100x60?text=No+Image";
+
     const ok = addToCart({
         id: course.id,
         name: course.name,
         price: course.price,
-        thumbnail: course.thumbnail ?? "https://placehold.co/100x60?text=No+Image"
+        thumbnail: thumbnail
     });
 
     alert(ok ? "Đã thêm vào giỏ hàng!" : "Khóa học đã có trong giỏ hàng!");
@@ -105,7 +110,6 @@ function handleCardRedirect(card) {
     const id = card.dataset.id;
     if (!id) return;
 
-    // CHỈNH LẠI ĐƯỜNG DẪN NẾU CẦN
     window.location.href = `/Course/Detail/${id}`;
 }
 
@@ -116,12 +120,16 @@ function handleCardRedirect(card) {
 function renderCourseCard(c) {
     const price = Number(c.price ?? 0).toLocaleString("vi-VN");
 
+    // ⭐ Lấy URL thumbnail từ API
+    const thumbnail = UploadApi.getFileUrl("course", c.thumbnail)
+        || "https://placehold.co/500x250?text=No+Image";
+
     return `
         <div class="col">
             <div class="card h-100 shadow-sm course-card" data-id="${c.id}" style="cursor:pointer;">
                 
-                <img src="${c.thumbnail ?? 'https://placehold.co/500x250?text=No+Image'}" 
-                        onerror="this.src='https://placehold.co/500x250?text=Error'"
+                <img src="${thumbnail}" 
+                     onerror="this.src='https://placehold.co/500x250?text=Error'"
                      class="card-img-top" 
                      alt="${escapeHTML(c.name)}">
 
