@@ -297,25 +297,42 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// ==================== XÓA BÀI HỌC ====================
-let lessonToDelete = null;
+// ==================== XÓA BÀI HỌC (dùng modal đẹp như hình) ====================
+let lessonToDelete = null; // lưu tạm chapterId + lessonId
 
-window.deleteLesson = (chapterId, lessonId) => {
-    lessonToDelete = { chapterId, lessonId };
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteModal')).show();
-};
+// Bước 1: Khi bấm nút thùng rác → lưu dữ liệu + mở modal
+document.body.addEventListener("click", (e) => {
+    const deleteBtn = e.target.closest(".delete-lesson-btn");
+    if (!deleteBtn) return;
 
-// Xác nhận xóa
-document.getElementById("btnConfirmDelete")?.addEventListener("click", async () => {
+    lessonToDelete = {
+        chapterId: deleteBtn.dataset.chapterId,
+        lessonId: deleteBtn.dataset.lessonId
+    };
+
+    const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteLessonModal'));
+    modal.show();
+});
+
+// Bước 2: Khi bấm nút "Xóa" đỏ trong modal → gọi API + reload + toast
+document.getElementById("btnConfirmDeleteLesson")?.addEventListener("click", async () => {
     if (!lessonToDelete) return;
+
     const { chapterId, lessonId } = lessonToDelete;
+
     try {
         await LessonApi.deleteLesson(chapterId, lessonId);
-        bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+
+        // Đóng modal
+        bootstrap.Modal.getInstance(document.getElementById('deleteLessonModal')).hide();
+
+        // Reload danh sách bài học
         const lessons = await LessonApi.getLessonsByChapter(chapterId);
         window.lessonListModule.renderLessonsIntoChapter(chapterId, lessons);
+
         Toast.show("Xóa bài học thành công!", "success", 3000);
     } catch (err) {
+        console.error(err);
         Toast.show("Xóa bài học thất bại!", "danger", 4000);
     } finally {
         lessonToDelete = null;

@@ -234,19 +234,26 @@
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label class="form-label">Tên video</label>
-                    <input type="text" id="videoTitle" class="form-control" value="Cài đặt môi trường">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Video hiện tại</label>
-                    <video id="videoPreview" controls style="width:100%;max-height:400px;background:#000;">
-                        <source src="" type="video/mp4" />
-                    </video>
-                </div>
-                <div class="mb-3">
                     <label class="form-label">Upload video mới</label>
                     <input type="file" id="videoUploadInput" class="form-control" accept="video/*">
+                    <div id="videoFileInfo" class="text-muted small mt-1" style="display:none;"></div>
                 </div>
+
+                <!-- Thanh tiến trình upload -->
+                <div id="uploadProgress" class="mt-3" style="display:none;">
+                    <div class="progress" style="height: 30px;">
+                        <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                             style="width: 0%;">
+                            0%
+                        </div>
+                    </div>
+                    <div id="uploadProgressText" class="text-center mt-2 fw-bold">Đang chuẩn bị...</div>
+                </div>
+
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" id="editVideoFree">
+                    <label class="form-check-label">Bài học này miễn phí (Preview)</label>
+                </div>>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -342,7 +349,7 @@
 </div>
 
 <!-- Modal Xóa -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
+@* <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -355,6 +362,26 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                 <button type="button" id="btnConfirmDelete" class="btn btn-danger">Xóa</button>
+            </div>
+        </div>
+    </div>
+</div> *@
+
+<!-- Modal Xóa Bài Học (dùng chung cho tất cả bài học) -->
+<div class="modal fade" id="deleteLessonModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-danger fw-bold">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="mb-0">Bạn có chắc chắn muốn <strong>xóa bài học</strong> này không?</p>
+                <small class="text-muted">Thao tác không thể hoàn tác!</small>
+            </div>
+            <div class="modal-footer border-0 justify-content-center">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="btnConfirmDeleteLesson" class="btn btn-danger px-4">Xóa</button>
             </div>
         </div>
     </div>
