@@ -209,5 +209,110 @@ namespace KLCN_TH051_Web.API.Controllers
             var bytes = System.IO.File.ReadAllBytes(filePath);
             return File(bytes, contentType);
         }
+
+        // -----------------------
+        // Update Image endpoints
+        // -----------------------
+        [HttpPut("CourseImage/{fileName}")]
+        public async Task<IActionResult> UpdateCourseImage(string fileName, [FromForm] IFormFile file)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+                return BadRequest("Chưa cung cấp file cũ cần cập nhật");
+
+            try
+            {
+                var folder = "images/courses";
+                var folderPath = Path.Combine(_env.WebRootPath, folder);
+                var oldFilePath = Path.Combine(folderPath, fileName);
+
+                // Xóa file cũ nếu tồn tại
+                if (System.IO.File.Exists(oldFilePath))
+                    System.IO.File.Delete(oldFilePath);
+
+                // Lưu file mới
+                var result = await SaveFileAsync(file, folder, new[] { ".jpg", ".jpeg", ".png", ".gif" }, 5 * 1024 * 1024);
+                return Ok(new { result.fileName, result.fileUrl });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Avatar/{fileName}")]
+        public async Task<IActionResult> UpdateAvatar(string fileName, [FromForm] IFormFile file)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+                return BadRequest("Chưa cung cấp file cũ cần cập nhật");
+
+            try
+            {
+                var folder = "images/avatars";
+                var folderPath = Path.Combine(_env.WebRootPath, folder);
+                var oldFilePath = Path.Combine(folderPath, fileName);
+
+                if (System.IO.File.Exists(oldFilePath))
+                    System.IO.File.Delete(oldFilePath);
+
+                var result = await SaveFileAsync(file, folder, new[] { ".jpg", ".jpeg", ".png", ".gif" }, 5 * 1024 * 1024);
+                return Ok(new { result.fileName, result.fileUrl });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Thumbnail/{fileName}")]
+        public async Task<IActionResult> UpdateThumbnail(string fileName, [FromForm] IFormFile file)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+                return BadRequest("Chưa cung cấp file cũ cần cập nhật");
+
+            try
+            {
+                var folder = "images/banners"; // hoặc folder thumbnail nếu khác
+                var folderPath = Path.Combine(_env.WebRootPath, folder);
+                var oldFilePath = Path.Combine(folderPath, fileName);
+
+                if (System.IO.File.Exists(oldFilePath))
+                    System.IO.File.Delete(oldFilePath);
+
+                var result = await SaveFileAsync(file, folder, new[] { ".jpg", ".jpeg", ".png", ".gif" }, 5 * 1024 * 1024);
+                return Ok(new { result.fileName, result.fileUrl });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("BannerImage/{fileName}")]
+        public async Task<IActionResult> UpdateBannerImage(string fileName, [FromForm] IFormFile file)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+                return BadRequest("Chưa cung cấp file cũ cần cập nhật");
+
+            try
+            {
+                var folder = "images/banners";
+                var folderPath = Path.Combine(_env.WebRootPath, folder);
+                var oldFilePath = Path.Combine(folderPath, fileName);
+
+                // Xóa file cũ nếu tồn tại
+                if (System.IO.File.Exists(oldFilePath))
+                    System.IO.File.Delete(oldFilePath);
+
+                // Lưu file mới
+                var result = await SaveFileAsync(file, folder, new[] { ".jpg", ".jpeg", ".png", ".gif" }, 5 * 1024 * 1024);
+                return Ok(new { result.fileName, result.fileUrl });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
     }
 }

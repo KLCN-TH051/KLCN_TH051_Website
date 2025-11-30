@@ -77,6 +77,42 @@ const UploadApi = {
 
         return BaseApi.getFileUrl(`${folder}/${fileName}`);
     }
+
+    /**
+ * Update file hình ảnh
+ * @param {File} file - file mới
+ * @param {string} type - "course", "avatar", "thumbnail", "banner"
+ * @param {string} oldFileName - tên file cũ cần update
+ * @returns {Promise<{fileName: string, fileUrl: string}>}
+ */
+updateFile(file, type, oldFileName) {
+        if (!file) return Promise.reject("Chưa chọn file");
+        if (!oldFileName) return Promise.reject("Chưa có file cũ để cập nhật");
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        let endpoint = "";
+        switch (type.toLowerCase()) {
+            case "course":
+                endpoint = `CourseImage/${oldFileName}`;
+                break;
+            case "avatar":
+                endpoint = `Avatar/${oldFileName}`;
+                break;
+            case "thumbnail":
+                endpoint = `Thumbnail/${oldFileName}`;
+                break;
+            case "banner":
+                endpoint = `BannerImage/${oldFileName}`;
+                break;
+            default:
+                return Promise.reject("Type không hợp lệ: course | avatar | thumbnail | banner");
+        }
+
+        return BaseApi.put(`Upload/${endpoint}`, formData, { isFormData: true });
+    }
+
 };
 
 export default UploadApi;
