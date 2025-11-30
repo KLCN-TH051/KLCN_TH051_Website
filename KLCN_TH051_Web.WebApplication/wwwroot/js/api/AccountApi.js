@@ -20,6 +20,16 @@ const AccountApi = {
                 console.error("Lỗi khi lấy thông tin profile:", err);
                 return null; // trả về null để xử lý ở UI
             });
+    },
+
+    // 🔵 Cập nhật thông tin profile
+    updateProfile(data) {
+        return BaseApi.put("Account/profile", data)
+            .then(res => res)
+            .catch(err => {
+                console.error("Lỗi khi cập nhật profile:", err);
+                throw err;
+            });
     }
 };
 

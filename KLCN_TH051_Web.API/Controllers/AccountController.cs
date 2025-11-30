@@ -364,5 +364,61 @@ namespace KLCN_TH051_Web.API.Controllers
             var teachers = await _accountService.GetTeachersAsync();
             return Ok(teachers);
         }
+
+
+        [HttpPut("profile")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        {
+            var userId = User.GetUserId();
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user == null)
+            {
+                return NotFound(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Không tìm thấy người dùng."
+                });
+            }
+
+            // ========= cập nhật dữ liệu ==========
+            if (!string.IsNullOrWhiteSpace(request.FullName))
+                user.FullName = request.FullName;
+
+            if (request.DateOfBirth.HasValue)
+                user.DateOfBirth = request.DateOfBirth;
+
+            if (!string.IsNullOrWhiteSpace(request.Avatar))
+                user.Avatar = request.Avatar; // Đây là tên file trả về từ UploadApi
+
+            // ========= save to DB ==========
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Cập nhật thất bại.",
+                    Errors = result.Errors.Select(e => e.Description).ToList()
+                });
+            }
+
+            return Ok(new ApiResponse<UserResponse>
+            {
+                Success = true,
+                Message = "Cập nhật thông tin thành công.",
+                Data = new UserResponse
+                {
+                    Id = user.Id,
+                    Avatar = user.Avatar,
+                    Email = user.Email,
+                    FullName = user.FullName,
+                    DateOfBirth = user.DateOfBirth
+                }
+            });
+        }
+
     }
 }
