@@ -43,7 +43,7 @@
 
                 if (response.ok && data.success) {
                     const token = data.data; // JWT token
-                    localStorage.setItem("jwtToken", token);
+                    localStorage.setItem("authToken", token); // <-- sửa thành authToken
 
                     // ===== Gọi profile để lấy thông tin user =====
                     const profileRes = await fetch('https://localhost:7134/api/Account/profile', {
@@ -107,7 +107,7 @@
     if (logoutBtn) {
         logoutBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            localStorage.removeItem("jwtToken");
+            localStorage.removeItem("authToken"); // <-- sửa thành authToken
             localStorage.removeItem("userName");
             localStorage.removeItem("userEmail");
             updateHeaderUser();

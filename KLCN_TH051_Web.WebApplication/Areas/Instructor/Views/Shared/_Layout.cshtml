@@ -156,11 +156,12 @@
     <script type="module" src="~/js/site.js" asp-append-version="true"></script>
 
     <!-- Header login logic ( sử dụng module -->
+    <!-- Header login logic -->
     <script type="module">
         import jwtDecode from "https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.esm.js";
 
         function updateHeader() {
-            const token = localStorage.getItem("teacherToken");
+            const token = localStorage.getItem("authToken"); // <-- GIỮ NGUYÊN authToken
             const nameSpan = document.getElementById("headerUserName");
             const dropdownMenu = document.getElementById("headerDropdownMenu");
             dropdownMenu.innerHTML = "";
@@ -168,36 +169,50 @@
             if (token) {
                 try {
                     const decoded = jwtDecode(token);
-                    const fullName = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || "Teacher";
+
+                    const fullName =
+                        decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"]
+                        || "Teacher";
+
                     nameSpan.textContent = fullName;
 
                     dropdownMenu.innerHTML = `
-                        <li><a class="dropdown-item" href="/Instructor/Profile/Index"><i class="fas fa-user me-2"></i> Trang cá nhân</a></li>
+                        <li><a class="dropdown-item" href="/Instructor/Profile/Index">
+                            <i class="fas fa-user me-2"></i> Trang cá nhân
+                        </a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a href="#" class="dropdown-item text-danger" id="logoutBtn"><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
+                        <li><a href="#" class="dropdown-item text-danger" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                        </a></li>
                     `;
 
                     document.getElementById("logoutBtn")?.addEventListener("click", (e) => {
                         e.preventDefault();
-                        localStorage.removeItem("teacherToken");
+                        localStorage.removeItem("authToken"); // <-- Logout xoá authToken
                         localStorage.removeItem("teacherName");
+                        localStorage.removeItem("teacherId");
                         window.location.href = "/Instructor/Auth/Login";
                     });
 
                 } catch (err) {
                     console.error("Token lỗi:", err);
-                    localStorage.removeItem("teacherToken");
+                    localStorage.removeItem("authToken");
                     nameSpan.textContent = "Tài khoản";
-                    dropdownMenu.innerHTML = `<li><a class="dropdown-item" href="/Instructor/Auth/Login">Đăng nhập</a></li>`;
+                    dropdownMenu.innerHTML = `
+                        <li><a class="dropdown-item" href="/Instructor/Auth/Login">Đăng nhập</a></li>
+                    `;
                 }
             } else {
                 nameSpan.textContent = "Tài khoản";
-                dropdownMenu.innerHTML = `<li><a class="dropdown-item" href="/Instructor/Auth/Login">Đăng nhập</a></li>`;
+                dropdownMenu.innerHTML = `
+                    <li><a class="dropdown-item" href="/Instructor/Auth/Login">Đăng nhập</a></li>
+                `;
             }
         }
 
         document.addEventListener("DOMContentLoaded", updateHeader);
     </script>
+
 
 
     @await RenderSectionAsync("Scripts", required: false)
