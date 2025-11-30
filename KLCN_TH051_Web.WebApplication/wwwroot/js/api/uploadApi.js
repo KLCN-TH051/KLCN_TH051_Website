@@ -76,7 +76,7 @@ const UploadApi = {
         }
 
         return BaseApi.getFileUrl(`${folder}/${fileName}`);
-    }
+    },
 
     /**
  * Update file hình ảnh
