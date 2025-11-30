@@ -5,6 +5,83 @@
 <!-- KHÔNG giữ bất kỳ HTML cũ nào -->
 <div id="course-detail"></div>
 
+
+
+
+
+
+
+<!-- thái độ làm việc quá tệ, t làm lại hết -->
+<div class="container mt-5">
+    <div class="row">
+
+        <div class="col-lg-8 col-md-12">
+
+            <div class="course-header mb-4">
+                <span class="badge course-category-tag bg-primary text-white"></span>
+                <h1 class="display-5 fw-bold mt-2 course-title"></h1>
+                <p class="text-muted course-description"></p>
+
+                <div class="ratings mb-3 course-rating">
+                    <span class="text-warning rating-stars">
+                    </span>
+                </div>
+
+                <p class="lead instructor-info">Giảng viên: <strong class="instructor-name"></strong></p>
+            </div>
+
+            <ul class="nav nav-tabs" id="courseTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link course-tab-link" id="content-tab" data-bs-toggle="tab" data-bs-target="#content-pane" type="button" role="tab" aria-controls="content-pane" aria-selected="false">NỘI DUNG</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active course-tab-link" id="instructor-tab" data-bs-toggle="tab" data-bs-target="#instructor-pane" type="button" role="tab" aria-controls="instructor-pane" aria-selected="true">GIẢNG VIÊN</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link course-tab-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews-pane" type="button" role="tab" aria-controls="reviews-pane" aria-selected="false">ĐÁNH GIÁ</button>
+                </li>
+            </ul>
+
+            <div class="tab-content pt-3" id="courseTabContent">
+                <div class="tab-pane fade" id="content-pane" role="tabpanel" aria-labelledby="content-tab">
+                    <p class="tab-content-placeholder">Nội dung chi tiết khóa học sẽ được hiển thị ở đây.</p>
+                </div>
+                <div class="tab-pane fade show active" id="instructor-pane" role="tabpanel" aria-labelledby="instructor-tab">
+                    <p class="text-muted tab-content-placeholder">Chưa có nội dung</p>
+                </div>
+                <div class="tab-pane fade" id="reviews-pane" role="tabpanel" aria-labelledby="reviews-tab">
+                    <p class="tab-content-placeholder">Các đánh giá của học viên.</p>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-4 col-md-12 mt-md-4 mt-lg-0">
+            <div class="card shadow-sm course-enrollment-card">
+
+                <img src="placeholder-image.jpg" class="card-img-top course-image" alt="Hình ảnh khóa học">
+
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4 course-price"></h3>
+
+                    <button class="btn btn-primary btn-lg w-100 mb-4 add-to-cart-btn">THÊM VÀO GIỎ HÀNG</button>
+
+                    <div class="course-summary">
+                        <h5 class="fw-bold mb-3 summary-title">Khóa học bao gồm</h5>
+                        <ul class="list-unstyled course-features">
+                            <li class="mb-2 feature-item"><i class="bi bi-play-circle-fill text-success me-2"></i> <span class="feature-detail video-count"></span></li>
+                            <li class="mb-2 feature-item"><i class="bi bi-file-earmark-text-fill text-success me-2"></i> <span class="feature-detail reading-count"></span></li>
+                            <li class="mb-2 feature-item"><i class="bi bi-patch-question-fill text-success me-2"></i> <span class="feature-detail quiz-count"></span></li>
+                            <li class="mb-2 feature-item"><i class="bi bi-globe2 text-success me-2"></i> <span class="feature-detail access-type"></span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 @section Scripts {
     <script>
         // Truyền ID từ server sang JS
