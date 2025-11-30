@@ -1,4 +1,4 @@
-﻿<div class="row">
+﻿@* <div class="row">
     <!-- Sidebar -->
     <partial name="_Sidebar" />
     <!-- MAIN CONTENT -->
@@ -70,4 +70,45 @@
 
         </div>
     </div>
+</div> *@
+
+@{
+    ViewData["Title"] = "Thông tin tài khoản";
+}
+
+<div class="card p-4">
+    <h3>Thông tin cá nhân</h3>
+
+    <div class="row mt-3">
+        <div class="col-3 text-center">
+            <img id="avatarPreview" src="/images/default-avatar.png" class="img-fluid rounded-circle mb-3" style="max-width: 150px" />
+            <input id="avatarInput" type="file" class="d-none" />
+            <button id="btnChangeAvatar" class="btn btn-primary">Đổi ảnh</button>
+        </div>
+
+        <div class="col-9">
+            <div class="mb-3">
+                <label>Họ tên</label>
+                <input id="username" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input id="email" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label>Vai trò</label>
+                <input id="role" class="form-control" readonly />
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- API URL -->
+<script>
+    window.API_URL = "https://localhost:7134/";
+</script>
+
+<!-- Load JS -->
+<script type="module" src="/js/modules/student/profile.page.js"></script>
