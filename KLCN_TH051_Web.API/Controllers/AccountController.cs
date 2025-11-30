@@ -202,6 +202,7 @@ namespace KLCN_TH051_Web.API.Controllers
                 Data = new UserResponse
                 {
                     Id = user.Id,
+                    Avatar = user.Avatar,
                     Email = user.Email,
                     FullName = user.FullName,
                     DateOfBirth = user.DateOfBirth
