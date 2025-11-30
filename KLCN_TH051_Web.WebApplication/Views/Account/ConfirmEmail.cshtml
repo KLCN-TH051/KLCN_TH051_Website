@@ -22,7 +22,10 @@
             }
 
             try {
-                const response = await fetch(`${"@apiUrl"}/api/account/confirm-email?userId=@userId&token=@token`);
+        const api = "@apiUrl".replace(/\/$/, "");      // xóa "/" cuối nếu có
+        const path = "api/account/confirm-email";      // KHÔNG có "/" đầu
+
+        const response = await fetch(`${api}/${path}?userId=@userId&token=@token`);
                 const data = await response.json();
 
                 document.getElementById("message").textContent = data.message;
