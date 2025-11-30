@@ -1,4 +1,6 @@
-﻿const CART_KEY = "LSS_CART";
+﻿import UploadApi from "../../api/uploadApi.js";   // ⭐ THÊM DÒNG NÀY
+
+const CART_KEY = "LSS_CART";
 
 /* ================================
    UTIL
@@ -22,7 +24,7 @@ export function saveCart(cart) {
 export function addToCart(course) {
     const cart = getCart();
 
-    // Chỉ thêm 1 lần
+    // Không thêm trùng
     if (cart.some(c => c.id === course.id)) return false;
 
     cart.push(course);
@@ -54,23 +56,31 @@ export function updateCartUI() {
         return;
     }
 
-    // Render buffer → nhanh hơn innerHTML +=
-    box.innerHTML = cart.map(c => `
-        <div class="cart-item" data-id="${c.id}">
-            <img src="${c.thumbnail ?? 'https://placehold.co/60x60?text=No+Image'}" onerror="this.src='https://placehold.co/60x60?text=Error'" class="thumb">
+    box.innerHTML = cart.map(c => {
 
-            <div class="info">
-                <p class="title">${c.name}</p>
-                <span class="price">
-                    ${Number(c.price).toLocaleString("vi-VN")}đ
-                </span>
+        // ⭐ Build URL thumbnail từ UploadApi
+        const thumbnail = UploadApi.getFileUrl("course", c.thumbnail)
+            || "https://placehold.co/60x60?text=No+Image";
+
+        return `
+            <div class="cart-item" data-id="${c.id}">
+                <img src="${thumbnail}" 
+                     onerror="this.src='https://placehold.co/60x60?text=Error'" 
+                     class="thumb">
+
+                <div class="info">
+                    <p class="title">${c.name}</p>
+                    <span class="price">
+                        ${Number(c.price).toLocaleString("vi-VN")}đ
+                    </span>
+                </div>
+
+                <button class="dropdown-remove" data-id="${c.id}">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
-
-            <button class="dropdown-remove" data-id="${c.id}">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </div>
-    `).join("");
+        `;
+    }).join("");
 }
 
 /* ================================

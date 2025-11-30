@@ -35,7 +35,6 @@ namespace KLCN_TH051_Web.Services.Services
             var quiz = new Quiz
             {
                 LessonId = request.LessonId,
-                Title = request.Title,
                 Description = request.Description,
                 Type = request.Type,
                 PassingScore = request.PassingScore,
@@ -77,7 +76,6 @@ namespace KLCN_TH051_Web.Services.Services
             if (quiz == null || quiz.IsDeleted)
                 throw new Exception("Quiz not found");
 
-            quiz.Title = request.Title ?? quiz.Title;
             quiz.Description = request.Description ?? quiz.Description;
             quiz.Type = request.Type ?? quiz.Type;
             quiz.PassingScore = request.PassingScore ?? quiz.PassingScore;

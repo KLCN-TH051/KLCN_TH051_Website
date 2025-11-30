@@ -19,10 +19,6 @@ namespace KLCN_TH051_Website.Common.Configurations
             // Khóa chính
             builder.HasKey(q => q.Id);
 
-            builder.Property(q => q.Title)
-                   .IsRequired()
-                   .HasMaxLength(500);
-
             builder.Property(q => q.Description)
                    .HasMaxLength(1000)
                    .IsRequired(false);

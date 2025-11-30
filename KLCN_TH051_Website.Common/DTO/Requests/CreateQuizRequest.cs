@@ -10,7 +10,6 @@ namespace KLCN_TH051_Website.Common.DTO.Requests
     public class CreateQuizRequest
     {
         public int LessonId { get; set; }         // Lesson chứa quiz
-        public string Title { get; set; }
         public string? Description { get; set; }
         public QuizType Type { get; set; }        // SingleChoice / MultipleChoice
         public int PassingScore { get; set; }

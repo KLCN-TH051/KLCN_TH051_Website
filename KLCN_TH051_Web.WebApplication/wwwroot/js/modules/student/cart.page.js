@@ -1,4 +1,5 @@
-﻿import { getCart, removeFromCart, updateCartUI } from "./cart.icon.js";
+﻿import UploadApi from "../../api/uploadApi.js";   // ⭐ THÊM DÒNG NÀY
+import { getCart, removeFromCart, updateCartUI } from "./cart.icon.js";
 
 /* ========================= RENDER CART PAGE ========================= */
 
@@ -30,13 +31,17 @@ function renderCartPage() {
         const price = Number(c.price);
         total += price;
 
+        // ⭐ Lấy thumbnail đúng từ server
+        const thumbnail = UploadApi.getFileUrl("course", c.thumbnail)
+            || "https://placehold.co/110x60?text=No+Image";
+
         leftHTML += `
             <li class="list-group-item">
                 <div class="row align-items-center">
 
                     <div class="col-7 d-flex align-items-center">
-                        <img src="${c.thumbnail || 'https://placehold.co/60x60?text=No+Image'}" 
-                             onerror="this.src='https://placehold.co/60x60?text=Error'"
+                        <img src="${thumbnail}"
+                             onerror="this.src='https://placehold.co/110x60?text=Error'"
                              class="me-3 rounded"
                              style="width:110px;height:60px;object-fit:cover;">
                         <span class="fw-semibold">${c.name}</span>
@@ -79,7 +84,7 @@ function renderCartPage() {
 
 function attachRemoveEvents() {
     document.querySelectorAll(".cart-remove").forEach(btn => {
-        btn.onclick = () => {  // Không dùng addEventListener → tránh chồng event
+        btn.onclick = () => {
             const id = btn.dataset.id;
             removeFromCart(id);
             updateCartUI();
