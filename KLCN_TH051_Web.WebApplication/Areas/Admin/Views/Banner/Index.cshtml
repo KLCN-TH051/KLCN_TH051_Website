@@ -1,0 +1,64 @@
+﻿@{
+    ViewData["Title"] = "Quản lý Banner";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">Quản lý Banner</h3>
+        <button id="btnCreate" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Thêm Banner
+        </button>
+    </div>
+
+    <div id="bannerList">
+        <!-- JS sẽ render vào đây -->
+    </div>
+</div>
+
+<!-- ================= MODAL CREATE + EDIT ================= -->
+<div class="modal fade" id="bannerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 id="bannerModalTitle" class="modal-title fw-bold">Tạo Banner</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="bannerId">
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tiêu đề</label>
+                    <input id="bannerTitle" class="form-control" placeholder="Nhập tiêu đề banner">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Link chuyển hướng</label>
+                    <input id="bannerLink" class="form-control" placeholder="Nhập URL (nếu có)">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Ảnh Banner</label>
+                    <input type="file" id="bannerImage" class="form-control">
+
+                    <img id="bannerPreview" class="mt-3 rounded border"
+                         style="max-width: 100%; display:none;">
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button id="bannerSaveBtn" class="btn btn-primary">Lưu</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Your JS module -->
+<script type="module" src="~/js/modules/admin/banner/banner.list.js"></script>
+
