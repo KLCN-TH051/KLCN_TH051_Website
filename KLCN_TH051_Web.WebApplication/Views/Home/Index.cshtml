@@ -2,21 +2,28 @@
     ViewData["Title"] = "Trang chủ";
 }
 
-
 <section class="py-4">
     <div class="container">
         <div class="row">
 
-            <!-- Subject danh mục -->
             <div class="col-lg-3">
-                <div class="bg-success text-white rounded">
-                    <h5 class="fw-bold mb-3 p-3"><i class="bi bi-list"></i> DANH MỤC</h5>
-                    <ul class="list-group" id="subjectList" style="max-height: 500px; overflow-y: auto;"></ul>
+                <div class="bg-custom-blue text-white rounded">
+                    <h5 class="fw-bold mb-0 p-3"><i class="bi bi-list"></i> DANH MỤC</h5>
+
+                    <ul class="list-group list-group-flush text-dark hover-scroll-list" id="subjectList">
+                    </ul>
                 </div>
             </div>
 
-            <!-- Banner slideshow -->
             <div class="col-lg-9">
+
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Tìm bất cứ thứ gì mà bạn muốn" aria-label="Search">
+                    <button class="btn btn-outline-custom-blue" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+
                 <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner" id="bannerList" style="height: 300px;"></div>
 
@@ -37,9 +44,6 @@
     </div>
 </section>
 
-
-
-<!-- ===================== HERO ===================== -->
 <section class="bg-light py-5 text-center">
     <div class="container">
         <h1 class="display-5 fw-bold mb-3">Nền tảng học tập cho mọi người</h1>
@@ -52,18 +56,17 @@
     </div>
 </section>
 
-<!-- ===================== FEATURES ===================== -->
 <section class="py-5">
     <div class="container">
         <h2 class="text-center mb-5 fw-bold">Tại sao chọn chúng tôi?</h2>
 
         <div class="row g-4 text-center">
             @foreach (var feature in new[] {
-                        new { Icon = "bi-laptop", Title = "Học trực tuyến linh hoạt", Desc = "Truy cập mọi lúc, mọi nơi với hệ thống học trực tuyến hiện đại." },
-                        new { Icon = "bi-journal-code", Title = "Khóa học chất lượng", Desc = "Nội dung được biên soạn kỹ lưỡng bởi giảng viên nhiều kinh nghiệm." },
-                        new { Icon = "bi-chat-dots", Title = "Cộng đồng hỗ trợ", Desc = "Tham gia thảo luận và nhận sự giúp đỡ từ các học viên khác." },
-                        new { Icon = "bi-bar-chart-line", Title = "Theo dõi tiến độ", Desc = "Đánh giá hiệu quả từng khóa học dễ dàng." }
-                        })
+            new { Icon = "bi-laptop", Title = "Học trực tuyến linh hoạt", Desc = "Truy cập mọi lúc, mọi nơi với hệ thống học trực tuyến hiện đại." },
+            new { Icon = "bi-journal-code", Title = "Khóa học chất lượng", Desc = "Nội dung được biên soạn kỹ lưỡng bởi giảng viên nhiều kinh nghiệm." },
+            new { Icon = "bi-chat-dots", Title = "Cộng đồng hỗ trợ", Desc = "Tham gia thảo luận và nhận sự giúp đỡ từ các học viên khác." },
+            new { Icon = "bi-bar-chart-line", Title = "Theo dõi tiến độ", Desc = "Đánh giá hiệu quả từng khóa học dễ dàng." }
+            })
             {
                 <div class="col-md-3">
                     <div class="px-3">
@@ -77,7 +80,6 @@
     </div>
 </section>
 
-<!-- ===================== COURSES ===================== -->
 <section class="bg-light py-5">
     <div class="container">
         <h2 class="text-center mb-5 fw-bold">Khóa học ngẫu nhiên</h2>
@@ -88,7 +90,6 @@
     </div>
 </section>
 
-<!-- ===================== CTA ===================== -->
 <section class="bg-primary text-white text-center py-5">
     <div class="container">
         <h2 class="mb-4 fw-bold">Bắt đầu hành trình học tập của bạn hôm nay!</h2>
@@ -106,6 +107,62 @@
 
 @section Styles {
     <style>
+
+        :root {
+            --custom-blue: #0072B0;
+        }
+
+        .bg-custom-blue {
+            background-color: var(--custom-blue) !important;
+            color: white;
+        }
+
+        .btn-outline-custom-blue {
+            color: var(--custom-blue);
+            border-color: var(--custom-blue);
+        }
+
+            .btn-outline-custom-blue:hover {
+                color: white;
+                background-color: var(--custom-blue);
+                border-color: var(--custom-blue);
+            }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            filter: invert(33%) sepia(94%) saturate(2289%) hue-rotate(189deg) brightness(91%) contrast(101%);
+        }
+
+        .carousel-indicators [data-bs-target] {
+            background-color: var(--custom-blue);
+        }
+
+        /* --- CSS CHO HIỆU ỨNG CUỘN KHI HOVER --- */
+        .hover-scroll-list {
+            /* ĐÃ CHỈNH SỬA: Giảm xuống 296px để cân bằng với cột phải */
+            max-height: 296px;
+            overflow-y: hidden; /* Mặc định ẩn thanh cuộn */
+            transition: all 0.3s ease;
+        }
+
+            .hover-scroll-list:hover {
+                overflow-y: auto; /* Hiện thanh cuộn khi di chuột vào */
+            }
+
+            /* Tùy chỉnh thanh cuộn Webkit (Chrome, Edge, Safari) */
+            .hover-scroll-list::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .hover-scroll-list::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 4px;
+            }
+
+            .hover-scroll-list::-webkit-scrollbar-thumb {
+                background: var(--custom-blue);
+                border-radius: 4px;
+            }
         .carousel-container {
             position: relative;
         }
@@ -132,9 +189,10 @@
             cursor: pointer;
         }
 
+            /* Hiệu ứng hover nhẹ cho từng item trong list subject */
             #subjectList .list-group-item:hover {
-                background-color: rgba(255,255,255,0.2);
+                /* Làm sáng màu nền lên một chút khi hover vào item */
+                filter: brightness(110%);
             }
-
     </style>
 }

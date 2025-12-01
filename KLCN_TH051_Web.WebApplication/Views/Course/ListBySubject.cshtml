@@ -1,0 +1,32 @@
+﻿@* @model IEnumerable<YourProjectNamespace.Models.Course>
+
+@{
+    ViewData["Title"] = ViewBag.SubjectName;
+}
+
+<div class="container py-5">
+    <h2 class="mb-4">Khóa học thuộc chủ đề: <span class="text-primary">@ViewBag.SubjectName</span></h2>
+
+    @if (!Model.Any())
+    {
+            <div class="alert alert-warning">Chưa có khóa học nào thuộc môn này.</div>
+    }
+    else
+    {
+            <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                        <div class="col-md-3">
+                            <div class="card h-100 shadow-sm">
+                                <img src="@item.ImageUrl" class="card-img-top" alt="@item.Title" style="height: 180px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-truncate">@item.Title</h5>
+                                    <p class="card-text text-muted small">Giảng viên: @item.InstructorName</p>
+                                    <a href="/Course/Detail/@item.Id" class="btn btn-outline-primary btn-sm w-100">Xem chi tiết</a>
+                                </div>
+                            </div>
+                        </div>
+            }
+            </div>
+    }
+</div> *@

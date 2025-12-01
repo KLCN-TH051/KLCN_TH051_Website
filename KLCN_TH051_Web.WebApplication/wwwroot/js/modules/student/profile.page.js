@@ -30,7 +30,7 @@ async function loadProfile() {
 
         document.getElementById("username").value = user.fullName ?? "";
         document.getElementById("email").value = user.email ?? "";
-        document.getElementById("role").value = user.role ?? "Không rõ";
+        document.getElementById("dateOfBirth").value = user.dateOfBirth ?? "Chưa có";
 
         // ===== FIX lỗi avatar =====
         let avatarUrl = "/images/default-avatar.png";
