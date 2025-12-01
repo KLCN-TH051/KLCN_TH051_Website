@@ -40,22 +40,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         bannerList.innerHTML = `<div class="text-danger">Lỗi khi load banner</div>`;
     }
 
-    // ---- Load subject ----
+    // --- Load subject ---
     try {
         const subjects = await SubjectApi.getAll();
         subjectList.innerHTML = "";
 
         if (!subjects.length) {
-            subjectList.innerHTML = `<li class="list-group-item text-white">Chưa có môn học nào</li>`;
+            // Đảm bảo vẫn giữ style cho trường hợp không có môn học
+            const li = document.createElement("li");
+            li.className = "list-group-item text-white";
+            li.style.backgroundColor = "rgb(25 135 84)";
+            li.textContent = "Chưa có môn học nào";
+            subjectList.appendChild(li);
             return;
         }
 
         subjects.forEach(s => {
-            const li = document.createElement("li");
-            li.className = "list-group-item text-white";
-            li.style.backgroundColor = "rgb(25 135 84)"; 
-            li.textContent = s.name;
-            subjectList.appendChild(li);
+            const a = document.createElement("a");
+            // Thêm đường dẫn đến trang chi tiết môn học. Giả sử object s có thuộc tính 'id'.
+            a.href = `subject${s.id}.html`; // Hoặc đường dẫn phù hợp với cấu trúc project của bạn
+            a.className = "list-group-item list-group-item-action text-white py-2 px-3"; // Loại bỏ padding mặc định lớn
+            a.style.backgroundColor = "rgb(25 135 84)";
+            a.textContent = s.name;
+            subjectList.appendChild(a);
         });
 
     } catch (err) {

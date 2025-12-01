@@ -11,22 +11,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         const course = await CourseApi.getById(courseId);
 
-        // Header
+        // ---- Header ----
         document.querySelector(".course-title").textContent = course.name;
         document.querySelector(".course-description").textContent = course.description;
         document.querySelector(".instructor-name").textContent = course.teacherName ?? "Chưa cập nhật";
         document.querySelector(".course-category-tag").textContent = course.subjectName ?? "Chưa cập nhật";
 
-        // Ảnh khóa học
+        // ---- Ảnh khóa học ----
         const courseImgEl = document.querySelector(".course-image");
         if (course.thumbnail) {
-            courseImgEl.src = UploadApi.getFileUrl("banner", course.thumbnail)
+            // SỬA ĐÚNG: chỉ dùng type "course"
+            courseImgEl.src = UploadApi.getFileUrl("course", course.thumbnail)
                 || "https://placehold.co/500x250?text=No+Image";
         } else {
             courseImgEl.src = "https://placehold.co/500x250?text=No+Image";
         }
 
-        // Giá
+        // ---- Giá ----
         const priceEl = document.querySelector(".course-price");
         priceEl.textContent = course.price > 0
             ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(course.price)

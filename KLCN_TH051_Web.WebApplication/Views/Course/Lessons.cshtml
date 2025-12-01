@@ -5,62 +5,31 @@
     <!-- SIDEBAR -->
     <div class="col-3 border-end bg-white 100vh overflow-auto">
         <ul class="list-group list-group-flush mt-2">
-            <!-- CHƯƠNG 1 - Đã hoàn thành -->
-            <li class="list-group-item p-0">
-                <div class="p-2 text-success" data-bs-toggle="collapse" data-bs-target="#chapter1">
-                    <i class="bi bi-check-circle-fill me-2"></i>
-                    <strong>Chương 1: Tên chương</strong>
-                </div>
-
-                <div id="chapter1" class="collapse show">
-                    <ul class="list-group list-group-flush ms-3">
-
-                        <!-- Bài 1 -->
-                        <li class="list-group-item text-success lesson-item" data-id="lesson">
-                            <i class="bi bi-check-circle-fill me-2"></i>
-                            Bài 1: Tên bài
-                        </li>
-                    </ul>
-                </div>
-            </li>
-            <!-- CHƯƠNG 2 -->
-            <li class="list-group-item p-0">
-                <div class="p-2" data-bs-toggle="collapse" data-bs-target="#chapter2">
-                    <strong>Javascript Cơ bản</strong>
-                </div>
-
-                <div id="chapter2" class="collapse">
-                    <ul class="list-group list-group-flush ms-3">
-                        <li class="list-group-item lesson-item" data-id="video">
-                            <i class="bi bi-play-circle me-2"></i>
-                            Bài 1: Video
-                        </li>
-                        <li class="list-group-item lesson-item" data-id="quiz">
-                            <i class="bi bi-question-circle me-2"></i>
-                            Bài 2: Quiz
-                        </li>
-                    </ul>
-                </div>
-            </li>
+            <!-- Danh sách chapter & lesson sẽ render bằng JS -->
         </ul>
     </div>
     <!-- MAIN CONTENT -->
     <div class="col-9 p-3 100vh overflow-auto">
         <div class="bg-white p-3 rounded shadow-sm" id="mainContent">
-            <h5 class="fw-bold">GIỚI THIỆU</h5>
-            <p>
-                Thành phần cơ bản của React được gọi là <b>components</b>.
-                Syntax để viết HTML sử dụng Javascript để render. Bạn có thể tạo
-                ra một component bằng các gọi phương thức createClass của đối tượng React.
-            </p>
-            <p>
-                Có thể lồng nhiều component vào nhau thông qua lệnh return của phương thức render.
-            </p>
+            <!-- Nội dung bài học -->
         </div>
         <button class="btn btn-primary mt-3">Bài sau</button>
     </div>
 </div>
+
 <script>
+    // Lấy courseId từ URL: /Course/Lessons/{lessonId}?courseId=123
+    const urlParams = new URLSearchParams(window.location.search);
+    window.currentCourseId = urlParams.get('courseId'); // null nếu không có query
+    window.currentLessonId = window.location.pathname.split("/").pop();
+</script>
+<script type="module" src="~/js/modules/student/lesson/lesson.render.js"></script>
+
+
+
+
+
+@* <script>
     document.addEventListener("DOMContentLoaded", function () {
 
         const lessonItems = document.querySelectorAll(".lesson-item");
@@ -163,4 +132,4 @@
         }
 
     });
-</script>
+</script> *@
